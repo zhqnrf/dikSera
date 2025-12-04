@@ -272,40 +272,44 @@ class PerawatDrhController extends Controller
     }
 
     /* ============ PEKERJAAN ============ */
-    public function pekerjaanIndex()
+   public function pekerjaanIndex()
     {
         $user = $this->currentPerawat();
         if (!$user) return redirect('/');
 
-        $pekerjaan = PerawatPekerjaan::where('user_id',$user->id)->orderBy('tanggal_mulai','desc')->get();
-        return view('perawat.pekerjaan.index', compact('user','pekerjaan'));
+        // Urutkan berdasarkan tahun mulai terbaru
+        $pekerjaan = PerawatPekerjaan::where('user_id', $user->id)
+                     ->orderBy('tahun_mulai', 'desc')
+                     ->get();
+
+        return view('perawat.pekerjaan.index', compact('user', 'pekerjaan'));
     }
 
-    public function pekerjaanStore(Request $request)
+   public function pekerjaanStore(Request $request)
     {
         $user = $this->currentPerawat();
         if (!$user) return redirect('/');
 
         $request->validate([
-            'nama_instansi'  => 'required|string|max:150',
-            'jabatan'        => 'required|string|max:150',
-            'gaji_pokok'     => 'nullable|string|max:50',
-            'tanggal_mulai'  => 'nullable|date',
-            'tanggal_selesai'=> 'nullable|date',
-            'dokumen'        => 'nullable|mimes:pdf,jpg,jpeg,png|max:4096',
+            'nama_instansi' => 'required|string|max:150',
+            'jabatan'       => 'required|string|max:150',
+            'tahun_mulai'   => 'nullable|string|max:4', // Sesuai Migration
+            'tahun_selesai' => 'nullable|string|max:4', // Sesuai Migration
+            'keterangan'    => 'nullable|string|max:255', // Sesuai Migration
+            'dokumen'       => 'nullable|mimes:pdf,jpg,jpeg,png|max:4096',
         ]);
 
-        $data = $request->only('nama_instansi','jabatan','gaji_pokok','tanggal_mulai','tanggal_selesai');
+        $data = $request->only('nama_instansi', 'jabatan', 'tahun_mulai', 'tahun_selesai', 'keterangan');
         $data['user_id'] = $user->id;
 
         if ($request->hasFile('dokumen')) {
-            $data['dokumen_path'] = $request->file('dokumen')->store('perawat/pekerjaan','public');
+            $data['dokumen_path'] = $request->file('dokumen')->store('perawat/pekerjaan', 'public');
         }
 
         PerawatPekerjaan::create($data);
 
-        return redirect()->route('perawat.pekerjaan.index')->with('swal',[
-            'icon'=>'success','title'=>'Berhasil','text'=>'Riwayat pekerjaan ditambahkan.'
+        return redirect()->route('perawat.pekerjaan.index')->with('swal', [
+            'icon' => 'success', 'title' => 'Berhasil', 'text' => 'Riwayat pekerjaan ditambahkan.'
         ]);
     }
 
@@ -314,26 +318,27 @@ class PerawatDrhController extends Controller
         $user = $this->currentPerawat();
         if (!$user) return redirect('/');
 
-        $pekerjaan = PerawatPekerjaan::where('user_id',$user->id)->findOrFail($id);
+        $pekerjaan = PerawatPekerjaan::where('user_id', $user->id)->findOrFail($id);
 
         $request->validate([
-            'nama_instansi'  => 'required|string|max:150',
-            'jabatan'        => 'required|string|max:150',
-            'gaji_pokok'     => 'nullable|string|max:50',
-            'tanggal_mulai'  => 'nullable|date',
-            'tanggal_selesai'=> 'nullable|date',
-            'dokumen'        => 'nullable|mimes:pdf,jpg,jpeg,png|max:4096',
+            'nama_instansi' => 'required|string|max:150',
+            'jabatan'       => 'required|string|max:150',
+            'tahun_mulai'   => 'nullable|string|max:4',
+            'tahun_selesai' => 'nullable|string|max:4',
+            'keterangan'    => 'nullable|string|max:255',
+            'dokumen'       => 'nullable|mimes:pdf,jpg,jpeg,png|max:4096',
         ]);
 
-        $data = $request->only('nama_instansi','jabatan','gaji_pokok','tanggal_mulai','tanggal_selesai');
+        $data = $request->only('nama_instansi', 'jabatan', 'tahun_mulai', 'tahun_selesai', 'keterangan');
+
         if ($request->hasFile('dokumen')) {
-            $data['dokumen_path'] = $request->file('dokumen')->store('perawat/pekerjaan','public');
+            $data['dokumen_path'] = $request->file('dokumen')->store('perawat/pekerjaan', 'public');
         }
 
         $pekerjaan->update($data);
 
-        return redirect()->route('perawat.pekerjaan.index')->with('swal',[
-            'icon'=>'success','title'=>'Berhasil','text'=>'Riwayat pekerjaan diperbarui.'
+        return redirect()->route('perawat.pekerjaan.index')->with('swal', [
+            'icon' => 'success', 'title' => 'Berhasil', 'text' => 'Riwayat pekerjaan diperbarui.'
         ]);
     }
 
@@ -356,8 +361,8 @@ class PerawatDrhController extends Controller
         $user = $this->currentPerawat();
         if (!$user) return redirect('/');
 
-        $keluarga = PerawatKeluarga::where('user_id',$user->id)->get();
-        return view('perawat.keluarga.index', compact('user','keluarga'));
+        $keluarga = PerawatKeluarga::where('user_id', $user->id)->get();
+        return view('perawat.keluarga.index', compact('user', 'keluarga'));
     }
 
     public function keluargaStore(Request $request)
@@ -366,22 +371,19 @@ class PerawatDrhController extends Controller
         if (!$user) return redirect('/');
 
         $request->validate([
-            'hubungan'   => 'required|string|max:50', // Istri / Suami / Anak / Orang Tua / Saudara / Mertua
-            'nik'        => 'nullable|string|max:30',
-            'nama'       => 'required|string|max:150',
-            'ttl'        => 'nullable|string|max:150',
-            'pekerjaan'  => 'nullable|string|max:150',
-            'instansi'   => 'nullable|string|max:150',
-            'status_hidup'=> 'nullable|string|max:50',
+            'hubungan'      => 'required|string|max:50',
+            'nama'          => 'required|string|max:150',
+            'tanggal_lahir' => 'nullable|date',
+            'pekerjaan'     => 'nullable|string|max:150',
         ]);
 
-        $data = $request->only('hubungan','nik','nama','ttl','pekerjaan','instansi','status_hidup');
+        $data = $request->only('hubungan', 'nama', 'tanggal_lahir', 'pekerjaan');
         $data['user_id'] = $user->id;
 
         PerawatKeluarga::create($data);
 
-        return redirect()->route('perawat.keluarga.index')->with('swal',[
-            'icon'=>'success','title'=>'Berhasil','text'=>'Data keluarga ditambahkan.'
+        return redirect()->route('perawat.keluarga.index')->with('swal', [
+            'icon' => 'success', 'title' => 'Berhasil', 'text' => 'Data keluarga ditambahkan.'
         ]);
     }
 
@@ -390,25 +392,21 @@ class PerawatDrhController extends Controller
         $user = $this->currentPerawat();
         if (!$user) return redirect('/');
 
-        $keluarga = PerawatKeluarga::where('user_id',$user->id)->findOrFail($id);
+        $keluarga = PerawatKeluarga::where('user_id', $user->id)->findOrFail($id);
 
         $request->validate([
-            'hubungan'   => 'required|string|max:50',
-            'nik'        => 'nullable|string|max:30',
-            'nama'       => 'required|string|max:150',
-            'ttl'        => 'nullable|string|max:150',
-            'pekerjaan'  => 'nullable|string|max:150',
-            'instansi'   => 'nullable|string|max:150',
-            'status_hidup'=> 'nullable|string|max:50',
+            'hubungan'      => 'required|string|max:50',
+            'nama'          => 'required|string|max:150',
+            'tanggal_lahir' => 'nullable|date',
+            'pekerjaan'     => 'nullable|string|max:150',
         ]);
 
-        $keluarga->update($request->only('hubungan','nik','nama','ttl','pekerjaan','instansi','status_hidup'));
+        $keluarga->update($request->only('hubungan', 'nama', 'tanggal_lahir', 'pekerjaan'));
 
-        return redirect()->route('perawat.keluarga.index')->with('swal',[
-            'icon'=>'success','title'=>'Berhasil','text'=>'Data keluarga diperbarui.'
+        return redirect()->route('perawat.keluarga.index')->with('swal', [
+            'icon' => 'success', 'title' => 'Berhasil', 'text' => 'Data keluarga diperbarui.'
         ]);
     }
-
     public function keluargaDestroy($id)
     {
         $user = $this->currentPerawat();

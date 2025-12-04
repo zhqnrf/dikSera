@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <title>{{ $title ?? 'DIKSERA' }}</title>
@@ -21,7 +22,9 @@
             --text-muted: #6b7280;
         }
 
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+        }
 
         body {
             margin: 0;
@@ -62,12 +65,12 @@
             width: 64px;
             height: 64px;
             border-radius: 20px;
-            background: radial-gradient(circle at 20% 0,#eff6ff,#3b82f6);
+            background: radial-gradient(circle at 20% 0, #eff6ff, #3b82f6);
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            box-shadow: 0 10px 25px rgba(37,99,235,0.35);
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.35);
         }
 
         .brand-logo img {
@@ -116,12 +119,14 @@
         }
 
         .nav-linkx.active {
-            background: linear-gradient(135deg,#2563eb,#60a5fa);
+            background: linear-gradient(135deg, #2563eb, #60a5fa);
             color: #f9fafb;
-            box-shadow: 0 14px 32px rgba(37,99,235,0.45);
+            box-shadow: 0 14px 32px rgba(37, 99, 235, 0.45);
         }
 
-        .nav-linkx.active span.dot { background: #eff6ff; }
+        .nav-linkx.active span.dot {
+            background: #eff6ff;
+        }
 
         .nav-linkx:hover:not(.active) {
             background: #f3f6ff;
@@ -198,120 +203,148 @@
         }
 
         @media (max-width: 900px) {
-            .app-shell { flex-direction: column; padding: 10px; }
-            .app-sidebar { width: 100%; flex-direction: row; align-items: center; gap: 10px; }
-            .nav-section-title { display: none; }
-            .sidebar-footer { display: none; }
+            .app-shell {
+                flex-direction: column;
+                padding: 10px;
+            }
+
+            .app-sidebar {
+                width: 100%;
+                flex-direction: row;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .nav-section-title {
+                display: none;
+            }
+
+            .sidebar-footer {
+                display: none;
+            }
         }
     </style>
 
     @stack('styles')
 </head>
+
 <body>
 
-<div class="app-shell">
-    {{-- SIDEBAR --}}
-    <aside class="app-sidebar">
-        <div>
-            <div class="brand-row mb-2">
-                <div class="brand-logo">
-                    <img src="{{ asset('icon.png') }}" alt="DIKSERA">
-                </div>
-                <div>
-                    <div class="brand-name">DIKSERA</div>
-                    <div class="brand-caption">
-                        Digitalisasi Kompetensi, Sertifikasi & Evaluasi Perawat
-                    </div>
-                </div>
-            </div>
-
-            <div class="nav-section-title">Umum</div>
-            <a href="{{ route('dashboard') }}" class="nav-linkx {{ (isset($menu) && $menu === 'dashboard') ? 'active' : '' }}">
-                <span class="dot"></span>
-                <span>Dashboard</span>
-            </a>
-
-            <div class="nav-section-title">Master & Proses</div>
-            <a href="#" class="nav-linkx">
-                <span class="dot"></span>
-                <span>DRH & Profil Perawat</span>
-            </a>
-            <a href="#" class="nav-linkx">
-                <span class="dot"></span>
-                <span>Dokumen Lisensi & Sertifikat</span>
-            </a>
-            <a href="#" class="nav-linkx">
-                <span class="dot"></span>
-                <span>Bank Soal & Ujian</span>
-            </a>
-            <a href="#" class="nav-linkx">
-                <span class="dot"></span>
-                <span>Wawancara Kompetensi</span>
-            </a>
-
-            <div class="nav-section-title">Lainnya</div>
-            <a href="#" class="nav-linkx">
-                <span class="dot"></span>
-                <span>Pengaturan</span>
-            </a>
-        </div>
-
-        <div class="sidebar-footer">
-            &copy; {{ date('Y') }} DIKSERA<br>
-            <span>Komite Keperawatan</span>
-        </div>
-    </aside>
-
-    {{-- MAIN --}}
-    <main class="app-main">
-        <div class="main-header">
+    <div class="app-shell">
+        {{-- SIDEBAR --}}
+        <aside class="app-sidebar">
             <div>
-                <div class="page-title">
-                    {{ $pageTitle ?? 'Dashboard' }}
-                </div>
-                @isset($pageSubtitle)
-                    <div class="page-subtitle">
-                        {{ $pageSubtitle }}
+                <div class="brand-row mb-2">
+                    <div class="brand-logo">
+                        <img src="{{ asset('icon.png') }}" alt="DIKSERA">
                     </div>
-                @endisset
+                    <div>
+                        <div class="brand-name">DIKSERA</div>
+                        <div class="brand-caption">
+                            Digitalisasi Kompetensi, Sertifikasi & Evaluasi Perawat
+                        </div>
+                    </div>
+                </div>
+
+                <div class="nav-section-title">Umum</div>
+                <a href="{{ route('dashboard') }}"
+                    class="nav-linkx {{ isset($menu) && $menu === 'dashboard' ? 'active' : '' }}">
+                    <span class="dot"></span>
+                    <span>Dashboard</span>
+                </a>
+
+                <div class="nav-section-title">Master & Proses</div>
+                <a href="{{ route('perawat.drh') }}" class="nav-linkx">
+                    <span class="dot"></span>
+                    <span>DRH & Profil Perawat</span>
+                </a>
+                <a href="{{ route('perawat.pekerjaan.index') }}"
+                    class="nav-linkx {{ request()->routeIs('perawat.pekerjaan.*') ? 'active' : '' }}">
+                    <span class="dot"></span>
+                    <span>Riwayat Pekerjaan</span>
+                </a>
+                <a href="{{ route('perawat.keluarga.index') }}"
+                    class="nav-linkx {{ request()->routeIs('perawat.keluarga.*') ? 'active' : '' }}">
+                    <span class="dot"></span>
+                    <span>Data Keluarga</span>
+                </a>
+                <a href="#" class="nav-linkx">
+                    <span class="dot"></span>
+                    <span>Dokumen Lisensi & Sertifikat</span>
+                </a>
+                <a href="#" class="nav-linkx">
+                    <span class="dot"></span>
+                    <span>Bank Soal & Ujian</span>
+                </a>
+                <a href="#" class="nav-linkx">
+                    <span class="dot"></span>
+                    <span>Wawancara Kompetensi</span>
+                </a>
+
+                <div class="nav-section-title">Lainnya</div>
+                <a href="#" class="nav-linkx">
+                    <span class="dot"></span>
+                    <span>Pengaturan</span>
+                </a>
             </div>
 
-            @php($user = \Illuminate\Support\Facades\Auth::user())
-            @if($user)
-                <div class="d-flex align-items-center gap-2">
-                    <div class="user-pill">
-                        <span class="user-dot"></span>
-                        <span style="font-weight:500;">{{ $user->name }}</span>
-                        <span class="text-muted" style="font-size:10px;">{{ strtoupper($user->role) }}</span>
+            <div class="sidebar-footer">
+                &copy; {{ date('Y') }} DIKSERA<br>
+                <span>Komite Keperawatan</span>
+            </div>
+        </aside>
+
+        {{-- MAIN --}}
+        <main class="app-main">
+            <div class="main-header">
+                <div>
+                    <div class="page-title">
+                        {{ $pageTitle ?? 'Dashboard' }}
                     </div>
-
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="btn btn-outline-primary btn-logout">
-                            Logout
-                        </button>
-                    </form>
+                    @isset($pageSubtitle)
+                        <div class="page-subtitle">
+                            {{ $pageSubtitle }}
+                        </div>
+                    @endisset
                 </div>
-            @endif
-        </div>
 
-        <div class="main-body">
-            @yield('content')
-        </div>
-    </main>
-</div>
+                @php($user = \Illuminate\Support\Facades\Auth::user())
+                @if ($user)
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="user-pill">
+                            <span class="user-dot"></span>
+                            <span style="font-weight:500;">{{ $user->name }}</span>
+                            <span class="text-muted" style="font-size:10px;">{{ strtoupper($user->role) }}</span>
+                        </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="btn btn-outline-primary btn-logout">
+                                Logout
+                            </button>
+                        </form>
+                    </div>
+                @endif
+            </div>
 
-@if(session('swal'))
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    Swal.fire(@json(session('swal')));
-});
-</script>
-@endif
+            <div class="main-body">
+                @yield('content')
+            </div>
+        </main>
+    </div>
 
-@stack('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    @if (session('swal'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire(@json(session('swal')));
+            });
+        </script>
+    @endif
+
+    @stack('scripts')
 </body>
+
 </html>
