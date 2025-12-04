@@ -13,9 +13,11 @@ class CreatePerawatTandajasaTable extends Migration
             $table->unsignedBigInteger('user_id');
 
             $table->string('nama_penghargaan', 150)->nullable();
-            $table->string('pemberi', 150)->nullable();
-            $table->string('tahun', 4)->nullable();
-            $table->string('keterangan', 255)->nullable();
+            $table->string('instansi_pemberi', 150)->nullable(); // <-- (Controller pakai ini)
+            $table->string('tahun', 10)->nullable();             // <-- UPDATE (Controller max:10)
+            $table->string('nomor_sk', 100)->nullable();         // <-- BARU
+            $table->date('tanggal_sk')->nullable();              // <-- BARU
+            $table->string('keterangan', 255)->nullable();       // Unused
 
             $table->timestamps();
 

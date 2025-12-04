@@ -21,10 +21,13 @@ class PerawatTandaJasa extends Model
     protected $fillable = [
         'user_id',
         'nama_penghargaan',
-        'pemberi',
+        'instansi_pemberi', // <-- TAMBAH
         'tahun',
+        'nomor_sk',         // <-- TAMBAH
+        'tanggal_sk',       // <-- TAMBAH
+        'dokumen_path',
+        // Unused 
         'keterangan',
-         'dokumen_path', 
     ];
 
     /**
