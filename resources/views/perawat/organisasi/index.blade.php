@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @php
-    $pageTitle = 'Riwayat Pelatihan';
-    $pageSubtitle = 'Kelola data kursus, seminar, dan pelatihan non-formal.';
+    $pageTitle = 'Riwayat Organisasi';
+    $pageSubtitle = 'Kelola data pengalaman organisasi profesi atau kemasyarakatan.';
 @endphp
 
-@section('title','Pelatihan – DIKSERA')
+@section('title', 'Organisasi – DIKSERA')
 
 @push('styles')
 <style>
@@ -68,7 +68,7 @@
     </div>
 
     <div class="content-card">
-
+        
         {{-- Alert Error --}}
         @if($errors->any())
             <div class="alert alert-danger py-2 px-3 small rounded-3 mb-4 border-0 bg-danger-subtle text-danger">
@@ -84,21 +84,21 @@
         <div class="p-3 mb-4 rounded-3" style="background-color: #f8fafc; border: 1px dashed var(--border-soft);">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h6 class="m-0" style="font-size: 14px; color: var(--blue-main); font-weight: 600;">
-                    + Tambah Data Pelatihan
+                    + Tambah Pengalaman Organisasi
                 </h6>
             </div>
-
-            <form action="{{ route('perawat.pelatihan.store') }}" method="POST" enctype="multipart/form-data">
+            
+            <form action="{{ route('perawat.organisasi.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
-                {{-- Baris 1: Informasi Utama --}}
+                {{-- Baris 1: Info Utama --}}
                 <div class="row g-3 mb-2">
                     <div class="col-md-4">
-                        <label class="form-label">Nama Pelatihan <span class="text-danger">*</span></label>
-                        <input type="text" name="nama_pelatihan" class="form-control form-control-custom" placeholder="Contoh: BTCLS / PPGD">
+                        <label class="form-label">Nama Organisasi <span class="text-danger">*</span></label>
+                        <input type="text" name="nama_organisasi" class="form-control form-control-custom" placeholder="Contoh: PPNI / BEM">
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label">Penyelenggara</label>
-                        <input type="text" name="penyelenggara" class="form-control form-control-custom" placeholder="Nama Instansi/Organisasi">
+                        <label class="form-label">Jabatan <span class="text-danger">*</span></label>
+                        <input type="text" name="jabatan" class="form-control form-control-custom" placeholder="Ketua / Anggota / Sekretaris">
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Tempat</label>
@@ -106,27 +106,27 @@
                     </div>
                 </div>
 
-                {{-- Baris 2: Waktu & Dokumen --}}
+                {{-- Baris 2: Detail Tambahan --}}
                 <div class="row g-3 align-items-end">
-                    <div class="col-md-2">
-                        <label class="form-label">Durasi</label>
-                        <input type="text" name="durasi" class="form-control form-control-custom" placeholder="32 JP">
+                    <div class="col-md-3">
+                        <label class="form-label">Nama Pimpinan</label>
+                        <input type="text" name="pemimpin" class="form-control form-control-custom" placeholder="Ketua Umum / Direktur">
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">Mulai</label>
-                        <input type="date" name="tanggal_mulai" class="form-control form-control-custom">
+                        <input type="date" name="tahun_mulai" class="form-control form-control-custom">
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">Selesai</label>
-                        <input type="date" name="tanggal_selesai" class="form-control form-control-custom">
+                        <input type="date" name="tahun_selesai" class="form-control form-control-custom">
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label">Sertifikat (PDF)</label>
+                        <label class="form-label">SK / Dokumen (PDF)</label>
                         <input type="file" name="dokumen" class="form-control form-control-custom" style="padding: 5px 8px;">
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <button type="submit" class="btn btn-primary btn-sm px-4 w-100" style="border-radius: 8px; background: var(--blue-main); border: none;">
-                            Simpan Pelatihan
+                            Simpan
                         </button>
                     </div>
                 </div>
@@ -139,61 +139,56 @@
                 <thead>
                     <tr>
                         <th style="width:40px;">No</th>
-                        <th style="width:30%;">Pelatihan & Penyelenggara</th>
-                        <th>Tempat</th>
-                        <th>Durasi</th>
-                        <th>Waktu Pelaksanaan</th>
+                        <th style="width:30%;">Organisasi & Jabatan</th>
+                        <th>Tempat & Pimpinan</th>
+                        <th>Periode Aktif</th>
                         <th>Dokumen</th>
                         <th style="width:140px;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($pelatihan as $i => $row)
+                    @forelse($organisasi as $i => $row)
                         <tr>
                             <td class="text-center text-muted">{{ $i+1 }}</td>
                             
-                            {{-- Nested Form untuk Layout Rapi --}}
-                            <td colspan="6" class="p-0">
-                                <form action="{{ route('perawat.pelatihan.update',$row->id) }}" method="POST" enctype="multipart/form-data">
+                            {{-- Nested Form --}}
+                            <td colspan="5" class="p-0">
+                                <form action="{{ route('perawat.organisasi.update',$row->id) }}" method="POST" enctype="multipart/form-data">
                                     @csrf
                                     
                                     <table class="w-100 m-0 bg-transparent">
                                         <tr>
-                                            {{-- Kolom 1: Nama & Penyelenggara (Stacked) --}}
+                                            {{-- Kolom 1: Nama Org & Jabatan --}}
                                             <td style="border:none; width: 30%;">
-                                                <input type="text" name="nama_pelatihan" value="{{ $row->nama_pelatihan }}" class="form-control form-control-custom mb-1 fw-bold" placeholder="Nama Pelatihan">
-                                                <input type="text" name="penyelenggara" value="{{ $row->penyelenggara }}" class="form-control form-control-custom text-muted" style="font-size: 11px;" placeholder="Penyelenggara">
+                                                <input type="text" name="nama_organisasi" value="{{ $row->nama_organisasi }}" class="form-control form-control-custom mb-1 fw-bold" placeholder="Nama Organisasi">
+                                                <input type="text" name="jabatan" value="{{ $row->jabatan }}" class="form-control form-control-custom text-muted" style="font-size: 11px;" placeholder="Jabatan">
                                             </td>
                                             
-                                            {{-- Kolom 2: Tempat --}}
+                                            {{-- Kolom 2: Tempat & Pimpinan --}}
                                             <td style="border:none;">
-                                                <input type="text" name="tempat" value="{{ $row->tempat }}" class="form-control form-control-custom">
+                                                <input type="text" name="tempat" value="{{ $row->tempat }}" class="form-control form-control-custom mb-1" style="font-size: 11px;" placeholder="Tempat">
+                                                <input type="text" name="pemimpin" value="{{ $row->pemimpin }}" class="form-control form-control-custom text-muted" style="font-size: 11px;" placeholder="Pimpinan">
                                             </td>
 
-                                            {{-- Kolom 3: Durasi --}}
-                                            <td style="border:none; width: 80px;">
-                                                <input type="text" name="durasi" value="{{ $row->durasi }}" class="form-control form-control-custom text-center">
-                                            </td>
-
-                                            {{-- Kolom 4: Waktu (Mulai & Selesai Stacked) --}}
-                                            <td style="border:none; width: 130px;">
+                                            {{-- Kolom 3: Periode (Dates) --}}
+                                            <td style="border:none; width: 140px;">
                                                 <div class="d-flex align-items-center gap-1 mb-1">
-                                                    <span class="text-muted" style="font-size:10px; width:20px;">M:</span>
-                                                    <input type="date" name="tanggal_mulai" value="{{ $row->tanggal_mulai }}" class="form-control form-control-custom p-1" style="font-size:11px;">
+                                                    <span class="text-muted" style="font-size:10px; width:15px;">M:</span>
+                                                    <input type="date" name="tahun_mulai" value="{{ $row->tahun_mulai }}" class="form-control form-control-custom p-1" style="font-size:11px;">
                                                 </div>
                                                 <div class="d-flex align-items-center gap-1">
-                                                    <span class="text-muted" style="font-size:10px; width:20px;">S:</span>
-                                                    <input type="date" name="tanggal_selesai" value="{{ $row->tanggal_selesai }}" class="form-control form-control-custom p-1" style="font-size:11px;">
+                                                    <span class="text-muted" style="font-size:10px; width:15px;">S:</span>
+                                                    <input type="date" name="tahun_selesai" value="{{ $row->tahun_selesai }}" class="form-control form-control-custom p-1" style="font-size:11px;">
                                                 </div>
                                             </td>
 
-                                            {{-- Kolom 5: Dokumen --}}
+                                            {{-- Kolom 4: Dokumen --}}
                                             <td style="border:none;">
                                                 <div class="d-flex flex-column gap-1" style="font-size: 11px;">
                                                     <input type="file" name="dokumen" class="form-control form-control-custom" style="padding: 4px; font-size: 10px;">
                                                     @if($row->dokumen_path)
                                                         <a href="{{ asset('storage/'.$row->dokumen_path) }}" target="_blank" class="text-decoration-none text-primary">
-                                                            <i class="bi bi-file-earmark-pdf"></i> Lihat File
+                                                            <i class="bi bi-file-earmark-pdf"></i> Lihat SK
                                                         </a>
                                                     @else
                                                         <span class="text-muted text-opacity-50">- Kosong -</span>
@@ -201,14 +196,15 @@
                                                 </div>
                                             </td>
 
-                                            {{-- Kolom 6: Aksi --}}
+                                            {{-- Kolom 5: Aksi --}}
                                             <td style="border:none; width: 140px;">
                                                 <div class="d-flex gap-2 justify-content-end">
                                                     <button type="submit" class="btn btn-action btn-outline-primary" title="Simpan Perubahan">
                                                         <i class="bi bi-check-lg"></i>
                                                     </button>
                                 </form> 
-                                                    <form action="{{ route('perawat.pelatihan.destroy',$row->id) }}" method="POST" onsubmit="return confirm('Hapus data pelatihan ini?');">
+                                                    {{-- Note: Pastikan route destroy sudah ada di web.php --}}
+                                                    <form action="{{ route('perawat.organisasi.destroy',$row->id) }}" method="POST" onsubmit="return confirm('Hapus data organisasi ini?');">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="btn btn-action btn-outline-danger" title="Hapus Data">
@@ -224,11 +220,11 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center py-5">
+                            <td colspan="6" class="text-center py-5">
                                 <div class="text-muted mb-2">
-                                    <i class="bi bi-journal-bookmark display-6 opacity-25"></i>
+                                    <i class="bi bi-people display-6 opacity-25"></i>
                                 </div>
-                                <span class="text-muted small">Belum ada data pelatihan yang ditambahkan.</span>
+                                <span class="text-muted small">Belum ada data pengalaman organisasi.</span>
                             </td>
                         </tr>
                     @endforelse

@@ -11,12 +11,13 @@ class CreatePerawatPendidikansTable extends Migration
         Schema::create('perawat_pendidikans', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-
-            $table->string('jenjang', 50)->nullable();      // D3, S1, dll
+            $table->string('jenjang', 50)->nullable();
             $table->string('nama_institusi', 150)->nullable();
-            $table->string('jurusan', 150)->nullable();
-            $table->string('tahun_masuk', 4)->nullable();
+            $table->string('akreditasi', 10)->nullable();   // <-- BARU (Dari Form)
+            $table->string('tempat', 100)->nullable();      // <-- BARU (Dari Form)
             $table->string('tahun_lulus', 4)->nullable();
+            $table->string('jurusan', 150)->nullable();     // (unused di form)
+            $table->string('tahun_masuk', 4)->nullable();   // (unused di form)
 
             $table->timestamps();
 

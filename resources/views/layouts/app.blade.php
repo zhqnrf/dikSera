@@ -128,7 +128,7 @@
             background: #eff6ff;
         }
 
-        .nav-linkx:hover:not(.active) {
+        .nav-linkx:hover:not(.active)) {
             background: #f3f6ff;
             border-color: #d1ddff;
         }
@@ -246,41 +246,69 @@
                     </div>
                 </div>
 
+                {{-- UMUM --}}
                 <div class="nav-section-title">Umum</div>
                 <a href="{{ route('dashboard') }}"
-                    class="nav-linkx {{ isset($menu) && $menu === 'dashboard' ? 'active' : '' }}">
+                   class="nav-linkx {{ isset($menu) && $menu === 'dashboard' ? 'active' : '' }}">
                     <span class="dot"></span>
                     <span>Dashboard</span>
                 </a>
 
+                {{-- MASTER & PROSES --}}
                 <div class="nav-section-title">Master & Proses</div>
-                <a href="{{ route('perawat.drh') }}" class="nav-linkx">
+
+                <a href="{{ route('perawat.drh') }}"
+                   class="nav-linkx {{ request()->routeIs('perawat.drh') ? 'active' : '' }}">
                     <span class="dot"></span>
                     <span>DRH & Profil Perawat</span>
                 </a>
+
+                <a href="{{ route('perawat.pelatihan.index') }}"
+                   class="nav-linkx {{ request()->routeIs('perawat.pelatihan.*') ? 'active' : '' }}">
+                    <span class="dot"></span>
+                    <span>Pelatihan</span>
+                </a>
+
                 <a href="{{ route('perawat.pekerjaan.index') }}"
-                    class="nav-linkx {{ request()->routeIs('perawat.pekerjaan.*') ? 'active' : '' }}">
+                   class="nav-linkx {{ request()->routeIs('perawat.pekerjaan.*') ? 'active' : '' }}">
                     <span class="dot"></span>
                     <span>Riwayat Pekerjaan</span>
                 </a>
+
                 <a href="{{ route('perawat.keluarga.index') }}"
-                    class="nav-linkx {{ request()->routeIs('perawat.keluarga.*') ? 'active' : '' }}">
+                   class="nav-linkx {{ request()->routeIs('perawat.keluarga.*') ? 'active' : '' }}">
                     <span class="dot"></span>
                     <span>Data Keluarga</span>
                 </a>
+
+                <a href="{{ route('perawat.organisasi.index') }}"
+                   class="nav-linkx {{ request()->routeIs('perawat.organisasi.*') ? 'active' : '' }}">
+                    <span class="dot"></span>
+                    <span>Organisasi</span>
+                </a>
+
+                <a href="{{ route('perawat.tandajasa.index') }}"
+                   class="nav-linkx {{ request()->routeIs('perawat.tandajasa.*') ? 'active' : '' }}">
+                    <span class="dot"></span>
+                    <span>Tanda Jasa</span>
+                </a>
+
                 <a href="#" class="nav-linkx">
                     <span class="dot"></span>
                     <span>Dokumen Lisensi & Sertifikat</span>
                 </a>
+
                 <a href="#" class="nav-linkx">
                     <span class="dot"></span>
                     <span>Bank Soal & Ujian</span>
                 </a>
+
                 <a href="#" class="nav-linkx">
                     <span class="dot"></span>
                     <span>Wawancara Kompetensi</span>
                 </a>
 
+                {{-- LAINNYA --}}
                 <div class="nav-section-title">Lainnya</div>
                 <a href="#" class="nav-linkx">
                     <span class="dot"></span>
@@ -314,7 +342,9 @@
                         <div class="user-pill">
                             <span class="user-dot"></span>
                             <span style="font-weight:500;">{{ $user->name }}</span>
-                            <span class="text-muted" style="font-size:10px;">{{ strtoupper($user->role) }}</span>
+                            <span class="text-muted" style="font-size:10px;">
+                                {{ strtoupper($user->role) }}
+                            </span>
                         </div>
 
                         <form method="POST" action="{{ route('logout') }}">

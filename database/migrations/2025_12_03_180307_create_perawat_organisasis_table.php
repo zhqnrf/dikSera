@@ -14,9 +14,11 @@ class CreatePerawatOrganisasisTable extends Migration
 
             $table->string('nama_organisasi', 150)->nullable();
             $table->string('jabatan', 150)->nullable();
-            $table->string('tahun_mulai', 4)->nullable();
-            $table->string('tahun_selesai', 4)->nullable();
-            $table->string('keterangan', 255)->nullable();
+            $table->string('tempat', 100)->nullable();       // <-- (Dari Controller)
+            $table->string('pemimpin', 150)->nullable();     // <-- (Dari Controller)
+            $table->string('tahun_mulai')->nullable();    // Tipe String (Legacy)
+            $table->string('tahun_selesai')->nullable();  // Tipe String (Legacy)
+            $table->string('keterangan', 255)->nullable();   // Unused di controller
 
             $table->timestamps();
 

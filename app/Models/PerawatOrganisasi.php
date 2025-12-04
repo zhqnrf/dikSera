@@ -6,24 +6,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class PerawatOrganisasi extends Model
 {
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'user_id',
         'nama_organisasi',
         'jabatan',
+        'tempat',           // <-- TAMBAH
+        'pemimpin',         // <-- TAMBAH
+        'dokumen_path',
         'tahun_mulai',
         'tahun_selesai',
+        // Unused 
         'keterangan',
-         'dokumen_path', 
     ];
 
-    /**
-     * Get the user that owns the organization record.
-     */
     public function user()
     {
         return $this->belongsTo(User::class);

@@ -133,9 +133,11 @@ class PerawatDrhController extends Controller
             'tempat'         => 'nullable|string|max:100',
             'tahun_lulus'    => 'nullable|string|max:10',
             'dokumen'        => 'nullable|mimes:pdf,jpg,jpeg,png|max:4096',
+            'jurusan'        => 'nullable|string|max:150', 
+            'tahun_masuk'    => 'nullable|string|max:10', 
         ]);
 
-        $data = $request->only('jenjang','nama_institusi','akreditasi','tempat','tahun_lulus');
+        $data = $request->only('jenjang','nama_institusi','akreditasi','tempat','tahun_lulus','jurusan','tahun_masuk');
         $data['user_id'] = $user->id;
 
         if ($request->hasFile('dokumen')) {
@@ -163,9 +165,11 @@ class PerawatDrhController extends Controller
             'tempat'         => 'nullable|string|max:100',
             'tahun_lulus'    => 'nullable|string|max:10',
             'dokumen'        => 'nullable|mimes:pdf,jpg,jpeg,png|max:4096',
+            'jurusan'        => 'nullable|string|max:150', 
+            'tahun_masuk'    => 'nullable|string|max:10', 
         ]);
 
-        $data = $request->only('jenjang','nama_institusi','akreditasi','tempat','tahun_lulus');
+        $data = $request->only('jenjang','nama_institusi','akreditasi','tempat','tahun_lulus','jurusan','tahun_masuk');
         if ($request->hasFile('dokumen')) {
             $data['dokumen_path'] = $request->file('dokumen')->store('perawat/pendidikan','public');
         }
@@ -439,13 +443,13 @@ class PerawatDrhController extends Controller
             'nama_organisasi' => 'required|string|max:150',
             'jabatan'         => 'required|string|max:150',
             'tempat'          => 'nullable|string|max:100',
-            'tanggal_mulai'   => 'nullable|date',
-            'tanggal_selesai' => 'nullable|date',
+            'tahun_mulai'   => 'nullable|date',
+            'tahun_selesai' => 'nullable|date',
             'pemimpin'        => 'nullable|string|max:150',
             'dokumen'         => 'nullable|mimes:pdf,jpg,jpeg,png|max:4096',
         ]);
 
-        $data = $request->only('nama_organisasi','jabatan','tempat','tanggal_mulai','tanggal_selesai','pemimpin');
+        $data = $request->only('nama_organisasi','jabatan','tempat','tahun_mulai','tahun_selesai','pemimpin');
         $data['user_id'] = $user->id;
 
         if ($request->hasFile('dokumen')) {
@@ -470,13 +474,13 @@ class PerawatDrhController extends Controller
             'nama_organisasi' => 'required|string|max:150',
             'jabatan'         => 'required|string|max:150',
             'tempat'          => 'nullable|string|max:100',
-            'tanggal_mulai'   => 'nullable|date',
-            'tanggal_selesai' => 'nullable|date',
+            'tahun_mulai'   => 'nullable|date',
+            'tahun_selesai' => 'nullable|date',
             'pemimpin'        => 'nullable|string|max:150',
             'dokumen'         => 'nullable|mimes:pdf,jpg,jpeg,png|max:4096',
         ]);
 
-        $data = $request->only('nama_organisasi','jabatan','tempat','tanggal_mulai','tanggal_selesai','pemimpin');
+        $data = $request->only('nama_organisasi','jabatan','tempat','tahun_mulai','tahun_selesai','pemimpin');
         if ($request->hasFile('dokumen')) {
             $data['dokumen_path'] = $request->file('dokumen')->store('perawat/organisasi','public');
         }
