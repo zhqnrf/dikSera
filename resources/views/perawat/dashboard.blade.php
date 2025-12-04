@@ -8,7 +8,7 @@
         <a href="{{ route('perawat.dashboard') }}" class="active">
             <i class="bi bi-house"></i><span>Dashboard</span>
         </a>
-        {{-- nanti bisa tambah menu lain untuk perawat di sini --}}
+        {{-- nanti bisa tambah menu lain untuk perawat --}}
     </div>
 @endsection
 
