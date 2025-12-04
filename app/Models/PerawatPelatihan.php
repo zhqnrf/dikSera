@@ -6,23 +6,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class PerawatPelatihan extends Model
 {
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'user_id',
         'nama_pelatihan',
         'penyelenggara',
-        'tahun',
+        'tempat',           // <-- TAMBAH
         'durasi',
-         'dokumen_path', 
+        'tanggal_mulai',    // <-- TAMBAH
+        'tanggal_selesai',  // <-- TAMBAH
+        'dokumen_path',     // <-- TAMBAH
+        'tahun',            // Tetap ada (unused)
     ];
 
-    /**
-     * Get the user that owns the training record.
-     */
     public function user()
     {
         return $this->belongsTo(User::class);
