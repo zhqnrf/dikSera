@@ -2,20 +2,159 @@
 
 @section('title', 'Tambah Tanda Jasa – DIKSERA')
 
+@push('styles')
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --primary-blue: #2563eb;
+        --primary-hover: #1d4ed8;
+        --text-dark: #0f172a;
+        --text-gray: #64748b;
+        --bg-light: #f8fafc;
+        --input-border: #e2e8f0;
+    }
+
+    body {
+        background-color: var(--bg-light);
+        font-family: 'Inter', sans-serif;
+        color: var(--text-dark);
+    }
+
+    /* --- Header --- */
+    .page-header {
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .page-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 0;
+        letter-spacing: -0.5px;
+    }
+
+    /* --- Form Card --- */
+    .form-card {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+        padding: 40px;
+    }
+
+    /* --- Inputs --- */
+    .form-label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .required-star {
+        color: #ef4444;
+    }
+
+    .form-control {
+        border: 1px solid var(--input-border);
+        border-radius: 10px;
+        padding: 12px 16px;
+        font-size: 0.95rem;
+        color: var(--text-dark);
+        background-color: #fff;
+        transition: all 0.2s ease;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        outline: none;
+    }
+
+    .form-control::placeholder {
+        color: #cbd5e1;
+    }
+
+    /* --- Buttons --- */
+    .btn-submit {
+        background-color: var(--primary-blue);
+        color: white;
+        width: 100%;
+        padding: 14px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 1rem;
+        border: none;
+        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.25);
+        transition: all 0.2s;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-submit:hover {
+        background-color: var(--primary-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 12px -1px rgba(37, 99, 235, 0.3);
+        color: white;
+    }
+
+    .btn-back {
+        background: white;
+        border: 1px solid #e2e8f0;
+        color: var(--text-gray);
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-decoration: none;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-back:hover {
+        background-color: #f1f5f9;
+        color: var(--text-dark);
+        border-color: #cbd5e1;
+    }
+
+    /* Alert Style */
+    .alert-danger {
+        background-color: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #b91c1c;
+        border-radius: 10px;
+        font-size: 0.9rem;
+    }
+</style>
+@endpush
+
 @section('content')
-<div class="container py-3">
+<div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="dash-card p-4">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h6 class="mb-0 fw-bold text-primary">+ Tambah Tanda Jasa</h6>
-                    <a href="{{ route('perawat.tandajasa.index') }}" class="btn btn-sm btn-outline-secondary">
-                        Kembali
-                    </a>
+
+            {{-- Header --}}
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Tambah Tanda Jasa</h1>
                 </div>
+                <a href="{{ route('perawat.tandajasa.index') }}" class="btn-back">
+                    <i class="bi bi-arrow-left"></i> Kembali
+                </a>
+            </div>
+
+            {{-- Form Card --}}
+            <div class="form-card">
 
                 @if($errors->any())
-                    <div class="alert alert-danger py-2 px-3 small mb-3">
+                    <div class="alert alert-danger py-3 px-4 mb-4">
                         <ul class="mb-0 ps-3">
                             @foreach($errors->all() as $e) <li>{{ $e }}</li> @endforeach
                         </ul>
@@ -25,42 +164,49 @@
                 <form action="{{ route('perawat.tandajasa.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
 
-                    <div class="row g-3">
+                    <div class="row g-4">
+                        {{-- Nama & Instansi --}}
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold">Nama Penghargaan <span class="text-danger">*</span></label>
+                            <label class="form-label">Nama Penghargaan <span class="required-star">*</span></label>
                             <input type="text" name="nama_penghargaan" class="form-control" value="{{ old('nama_penghargaan') }}" placeholder="Contoh: Perawat Teladan" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold">Instansi Pemberi</label>
-                            <input type="text" name="instansi_pemberi" class="form-control" value="{{ old('instansi_pemberi') }}" placeholder="Nama Instansi">
+                            <label class="form-label">Instansi Pemberi</label>
+                            <input type="text" name="instansi_pemberi" class="form-control" value="{{ old('instansi_pemberi') }}" placeholder="Nama Instansi/Lembaga">
                         </div>
 
+                        {{-- Tahun, No SK, Tgl SK --}}
                         <div class="col-md-4">
-                            <label class="form-label small fw-bold">Tahun Perolehan</label>
+                            <label class="form-label">Tahun Perolehan</label>
                             <input type="number" name="tahun" class="form-control" value="{{ old('tahun') }}" placeholder="YYYY">
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label small fw-bold">Nomor SK</label>
-                            <input type="text" name="nomor_sk" class="form-control" value="{{ old('nomor_sk') }}">
+                            <label class="form-label">Nomor SK</label>
+                            <input type="text" name="nomor_sk" class="form-control" value="{{ old('nomor_sk') }}" placeholder="Nomor Surat Keputusan">
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label small fw-bold">Tanggal SK</label>
+                            <label class="form-label">Tanggal SK</label>
                             <input type="date" name="tanggal_sk" class="form-control" value="{{ old('tanggal_sk') }}">
                         </div>
 
+                        {{-- Upload Dokumen --}}
                         <div class="col-12">
-                            <label class="form-label small fw-bold">Upload Dokumen Bukti (PDF/Image)</label>
+                            <label class="form-label">Upload Dokumen Bukti (PDF/Image)</label>
                             <input type="file" name="dokumen" class="form-control">
+                            <div class="form-text text-muted mt-2 small">
+                                <i class="bi bi-info-circle me-1"></i> Format PDF atau JPG, Pastikan dokumen terbaca jelas.
+                            </div>
                         </div>
                     </div>
 
-                    <div class="mt-4 text-end">
-                        <button type="submit" class="btn btn-primary px-4">
-                            Simpan Data
+                    <div class="mt-5">
+                        <button type="submit" class="btn-submit">
+                            <i class="bi bi-save2"></i> Simpan Tanda Jasa
                         </button>
                     </div>
                 </form>
             </div>
+
         </div>
     </div>
 </div>
