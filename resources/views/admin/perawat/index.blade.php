@@ -39,19 +39,29 @@
         }
 
         /* Tombol Aksi */
-        .btn-action {
-            border-radius: 8px;
-            font-size: 12px;
-            padding: 6px 12px;
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
+        .action-group {
+            display: flex;
             gap: 6px;
-            transition: all 0.2s;
+            /* Jarak antar tombol */
+            justify-content: center;
         }
 
-        .btn-action:hover {
-            transform: translateY(-1px);
+        /* Tombol Khusus Icon (Kotak Kecil) */
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .btn-icon:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         /* Avatar Initials (Opsional jika tidak ada foto) */
@@ -110,7 +120,7 @@
                                     {{-- Avatar Simple dari Inisial Nama --}}
                                     <div class="avatar-wrapper">
                                         @if (!empty($p->foto_3x4))
-                                            <img src="{{ asset('storage/'.$p->foto_3x4) }}" class="avatar-img"
+                                            <img src="{{ asset('storage/' . $p->foto_3x4) }}" class="avatar-img"
                                                 alt="{{ $p->name }}">
                                         @else
                                             <div class="avatar-circle">{{ strtoupper($p->name[0]) }}</div>
@@ -143,10 +153,29 @@
                                 </span>
                             </td>
                             <td class="text-center">
-                                <a href="{{ route('admin.perawat.show', $p->id) }}"
-                                    class="btn btn-action btn-outline-primary">
-                                    <i class="bi bi-eye"></i> Detail DRH
-                                </a>
+                                <div class="action-group">
+                                    {{-- Tombol Detail --}}
+                                    <a href="{{ route('admin.perawat.show', $p->id) }}"
+                                        class="btn btn-icon btn-outline-primary" title="Detail DRH"
+                                        data-bs-toggle="tooltip">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    {{-- Tombol Edit --}}
+                                    <a href="#" {{-- Ganti route edit nanti --}} class="btn btn-icon btn-outline-warning"
+                                        title="Edit Data" data-bs-toggle="tooltip">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    {{-- Tombol Hapus --}}
+                                    <form action="#" method="POST" onsubmit=""
+                                        class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-icon btn-outline-danger" title="Hapus"
+                                            data-bs-toggle="tooltip">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     @empty
