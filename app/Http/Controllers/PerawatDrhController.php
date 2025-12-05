@@ -194,7 +194,9 @@ class PerawatDrhController extends Controller
         ]);
     }
 
-    /* ============ PELATIHAN ============ */
+   /* ============ PELATIHAN ============ */
+
+    // 1. Index (List)
     public function pelatihanIndex()
     {
         $user = $this->currentPerawat();
@@ -204,6 +206,16 @@ class PerawatDrhController extends Controller
         return view('perawat.pelatihan.index', compact('user','pelatihan'));
     }
 
+    // 2. Create (Form Tambah)
+    public function pelatihanCreate()
+    {
+        $user = $this->currentPerawat();
+        if (!$user) return redirect('/');
+
+        return view('perawat.pelatihan.create', compact('user'));
+    }
+
+    // 3. Store (Simpan)
     public function pelatihanStore(Request $request)
     {
         $user = $this->currentPerawat();
@@ -233,6 +245,17 @@ class PerawatDrhController extends Controller
         ]);
     }
 
+    // 4. Edit (Form Edit)
+    public function pelatihanEdit($id)
+    {
+        $user = $this->currentPerawat();
+        if (!$user) return redirect('/');
+
+        $pelatihan = PerawatPelatihan::where('user_id', $user->id)->findOrFail($id);
+        return view('perawat.pelatihan.edit', compact('user', 'pelatihan'));
+    }
+
+    // 5. Update (Simpan Perubahan)
     public function pelatihanUpdate(Request $request, $id)
     {
         $user = $this->currentPerawat();
@@ -251,7 +274,9 @@ class PerawatDrhController extends Controller
         ]);
 
         $data = $request->only('nama_pelatihan','penyelenggara','tempat','durasi','tanggal_mulai','tanggal_selesai');
+
         if ($request->hasFile('dokumen')) {
+            // if ($pelatihan->dokumen_path) Storage::disk('public')->delete($pelatihan->dokumen_path);
             $data['dokumen_path'] = $request->file('dokumen')->store('perawat/pelatihan','public');
         }
 
@@ -262,12 +287,16 @@ class PerawatDrhController extends Controller
         ]);
     }
 
+    // 6. Destroy (Hapus)
     public function pelatihanDestroy($id)
     {
         $user = $this->currentPerawat();
         if (!$user) return redirect('/');
 
         $pelatihan = PerawatPelatihan::where('user_id',$user->id)->findOrFail($id);
+
+        // if ($pelatihan->dokumen_path) Storage::disk('public')->delete($pelatihan->dokumen_path);
+
         $pelatihan->delete();
 
         return redirect()->route('perawat.pelatihan.index')->with('swal',[
