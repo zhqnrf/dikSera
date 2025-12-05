@@ -452,15 +452,27 @@ class PerawatDrhController extends Controller
     }
 
     /* ============ ORGANISASI ============ */
+
+    // 1. Menampilkan Tabel List (index.blade.php)
     public function organisasiIndex()
     {
         $user = $this->currentPerawat();
         if (!$user) return redirect('/');
 
-        $organisasi = PerawatOrganisasi::where('user_id',$user->id)->get();
-        return view('perawat.organisasi.index', compact('user','organisasi'));
+        $organisasi = PerawatOrganisasi::where('user_id', $user->id)->get();
+        return view('perawat.organisasi.index', compact('user', 'organisasi'));
     }
 
+    // 2. Menampilkan Form Tambah (create.blade.php) -- [BARU]
+    public function organisasiCreate()
+    {
+        $user = $this->currentPerawat();
+        if (!$user) return redirect('/');
+
+        return view('perawat.organisasi.create', compact('user'));
+    }
+
+    // 3. Proses Simpan Data (Store)
     public function organisasiStore(Request $request)
     {
         $user = $this->currentPerawat();
@@ -470,65 +482,87 @@ class PerawatDrhController extends Controller
             'nama_organisasi' => 'required|string|max:150',
             'jabatan'         => 'required|string|max:150',
             'tempat'          => 'nullable|string|max:100',
-            'tahun_mulai'   => 'nullable|date',
-            'tahun_selesai' => 'nullable|date',
+            'tahun_mulai'     => 'nullable|date',
+            'tahun_selesai'   => 'nullable|date',
             'pemimpin'        => 'nullable|string|max:150',
             'dokumen'         => 'nullable|mimes:pdf,jpg,jpeg,png|max:4096',
         ]);
 
-        $data = $request->only('nama_organisasi','jabatan','tempat','tahun_mulai','tahun_selesai','pemimpin');
+        $data = $request->only('nama_organisasi', 'jabatan', 'tempat', 'tahun_mulai', 'tahun_selesai', 'pemimpin');
         $data['user_id'] = $user->id;
 
         if ($request->hasFile('dokumen')) {
-            $data['dokumen_path'] = $request->file('dokumen')->store('perawat/organisasi','public');
+            $data['dokumen_path'] = $request->file('dokumen')->store('perawat/organisasi', 'public');
         }
 
         PerawatOrganisasi::create($data);
 
-        return redirect()->route('perawat.organisasi.index')->with('swal',[
-            'icon'=>'success','title'=>'Berhasil','text'=>'Data organisasi ditambahkan.'
+        return redirect()->route('perawat.organisasi.index')->with('swal', [
+            'icon' => 'success', 'title' => 'Berhasil', 'text' => 'Data organisasi ditambahkan.'
         ]);
     }
 
+    // 4. Menampilkan Form Edit (edit.blade.php) -- [BARU]
+    public function organisasiEdit($id)
+    {
+        $user = $this->currentPerawat();
+        if (!$user) return redirect('/');
+
+        // Ambil data berdasarkan ID dan pastikan milik user yang login
+        $organisasi = PerawatOrganisasi::where('user_id', $user->id)->findOrFail($id);
+
+        return view('perawat.organisasi.edit', compact('user', 'organisasi'));
+    }
+
+    // 5. Proses Update Data
     public function organisasiUpdate(Request $request, $id)
     {
         $user = $this->currentPerawat();
         if (!$user) return redirect('/');
 
-        $organisasi = PerawatOrganisasi::where('user_id',$user->id)->findOrFail($id);
+        $organisasi = PerawatOrganisasi::where('user_id', $user->id)->findOrFail($id);
 
         $request->validate([
             'nama_organisasi' => 'required|string|max:150',
             'jabatan'         => 'required|string|max:150',
             'tempat'          => 'nullable|string|max:100',
-            'tahun_mulai'   => 'nullable|date',
-            'tahun_selesai' => 'nullable|date',
+            'tahun_mulai'     => 'nullable|date',
+            'tahun_selesai'   => 'nullable|date',
             'pemimpin'        => 'nullable|string|max:150',
             'dokumen'         => 'nullable|mimes:pdf,jpg,jpeg,png|max:4096',
         ]);
 
-        $data = $request->only('nama_organisasi','jabatan','tempat','tahun_mulai','tahun_selesai','pemimpin');
+        $data = $request->only('nama_organisasi', 'jabatan', 'tempat', 'tahun_mulai', 'tahun_selesai', 'pemimpin');
+
         if ($request->hasFile('dokumen')) {
-            $data['dokumen_path'] = $request->file('dokumen')->store('perawat/organisasi','public');
+            // Hapus file lama jika ada (opsional, praktik bagus untuk menghemat storage)
+            // if ($organisasi->dokumen_path) Storage::disk('public')->delete($organisasi->dokumen_path);
+
+            $data['dokumen_path'] = $request->file('dokumen')->store('perawat/organisasi', 'public');
         }
 
         $organisasi->update($data);
 
-        return redirect()->route('perawat.organisasi.index')->with('swal',[
-            'icon'=>'success','title'=>'Berhasil','text'=>'Data organisasi diperbarui.'
+        return redirect()->route('perawat.organisasi.index')->with('swal', [
+            'icon' => 'success', 'title' => 'Berhasil', 'text' => 'Data organisasi diperbarui.'
         ]);
     }
 
+    // 6. Hapus Data
     public function organisasiDestroy($id)
     {
         $user = $this->currentPerawat();
         if (!$user) return redirect('/');
 
-        $organisasi = PerawatOrganisasi::where('user_id',$user->id)->findOrFail($id);
+        $organisasi = PerawatOrganisasi::where('user_id', $user->id)->findOrFail($id);
+
+        // Hapus file fisik jika diperlukan
+        // if ($organisasi->dokumen_path) Storage::disk('public')->delete($organisasi->dokumen_path);
+
         $organisasi->delete();
 
-        return redirect()->route('perawat.organisasi.index')->with('swal',[
-            'icon'=>'success','title'=>'Berhasil','text'=>'Data organisasi dihapus.'
+        return redirect()->route('perawat.organisasi.index')->with('swal', [
+            'icon' => 'success', 'title' => 'Berhasil', 'text' => 'Data organisasi dihapus.'
         ]);
     }
 
