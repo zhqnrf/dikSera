@@ -130,6 +130,57 @@ class DashboardController extends Controller
 
     public function adminIndex()
     {
-        return view('dashboard.admin');
+        // Data Ringkasan Metrik Utama (Diambil dari database)
+        // DUMMY DATA (MAKRO) - Gantikan dengan query database sesungguhnya
+        $totalPerawat        = 1250; // SELECT COUNT(*) FROM users WHERE role = 'perawat'
+        $totalUsers          = 1300; // SELECT COUNT(*) FROM users
+        $pendingVerifikasi   = 85;   // SELECT COUNT(*) FROM perawat_profiles WHERE status_verifikasi = 'pending'
+        $eligibleCount       = 950;  // SELECT COUNT(*) FROM perawat_status WHERE is_eligible = true
+        $lulusFinalCount     = 620;  // SELECT COUNT(*) FROM perawat_status WHERE status_akhir = 'lulus_final'
+        $almostExpired       = 12;   // SELECT COUNT(*) FROM perawat_lisensi WHERE masa_berlaku < DATE_ADD(NOW(), INTERVAL 6 MONTH)
+
+        // Data Chart Kelulusan Per Bulan
+        // DUMMY DATA (MAKRO)
+        $monthlyPassRates = [
+            'Jan' => 80,
+            'Feb' => 95,
+            'Mar' => 78,
+            'Apr' => 110,
+            'Mei' => 89,
+            'Jun' => 125,
+        ];
+
+        // DUMMY DATA  - Mengisi variabel yang sudah ada di view Blade
+        $onProgress = 40; // Perawat yang sedang diverifikasi
+        $verified   = $totalPerawat - $pendingVerifikasi - $onProgress; // Selesai Diverifikasi
+
+        // DUMMY DATA (MAKRO)
+        $recentActivities = collect([
+            (object)['user' => (object)['name' => 'Admin Utama'], 'description' => 'Memverifikasi DRH P. Budi Santoso.', 'created_at' => now()->subMinutes(5)],
+            (object)['user' => (object)['name' => 'Perawat Aisyah'], 'description' => 'Mengunggah Riwayat Pekerjaan baru.', 'created_at' => now()->subHours(2)],
+            (object)['user' => (object)['name' => 'Komite B'], 'description' => 'Menjadwalkan Ujian Kompetensi Batch 4.', 'created_at' => now()->subHours(4)],
+        ]);
+
+        // DUMMY DATA (MAKRO)
+        $modulesStatus = [
+            ['nama' => 'Verifikasi DRH', 'status' => 'ready', 'catatan' => 'Stabil'],
+            ['nama' => 'Ujian Kompetensi', 'status' => 'ready', 'catatan' => 'Fitur Export tersedia'],
+            ['nama' => 'Wawancara', 'status' => 'progress', 'catatan' => 'Pengembangan Tampilan Komite'],
+            ['nama' => 'Sertifikasi & Lisensi', 'status' => 'ready', 'catatan' => 'Otomatisasi perizinan'],
+        ];
+
+        return view('dashboard.admin', compact(
+            'totalPerawat',
+            'totalUsers',
+            'pendingVerifikasi',
+            'eligibleCount',
+            'lulusFinalCount',
+            'almostExpired',
+            'monthlyPassRates',
+            'onProgress',
+            'verified',
+            'recentActivities',
+            'modulesStatus'
+        ));
     }
 }
