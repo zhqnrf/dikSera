@@ -132,6 +132,29 @@ class PerawatDrhController extends Controller
         ]);
     }
 
+     /* ============ DATA LENGKAP ============ */
+    public function showDataLengkap()
+{
+    $user = $this->currentPerawat();
+    if (!$user) return redirect('/');
+
+    $profile    = PerawatProfile::where('user_id', $user->id)->first();
+
+    // Mengambil semua data relasi
+    $pendidikan = PerawatPendidikan::where('user_id', $user->id)->orderBy('tahun_lulus', 'desc')->get();
+    $pelatihan  = PerawatPelatihan::where('user_id', $user->id)->orderBy('tanggal_mulai', 'desc')->get();
+    $pekerjaan  = PerawatPekerjaan::where('user_id', $user->id)->orderBy('tahun_mulai', 'desc')->get();
+    $keluarga   = PerawatKeluarga::where('user_id', $user->id)->get(); // Biasanya tidak butuh order khusus
+    $organisasi = PerawatOrganisasi::where('user_id', $user->id)->orderBy('tahun_mulai', 'desc')->get();
+    $tandajasa  = PerawatTandaJasa::where('user_id', $user->id)->orderBy('tahun', 'desc')->get();
+
+    return view('perawat.drh.data-lengkap', compact(
+        'user', 'profile',
+        'pendidikan', 'pelatihan', 'pekerjaan',
+        'keluarga', 'organisasi', 'tandajasa'
+    ));
+}
+
     /* ============ PENDIDIKAN ============ */
     public function pendidikanIndex()
     {

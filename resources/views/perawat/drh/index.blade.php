@@ -29,10 +29,15 @@
                     {{ $profile->pangkat ?? 'Pangkat (-)' }} / {{ $profile->golongan ?? 'Gol (-)' }}
                 </div>
             </div>
-            {{-- Tombol Edit --}}
-            <div class="flex-shrink-0">
+            {{-- Tombol Action --}}
+            <div class="flex-shrink-0 d-flex gap-2">
+                {{-- BUTTON BARU: DATA LENGKAP --}}
+                <a href="{{ route('perawat.data.lengkap') }}" class="btn btn-outline-primary">
+                    <i class="bi bi-file-earmark-text me-1"></i> Data Lengkap
+                </a>
+                {{-- BUTTON EDIT IDENTITAS --}}
                 <a href="{{ route('perawat.identitas.edit') }}" class="btn btn-primary">
-                    <i class="bi bi-pencil-square me-1"></i> Edit Data Lengkap
+                    <i class="bi bi-pencil-square me-1"></i> Edit Identitas
                 </a>
             </div>
         </div>
