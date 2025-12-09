@@ -17,14 +17,25 @@ use App\Models\PerawatTandaJasa;
 class AdminPerawatController extends Controller
 {
     // LIST SEMUA PERAWAT
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->input('search');
+
         $perawat = User::where('role', 'perawat')
             ->with('profile')
+            ->when($search, function ($q) use ($search) {
+                $q->where('name', 'like', "%$search%")
+                    ->orWhereHas('profile', function ($q) use ($search) {
+                        $q->where('nik', 'like', "%$search%")
+                            ->orWhere('no_hp', 'like', "%$search%")
+                            ->orWhere('alamat', 'like', "%$search%");
+                    });
+            })
             ->orderBy('name')
-            ->get();
+            ->paginate(10)
+            ->withQueryString();
 
-        return view('admin.perawat.index', compact('perawat'));
+        return view('admin.perawat.index', compact('perawat', 'search'));
     }
 
     // DETAIL DRH PER PERAWAT

@@ -97,7 +97,19 @@
                 <h6 class="m-0 text-muted" style="font-size: 13px;">Total: <strong
                         class="text-dark">{{ $perawat->count() }}</strong> Perawat</h6>
             </div>
-            {{-- Jika nanti butuh search, bisa taruh di sini --}}
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h6 class="m-0 text-muted" style="font-size: 13px;">
+                        Total: <strong class="text-dark">{{ $perawat->total() }}</strong> Perawat
+                    </h6>
+                </div>
+
+                <form method="GET" class="d-flex" style="gap:10px;">
+                    <input type="text" name="search" class="form-control form-control-sm"
+                        placeholder="Cari nama, NIK, no HP, alamat..." value="{{ request('search') }}" style="width:220px;">
+                    <button class="btn btn-sm btn-primary">Cari</button>
+                </form>
+            </div>
         </div>
 
         <div class="table-responsive">
@@ -191,6 +203,9 @@
                     @endforelse
                 </tbody>
             </table>
+            <div class="mt-4">
+                {{ $perawat->links('vendor.pagination.diksera') }}
+            </div>
         </div>
     </div>
 @endsection
