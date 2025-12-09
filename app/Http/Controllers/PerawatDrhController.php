@@ -12,6 +12,7 @@ use App\Models\PerawatPekerjaan;
 use App\Models\PerawatKeluarga;
 use App\Models\PerawatOrganisasi;
 use App\Models\PerawatTandaJasa;
+use App\Models\PerawatLisensi;
 
 class PerawatDrhController extends Controller
 {
@@ -735,4 +736,158 @@ class PerawatDrhController extends Controller
             'icon'=>'success','title'=>'Berhasil','text'=>'Tanda jasa dihapus.'
         ]);
     }
+    /* ============ LISENSI & DOKUMEN (STR/SIP) ============ */
+    public function lisensiIndex()
+    {
+        $user = $this->currentPerawat();
+        if (!$user) return redirect('/');
+
+        // Ambil Profile ID
+        $profile = \App\Models\PerawatProfile::where('user_id', $user->id)->first();
+
+        if(!$profile) {
+            $lisensi = collect();
+        } else {
+            // Filter berdasarkan perawat_profile_id
+            $lisensi = \App\Models\PerawatLisensi::where('perawat_profile_id', $profile->id)
+                        ->orderBy('tgl_expired', 'asc')
+                        ->get();
+        }
+
+        return view('perawat.lisensi.index', compact('user', 'lisensi'));
+    }
+
+    public function lisensiCreate()
+    {
+        $user = $this->currentPerawat();
+        if (!$user) return redirect('/');
+        return view('perawat.lisensi.create', compact('user'));
+    }
+
+    public function lisensiStore(Request $request)
+    {
+        $user = $this->currentPerawat();
+        if (!$user) return redirect('/');
+
+        // Pastikan Profile Ada (Logic: create profile jika belum ada)
+        $profile = \App\Models\PerawatProfile::firstOrCreate(
+            ['user_id' => $user->id],
+            ['nama_lengkap' => $user->name]
+        );
+
+        $request->validate([
+            'jenis'       => 'required|string|max:50',
+            'nomor'       => 'required|string|max:100',
+            'tgl_terbit'  => 'required|date',
+            'tgl_expired' => 'required|date|after:tgl_terbit',
+            'dokumen'     => 'required|mimes:pdf,jpg,jpeg,png|max:5120',
+        ]);
+
+        $data = $request->except(['dokumen', '_token']);
+
+        // SIMPAN MENGGUNAKAN ID PROFILE
+        $data['perawat_profile_id'] = $profile->id;
+
+        // Hitung Status Otomatis
+        $expiredDate = \Carbon\Carbon::parse($request->tgl_expired);
+        $today = \Carbon\Carbon::now();
+        $diffInDays = $today->diffInDays($expiredDate, false);
+
+        if ($diffInDays < 0) {
+            $data['status'] = 'expired';
+        } elseif ($diffInDays <= 180) { // 6 bulan
+            $data['status'] = 'hampir_expired';
+        } else {
+            $data['status'] = 'aktif';
+        }
+
+        if ($request->hasFile('dokumen')) {
+            $data['file_path'] = $request->file('dokumen')->store('perawat/lisensi', 'public');
+        }
+
+        \App\Models\PerawatLisensi::create($data);
+
+        return redirect()->route('perawat.lisensi.index')->with('swal', [
+            'icon' => 'success', 'title' => 'Berhasil', 'text' => 'Dokumen lisensi disimpan.'
+        ]);
+    }
+
+    public function lisensiEdit($id)
+    {
+        $user = $this->currentPerawat();
+        if (!$user) return redirect('/');
+
+        // Ambil profile user saat ini
+        $profile = \App\Models\PerawatProfile::where('user_id', $user->id)->first();
+        if(!$profile) return redirect()->back();
+
+        // Pastikan lisensi milik profile ini
+        $lisensi = \App\Models\PerawatLisensi::where('perawat_profile_id', $profile->id)->findOrFail($id);
+
+        return view('perawat.lisensi.edit', compact('user', 'lisensi'));
+    }
+
+    public function lisensiUpdate(Request $request, $id)
+    {
+        $user = $this->currentPerawat();
+        if (!$user) return redirect('/');
+
+        $profile = \App\Models\PerawatProfile::where('user_id', $user->id)->first();
+        $lisensi = \App\Models\PerawatLisensi::where('perawat_profile_id', $profile->id)->findOrFail($id);
+
+        $request->validate([
+            'jenis'       => 'required|string|max:50',
+            'nomor'       => 'required|string|max:100',
+            'tgl_terbit'  => 'required|date',
+            'tgl_expired' => 'required|date|after:tgl_terbit',
+            'dokumen'     => 'nullable|mimes:pdf,jpg,jpeg,png|max:5120',
+        ]);
+
+        $data = $request->except(['dokumen', '_token', '_method']);
+
+        // Update Status logic
+        $expiredDate = \Carbon\Carbon::parse($request->tgl_expired);
+        $today = \Carbon\Carbon::now();
+        $diffInDays = $today->diffInDays($expiredDate, false);
+
+        if ($diffInDays < 0) {
+            $data['status'] = 'expired';
+        } elseif ($diffInDays <= 180) {
+            $data['status'] = 'hampir_expired';
+        } else {
+            $data['status'] = 'aktif';
+        }
+
+        if ($request->hasFile('dokumen')) {
+            if ($lisensi->file_path && Storage::disk('public')->exists($lisensi->file_path)) {
+                Storage::disk('public')->delete($lisensi->file_path);
+            }
+            $data['file_path'] = $request->file('dokumen')->store('perawat/lisensi', 'public');
+        }
+
+        $lisensi->update($data);
+
+        return redirect()->route('perawat.lisensi.index')->with('swal', [
+            'icon' => 'success', 'title' => 'Berhasil', 'text' => 'Dokumen lisensi diperbarui.'
+        ]);
+    }
+
+    public function lisensiDestroy($id)
+    {
+        $user = $this->currentPerawat();
+        if (!$user) return redirect('/');
+
+        $profile = \App\Models\PerawatProfile::where('user_id', $user->id)->first();
+        $lisensi = \App\Models\PerawatLisensi::where('perawat_profile_id', $profile->id)->findOrFail($id);
+
+        if ($lisensi->file_path && Storage::disk('public')->exists($lisensi->file_path)) {
+            Storage::disk('public')->delete($lisensi->file_path);
+        }
+        $lisensi->delete();
+
+        return redirect()->route('perawat.lisensi.index')->with('swal', [
+            'icon' => 'success', 'title' => 'Dihapus', 'text' => 'Dokumen lisensi dihapus.'
+        ]);
+    }
+
 }

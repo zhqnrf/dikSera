@@ -101,6 +101,14 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/tanda-jasa/{id}/edit', [PerawatDrhController::class, 'tandajasaEdit'])->name('tandajasa.edit');
         Route::put('/tanda-jasa/{id}', [PerawatDrhController::class, 'tandajasaUpdate'])->name('tandajasa.update');
         Route::delete('/tanda-jasa/{id}', [PerawatDrhController::class, 'tandajasaDestroy'])->name('tandajasa.destroy');
+
+        // === LISENSI & DOKUMEN (STR/SIP) ===
+        Route::get('/lisensi', [PerawatDrhController::class, 'lisensiIndex'])->name('lisensi.index');
+        Route::get('/lisensi/create', [PerawatDrhController::class, 'lisensiCreate'])->name('lisensi.create');
+        Route::post('/lisensi', [PerawatDrhController::class, 'lisensiStore'])->name('lisensi.store');
+        Route::get('/lisensi/{id}/edit', [PerawatDrhController::class, 'lisensiEdit'])->name('lisensi.edit');
+        Route::put('/lisensi/{id}', [PerawatDrhController::class, 'lisensiUpdate'])->name('lisensi.update');
+        Route::delete('/lisensi/{id}', [PerawatDrhController::class, 'lisensiDestroy'])->name('lisensi.destroy');
     });
 
 });
