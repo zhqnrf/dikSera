@@ -154,29 +154,19 @@
 </style>
 @endpush
 
-@section('content')
+@@section('content')
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-
-            {{-- Header --}}
             <div class="page-header">
-                <div>
-                    <h1 class="page-title">Edit Lisensi</h1>
-                </div>
-                <a href="{{ route('perawat.lisensi.index') }}" class="btn-back">
-                    <i class="bi bi-arrow-left"></i> Kembali
-                </a>
+                <div><h1 class="page-title">Edit Lisensi</h1></div>
+                <a href="{{ route('perawat.lisensi.index') }}" class="btn-back"><i class="bi bi-arrow-left"></i> Kembali</a>
             </div>
 
-            {{-- Form Card --}}
             <div class="form-card">
-
                 @if($errors->any())
                     <div class="alert alert-danger py-3 px-4 mb-4">
-                        <ul class="mb-0 ps-3">
-                            @foreach($errors->all() as $e) <li>{{ $e }}</li> @endforeach
-                        </ul>
+                        <ul class="mb-0 ps-3">@foreach($errors->all() as $e) <li>{{ $e }}</li> @endforeach</ul>
                     </div>
                 @endif
 
@@ -186,24 +176,33 @@
 
                     <div class="row g-4">
 
-                        {{-- Nomor Lisensi --}}
-                        <div class="col-12">
-                            <label class="form-label">Nomor Lisensi <span class="required-star">*</span></label>
-                            <input type="text" name="nomor" class="form-control" value="{{ old('nomor', $data->nomor) }}" required placeholder="Masukkan nomor STR/SIP/SIPP">
+                        {{-- NEW: Nama & Lembaga --}}
+                        <div class="col-md-6">
+                            <label class="form-label">Nama Lisensi <span class="required-star">*</span></label>
+                            <input type="text" name="nama" class="form-control" value="{{ old('nama', $data->nama) }}" required placeholder="Contoh: STR, SIP">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Lembaga Penerbit <span class="required-star">*</span></label>
+                            <input type="text" name="lembaga" class="form-control" value="{{ old('lembaga', $data->lembaga) }}" required placeholder="Contoh: Kemenkes RI">
                         </div>
 
-                        {{-- Tanggal Terbit & Expired --}}
+                        {{-- Nomor --}}
+                        <div class="col-12">
+                            <label class="form-label">Nomor Lisensi <span class="required-star">*</span></label>
+                            <input type="text" name="nomor" class="form-control" value="{{ old('nomor', $data->nomor) }}" required>
+                        </div>
+
+                        {{-- Tanggal --}}
                         <div class="col-md-6">
                             <label class="form-label">Tanggal Terbit <span class="required-star">*</span></label>
                             <input type="date" name="tgl_terbit" class="form-control" value="{{ old('tgl_terbit', $data->tgl_terbit) }}" required>
                         </div>
-
                         <div class="col-md-6">
                             <label class="form-label">Tanggal Expired <span class="required-star">*</span></label>
                             <input type="date" name="tgl_expired" class="form-control" value="{{ old('tgl_expired', $data->tgl_expired) }}" required>
                         </div>
 
-                        {{-- Upload Dokumen --}}
+                        {{-- Upload --}}
                         <div class="col-12">
                             <label class="form-label">Upload Dokumen Baru</label>
                             <input type="file" name="dokumen" class="form-control pt-2 pb-2">
@@ -215,7 +214,6 @@
                                 </a>
                             @endif
                         </div>
-
                     </div>
 
                     <div class="mt-5">
@@ -225,7 +223,6 @@
                     </div>
                 </form>
             </div>
-
         </div>
     </div>
 </div>

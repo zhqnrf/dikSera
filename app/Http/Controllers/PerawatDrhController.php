@@ -761,29 +761,32 @@ class PerawatDrhController extends Controller
         return view('perawat.dokumen.lisensi.create', compact('user'));
     }
 
-    public function lisensiStore(Request $request)
-    {
-        $user = $this->currentPerawat();
-        if (!$user) return redirect('/');
+   public function lisensiStore(Request $request)
+{
+    $user = $this->currentPerawat();
+    if (!$user) return redirect('/');
 
-        $request->validate([
-            'nomor'       => 'required|string|max:100',
-            'tgl_terbit'  => 'required|date',
-            'tgl_expired' => 'required|date',
-            'dokumen'     => 'required|mimes:pdf,jpg,jpeg,png|max:5120', // Max 5MB
-        ]);
+    $request->validate([
+        'nama'        => 'required|string|max:100', // Validasi Baru
+        'lembaga'     => 'required|string|max:100', // Validasi Baru
+        'nomor'       => 'required|string|max:100',
+        'tgl_terbit'  => 'required|date',
+        'tgl_expired' => 'required|date',
+        'dokumen'     => 'required|mimes:pdf,jpg,jpeg,png|max:5120',
+    ]);
 
-        $data = $request->except(['dokumen', '_token']);
-        $data['user_id'] = $user->id;
+    $data = $request->except(['dokumen', '_token']);
+    $data['user_id'] = $user->id;
 
-        if ($request->hasFile('dokumen')) {
-            $data['file_path'] = $request->file('dokumen')->store('perawat/dokumen/lisensi', 'public');
-        }
-
-        PerawatLisensi::create($data);
-
-        return redirect()->route('perawat.lisensi.index')->with('swal', ['icon'=>'success', 'title'=>'Berhasil', 'text'=>'Lisensi berhasil disimpan.']);
+    if ($request->hasFile('dokumen')) {
+        $data['file_path'] = $request->file('dokumen')->store('perawat/dokumen/lisensi', 'public');
     }
+
+    PerawatLisensi::create($data);
+
+    return redirect()->route('perawat.lisensi.index')->with('swal', ['icon'=>'success', 'title'=>'Berhasil', 'text'=>'Lisensi berhasil disimpan.']);
+}
+
 
     public function lisensiEdit($id)
     {
@@ -794,30 +797,32 @@ class PerawatDrhController extends Controller
     }
 
     public function lisensiUpdate(Request $request, $id)
-    {
-        $user = $this->currentPerawat();
-        if (!$user) return redirect('/');
-        $lisensi = PerawatLisensi::where('user_id', $user->id)->findOrFail($id);
+{
+    $user = $this->currentPerawat();
+    if (!$user) return redirect('/');
+    $lisensi = PerawatLisensi::where('user_id', $user->id)->findOrFail($id);
 
-        $request->validate([
-            'nomor'       => 'required|string|max:100',
-            'tgl_terbit'  => 'required|date',
-            'tgl_expired' => 'required|date',
-            'dokumen'     => 'nullable|mimes:pdf,jpg,jpeg,png|max:5120',
-        ]);
+    $request->validate([
+        'nama'        => 'required|string|max:100', // Validasi Baru
+        'lembaga'     => 'required|string|max:100', // Validasi Baru
+        'nomor'       => 'required|string|max:100',
+        'tgl_terbit'  => 'required|date',
+        'tgl_expired' => 'required|date',
+        'dokumen'     => 'nullable|mimes:pdf,jpg,jpeg,png|max:5120',
+    ]);
 
-        $data = $request->except(['dokumen', '_token', '_method']);
+    $data = $request->except(['dokumen', '_token', '_method']);
 
-        if ($request->hasFile('dokumen')) {
-            if ($lisensi->file_path && Storage::disk('public')->exists($lisensi->file_path)) {
-                Storage::disk('public')->delete($lisensi->file_path);
-            }
-            $data['file_path'] = $request->file('dokumen')->store('perawat/dokumen/lisensi', 'public');
+    if ($request->hasFile('dokumen')) {
+        if ($lisensi->file_path && Storage::disk('public')->exists($lisensi->file_path)) {
+            Storage::disk('public')->delete($lisensi->file_path);
         }
-
-        $lisensi->update($data);
-        return redirect()->route('perawat.lisensi.index')->with('swal', ['icon'=>'success', 'title'=>'Berhasil', 'text'=>'Lisensi diperbarui.']);
+        $data['file_path'] = $request->file('dokumen')->store('perawat/dokumen/lisensi', 'public');
     }
+
+    $lisensi->update($data);
+    return redirect()->route('perawat.lisensi.index')->with('swal', ['icon'=>'success', 'title'=>'Berhasil', 'text'=>'Lisensi diperbarui.']);
+}
 
     public function lisensiDestroy($id)
     {
@@ -848,28 +853,30 @@ class PerawatDrhController extends Controller
         return view('perawat.dokumen.str.create', compact('user'));
     }
 
-    public function strStore(Request $request)
-    {
-        $user = $this->currentPerawat();
-        if (!$user) return redirect('/');
+   public function strStore(Request $request)
+{
+    $user = $this->currentPerawat();
+    if (!$user) return redirect('/');
 
-        $request->validate([
-            'nomor'       => 'required|string|max:100',
-            'tgl_terbit'  => 'required|date',
-            'tgl_expired' => 'required|date',
-            'dokumen'     => 'required|mimes:pdf,jpg,jpeg,png|max:5120',
-        ]);
+    $request->validate([
+        'nama'        => 'required|string|max:100', // Validasi Baru
+        'lembaga'     => 'required|string|max:100', // Validasi Baru
+        'nomor'       => 'required|string|max:100',
+        'tgl_terbit'  => 'required|date',
+        'tgl_expired' => 'required|date',
+        'dokumen'     => 'required|mimes:pdf,jpg,jpeg,png|max:5120',
+    ]);
 
-        $data = $request->except(['dokumen', '_token']);
-        $data['user_id'] = $user->id;
+    $data = $request->except(['dokumen', '_token']);
+    $data['user_id'] = $user->id;
 
-        if ($request->hasFile('dokumen')) {
-            $data['file_path'] = $request->file('dokumen')->store('perawat/dokumen/str', 'public');
-        }
-
-        PerawatStr::create($data);
-        return redirect()->route('perawat.str.index')->with('swal', ['icon'=>'success', 'title'=>'Berhasil', 'text'=>'STR berhasil disimpan.']);
+    if ($request->hasFile('dokumen')) {
+        $data['file_path'] = $request->file('dokumen')->store('perawat/dokumen/str', 'public');
     }
+
+    PerawatStr::create($data);
+    return redirect()->route('perawat.str.index')->with('swal', ['icon'=>'success', 'title'=>'Berhasil', 'text'=>'STR berhasil disimpan.']);
+}
 
     public function strEdit($id)
     {
@@ -879,31 +886,33 @@ class PerawatDrhController extends Controller
         return view('perawat.dokumen.str.edit', compact('user', 'data'));
     }
 
-    public function strUpdate(Request $request, $id)
-    {
-        $user = $this->currentPerawat();
-        if (!$user) return redirect('/');
-        $str = PerawatStr::where('user_id', $user->id)->findOrFail($id);
+   public function strUpdate(Request $request, $id)
+{
+    $user = $this->currentPerawat();
+    if (!$user) return redirect('/');
+    $str = PerawatStr::where('user_id', $user->id)->findOrFail($id);
 
-        $request->validate([
-            'nomor'       => 'required|string|max:100',
-            'tgl_terbit'  => 'required|date',
-            'tgl_expired' => 'required|date',
-            'dokumen'     => 'nullable|mimes:pdf,jpg,jpeg,png|max:5120',
-        ]);
+    $request->validate([
+        'nama'        => 'required|string|max:100', // Validasi Baru
+        'lembaga'     => 'required|string|max:100', // Validasi Baru
+        'nomor'       => 'required|string|max:100',
+        'tgl_terbit'  => 'required|date',
+        'tgl_expired' => 'required|date',
+        'dokumen'     => 'nullable|mimes:pdf,jpg,jpeg,png|max:5120',
+    ]);
 
-        $data = $request->except(['dokumen', '_token', '_method']);
+    $data = $request->except(['dokumen', '_token', '_method']);
 
-        if ($request->hasFile('dokumen')) {
-            if ($str->file_path && Storage::disk('public')->exists($str->file_path)) {
-                Storage::disk('public')->delete($str->file_path);
-            }
-            $data['file_path'] = $request->file('dokumen')->store('perawat/dokumen/str', 'public');
+    if ($request->hasFile('dokumen')) {
+        if ($str->file_path && Storage::disk('public')->exists($str->file_path)) {
+            Storage::disk('public')->delete($str->file_path);
         }
-
-        $str->update($data);
-        return redirect()->route('perawat.str.index')->with('swal', ['icon'=>'success', 'title'=>'Berhasil', 'text'=>'STR diperbarui.']);
+        $data['file_path'] = $request->file('dokumen')->store('perawat/dokumen/str', 'public');
     }
+
+    $str->update($data);
+    return redirect()->route('perawat.str.index')->with('swal', ['icon'=>'success', 'title'=>'Berhasil', 'text'=>'STR diperbarui.']);
+}
 
     public function strDestroy($id)
     {
@@ -935,28 +944,29 @@ class PerawatDrhController extends Controller
     }
 
     public function sipStore(Request $request)
-    {
-        $user = $this->currentPerawat();
-        if (!$user) return redirect('/');
+{
+    $user = $this->currentPerawat();
+    if (!$user) return redirect('/');
 
-        $request->validate([
-            'nomor'       => 'required|string|max:100',
-            'tgl_terbit'  => 'required|date',
-            'tgl_expired' => 'required|date',
-            'dokumen'     => 'required|mimes:pdf,jpg,jpeg,png|max:5120',
-        ]);
+    $request->validate([
+        'nama'        => 'required|string|max:100', // Validasi Baru
+        'lembaga'     => 'required|string|max:100', // Validasi Baru
+        'nomor'       => 'required|string|max:100',
+        'tgl_terbit'  => 'required|date',
+        'tgl_expired' => 'required|date',
+        'dokumen'     => 'required|mimes:pdf,jpg,jpeg,png|max:5120',
+    ]);
 
-        $data = $request->except(['dokumen', '_token']);
-        $data['user_id'] = $user->id;
+    $data = $request->except(['dokumen', '_token']);
+    $data['user_id'] = $user->id;
 
-        if ($request->hasFile('dokumen')) {
-            $data['file_path'] = $request->file('dokumen')->store('perawat/dokumen/sip', 'public');
-        }
-
-        PerawatSip::create($data);
-        return redirect()->route('perawat.sip.index')->with('swal', ['icon'=>'success', 'title'=>'Berhasil', 'text'=>'SIP berhasil disimpan.']);
+    if ($request->hasFile('dokumen')) {
+        $data['file_path'] = $request->file('dokumen')->store('perawat/dokumen/sip', 'public');
     }
 
+    PerawatSip::create($data);
+    return redirect()->route('perawat.sip.index')->with('swal', ['icon'=>'success', 'title'=>'Berhasil', 'text'=>'SIP berhasil disimpan.']);
+}
     public function sipEdit($id)
     {
         $user = $this->currentPerawat();
@@ -965,31 +975,33 @@ class PerawatDrhController extends Controller
         return view('perawat.dokumen.sip.edit', compact('user', 'data'));
     }
 
-    public function sipUpdate(Request $request, $id)
-    {
-        $user = $this->currentPerawat();
-        if (!$user) return redirect('/');
-        $sip = PerawatSip::where('user_id', $user->id)->findOrFail($id);
+  public function sipUpdate(Request $request, $id)
+{
+    $user = $this->currentPerawat();
+    if (!$user) return redirect('/');
+    $sip = PerawatSip::where('user_id', $user->id)->findOrFail($id);
 
-        $request->validate([
-            'nomor'       => 'required|string|max:100',
-            'tgl_terbit'  => 'required|date',
-            'tgl_expired' => 'required|date',
-            'dokumen'     => 'nullable|mimes:pdf,jpg,jpeg,png|max:5120',
-        ]);
+    $request->validate([
+        'nama'        => 'required|string|max:100', // Validasi Baru
+        'lembaga'     => 'required|string|max:100', // Validasi Baru
+        'nomor'       => 'required|string|max:100',
+        'tgl_terbit'  => 'required|date',
+        'tgl_expired' => 'required|date',
+        'dokumen'     => 'nullable|mimes:pdf,jpg,jpeg,png|max:5120',
+    ]);
 
-        $data = $request->except(['dokumen', '_token', '_method']);
+    $data = $request->except(['dokumen', '_token', '_method']);
 
-        if ($request->hasFile('dokumen')) {
-            if ($sip->file_path && Storage::disk('public')->exists($sip->file_path)) {
-                Storage::disk('public')->delete($sip->file_path);
-            }
-            $data['file_path'] = $request->file('dokumen')->store('perawat/dokumen/sip', 'public');
+    if ($request->hasFile('dokumen')) {
+        if ($sip->file_path && Storage::disk('public')->exists($sip->file_path)) {
+            Storage::disk('public')->delete($sip->file_path);
         }
-
-        $sip->update($data);
-        return redirect()->route('perawat.sip.index')->with('swal', ['icon'=>'success', 'title'=>'Berhasil', 'text'=>'SIP diperbarui.']);
+        $data['file_path'] = $request->file('dokumen')->store('perawat/dokumen/sip', 'public');
     }
+
+    $sip->update($data);
+    return redirect()->route('perawat.sip.index')->with('swal', ['icon'=>'success', 'title'=>'Berhasil', 'text'=>'SIP diperbarui.']);
+}
 
     public function sipDestroy($id)
     {
@@ -1020,29 +1032,31 @@ class PerawatDrhController extends Controller
         return view('perawat.dokumen.tambahan.create', compact('user'));
     }
 
-    public function tambahanStore(Request $request)
-    {
-        $user = $this->currentPerawat();
-        if (!$user) return redirect('/');
+   public function tambahanStore(Request $request)
+{
+    $user = $this->currentPerawat();
+    if (!$user) return redirect('/');
 
-        $request->validate([
-            'jenis'       => 'required|string|max:100', // Disini jenis ditangkap (STR, SIP, dll atau ketik sendiri)
-            'nomor'       => 'required|string|max:100',
-            'tgl_terbit'  => 'required|date',
-            'tgl_expired' => 'required|date',
-            'dokumen'     => 'required|mimes:pdf,jpg,jpeg,png|max:5120',
-        ]);
+    $request->validate([
+        'jenis'       => 'required|string|max:100',
+        'nama'        => 'required|string|max:100',
+        'lembaga'     => 'required|string|max:100',
+        'nomor'       => 'required|string|max:100',
+        'tgl_terbit'  => 'required|date',
+        'tgl_expired' => 'required|date',
+        'dokumen'     => 'required|mimes:pdf,jpg,jpeg,png|max:5120',
+    ]);
 
-        $data = $request->except(['dokumen', '_token']);
-        $data['user_id'] = $user->id;
+    $data = $request->except(['dokumen', '_token']);
+    $data['user_id'] = $user->id;
 
-        if ($request->hasFile('dokumen')) {
-            $data['file_path'] = $request->file('dokumen')->store('perawat/dokumen/tambahan', 'public');
-        }
-
-        PerawatDataTambahan::create($data);
-        return redirect()->route('perawat.tambahan.index')->with('swal', ['icon'=>'success', 'title'=>'Berhasil', 'text'=>'Dokumen tambahan berhasil disimpan.']);
+    if ($request->hasFile('dokumen')) {
+        $data['file_path'] = $request->file('dokumen')->store('perawat/dokumen/tambahan', 'public');
     }
+
+    PerawatDataTambahan::create($data);
+    return redirect()->route('perawat.tambahan.index')->with('swal', ['icon'=>'success', 'title'=>'Berhasil', 'text'=>'Dokumen berhasil disimpan.']);
+}
 
     public function tambahanEdit($id)
     {
@@ -1053,31 +1067,33 @@ class PerawatDrhController extends Controller
     }
 
     public function tambahanUpdate(Request $request, $id)
-    {
-        $user = $this->currentPerawat();
-        if (!$user) return redirect('/');
-        $tambahan = PerawatDataTambahan::where('user_id', $user->id)->findOrFail($id);
+{
+    $user = $this->currentPerawat();
+    if (!$user) return redirect('/');
+    $tambahan = PerawatDataTambahan::where('user_id', $user->id)->findOrFail($id);
 
-        $request->validate([
-            'jenis'       => 'required|string|max:100',
-            'nomor'       => 'required|string|max:100',
-            'tgl_terbit'  => 'required|date',
-            'tgl_expired' => 'required|date',
-            'dokumen'     => 'nullable|mimes:pdf,jpg,jpeg,png|max:5120',
-        ]);
+    $request->validate([
+        'jenis'       => 'required|string|max:100',
+        'nama'        => 'required|string|max:100',
+        'lembaga'     => 'required|string|max:100',
+        'nomor'       => 'required|string|max:100',
+        'tgl_terbit'  => 'required|date',
+        'tgl_expired' => 'required|date',
+        'dokumen'     => 'nullable|mimes:pdf,jpg,jpeg,png|max:5120',
+    ]);
 
-        $data = $request->except(['dokumen', '_token', '_method']);
+    $data = $request->except(['dokumen', '_token', '_method']);
 
-        if ($request->hasFile('dokumen')) {
-            if ($tambahan->file_path && Storage::disk('public')->exists($tambahan->file_path)) {
-                Storage::disk('public')->delete($tambahan->file_path);
-            }
-            $data['file_path'] = $request->file('dokumen')->store('perawat/dokumen/tambahan', 'public');
+    if ($request->hasFile('dokumen')) {
+        if ($tambahan->file_path && Storage::disk('public')->exists($tambahan->file_path)) {
+            Storage::disk('public')->delete($tambahan->file_path);
         }
-
-        $tambahan->update($data);
-        return redirect()->route('perawat.tambahan.index')->with('swal', ['icon'=>'success', 'title'=>'Berhasil', 'text'=>'Dokumen tambahan diperbarui.']);
+        $data['file_path'] = $request->file('dokumen')->store('perawat/dokumen/tambahan', 'public');
     }
+
+    $tambahan->update($data);
+    return redirect()->route('perawat.tambahan.index')->with('swal', ['icon'=>'success', 'title'=>'Berhasil', 'text'=>'Dokumen diperbarui.']);
+}
 
     public function tambahanDestroy($id)
     {

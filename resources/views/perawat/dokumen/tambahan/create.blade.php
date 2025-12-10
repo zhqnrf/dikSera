@@ -144,93 +144,69 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-
-            {{-- Header: Judul & Tombol Kembali --}}
             <div class="page-header">
-                <div>
-                    <h1 class="page-title">Tambah Dokumen Tambahan</h1>
-                </div>
-                <a href="{{ route('perawat.tambahan.index') }}" class="btn-back">
-                    <i class="bi bi-arrow-left"></i> Kembali
-                </a>
+                <div><h1 class="page-title">Tambah Dokumen Tambahan</h1></div>
+                <a href="{{ route('perawat.tambahan.index') }}" class="btn-back"><i class="bi bi-arrow-left"></i> Kembali</a>
             </div>
 
-            {{-- Form Card --}}
             <div class="form-card">
-
-                {{-- Global Error Alert --}}
                 @if($errors->any())
                     <div class="alert alert-danger py-3 px-4 mb-4">
-                        <ul class="mb-0 ps-3">
-                            @foreach($errors->all() as $e) <li>{{ $e }}</li> @endforeach
-                        </ul>
+                        <ul class="mb-0 ps-3">@foreach($errors->all() as $e) <li>{{ $e }}</li> @endforeach</ul>
                     </div>
                 @endif
 
                 <form action="{{ route('perawat.tambahan.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
-
                     <div class="row g-4">
 
-                        {{-- Jenis Dokumen (Datalist) --}}
-                        <div class="col-12 mb-3">
+                        {{-- Jenis Dokumen (TEXT MANUAL) --}}
+                        <div class="col-md-6">
                             <label class="form-label">Jenis Dokumen <span class="required-star">*</span></label>
-
-                            <input list="jenis_options" name="jenis" class="form-control @error('jenis') is-invalid @enderror" value="{{ old('jenis') }}" placeholder="Pilih atau ketik jenis dokumen..." required>
-
-                            <datalist id="jenis_options">
-                                <option value="Sertifikat Kompetensi">
-                                <option value="Sertifikat ACLS">
-                                <option value="Sertifikat BCLS">
-                                <option value="Surat Penugasan Klinis">
-                            </datalist>
-
-                            <small class="form-text">
-                                <i class="bi bi-info-circle"></i> Ketik sendiri jika pilihan tidak tersedia di daftar.
-                            </small>
-
-                            @error('jenis')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            <input type="text" name="jenis" class="form-control @error('jenis') is-invalid @enderror" value="{{ old('jenis') }}" placeholder="Contoh: Sertifikat, SK, Surat Tugas" required>
                         </div>
 
-                        {{-- Nomor Dokumen --}}
-                        <div class="col-12 mb-3">
+                        {{-- Nama Dokumen --}}
+                        <div class="col-md-6">
+                            <label class="form-label">Nama Dokumen <span class="required-star">*</span></label>
+                            <input type="text" name="nama" class="form-control @error('nama') is-invalid @enderror" value="{{ old('nama') }}" placeholder="Contoh: ACLS, Vaksin Covid, RKK" required>
+                        </div>
+
+                        {{-- Lembaga & Nomor --}}
+                        <div class="col-md-6">
+                            <label class="form-label">Lembaga Penerbit <span class="required-star">*</span></label>
+                            <input type="text" name="lembaga" class="form-control @error('lembaga') is-invalid @enderror" value="{{ old('lembaga') }}" placeholder="Contoh: PERKI, RSUD, PPNI" required>
+                        </div>
+
+                        <div class="col-md-6">
                             <label class="form-label">Nomor Dokumen <span class="required-star">*</span></label>
                             <input type="text" name="nomor" class="form-control @error('nomor') is-invalid @enderror" value="{{ old('nomor') }}" placeholder="Masukkan nomor dokumen" required>
-                            @error('nomor')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
 
-                        {{-- Tanggal Terbit & Expired --}}
-                        <div class="col-md-6 mb-3">
+                        {{-- Tanggal --}}
+                        <div class="col-md-6">
                             <label class="form-label">Tanggal Terbit <span class="required-star">*</span></label>
                             <input type="date" name="tgl_terbit" class="form-control @error('tgl_terbit') is-invalid @enderror" value="{{ old('tgl_terbit') }}" required>
-                            @error('tgl_terbit')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
-
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-6">
                             <label class="form-label">Tanggal Expired <span class="required-star">*</span></label>
                             <input type="date" name="tgl_expired" class="form-control @error('tgl_expired') is-invalid @enderror" value="{{ old('tgl_expired') }}" required>
-                            @error('tgl_expired')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
 
-                        {{-- Upload Dokumen --}}
-                        <div class="col-12 mb-3">
+                        {{-- Upload --}}
+                        <div class="col-12">
                             <label class="form-label">Upload Dokumen (PDF/Gambar, Max 5MB) <span class="required-star">*</span></label>
                             <input type="file" name="dokumen" class="form-control @error('dokumen') is-invalid @enderror" style="padding-top: 9px;" required>
-                            @error('dokumen')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                         </div>
-
                     </div>
 
-                    {{-- Tombol Simpan --}}
                     <div class="mt-5">
                         <button type="submit" class="btn-submit">
                             <i class="bi bi-save2"></i> Simpan Dokumen
                         </button>
                     </div>
-
                 </form>
             </div>
-
         </div>
     </div>
 </div>

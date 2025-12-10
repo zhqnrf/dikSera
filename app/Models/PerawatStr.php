@@ -13,6 +13,8 @@ class PerawatStr extends Model
     protected $fillable = [
         'user_id',
         'nomor',
+        'nama',
+        'lembaga',
         'tgl_terbit',
         'tgl_expired',
         'file_path',

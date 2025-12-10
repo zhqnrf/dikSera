@@ -213,42 +213,33 @@
 
 @section('content')
 <div class="container py-5">
-
-    {{-- Header --}}
     <div class="page-header">
         <div>
             <h1 class="page-title">Data SIP (Surat Izin Praktik)</h1>
             <p class="page-subtitle">Kelola data Surat Izin Praktik perawat.</p>
         </div>
         <div class="d-flex gap-2">
-            <a href="{{ route('perawat.drh') }}" class="btn-white">
-                <i class="bi bi-arrow-left"></i> Kembali
-            </a>
-            <a href="{{ route('perawat.sip.create') }}" class="btn-blue">
-                <i class="bi bi-plus-lg"></i> Tambah SIP
-            </a>
+            <a href="{{ route('perawat.drh') }}" class="btn-white"><i class="bi bi-arrow-left"></i> Kembali</a>
+            <a href="{{ route('perawat.sip.create') }}" class="btn-blue"><i class="bi bi-plus-lg"></i> Tambah SIP</a>
         </div>
     </div>
 
-    {{-- Alert --}}
     @if(session('success'))
-        <div class="alert-blue">
-            <i class="bi bi-check-circle-fill"></i> {{ session('success') }}
-        </div>
+        <div class="alert-blue"><i class="bi bi-check-circle-fill"></i> {{ session('success') }}</div>
     @endif
 
-    {{-- Content Card --}}
     <div class="table-card">
         <div class="table-responsive">
             <table class="custom-table">
                 <thead>
                     <tr>
                         <th width="5%">No</th>
-                        <th width="30%">Nomor SIP</th>
-                        <th width="25%">Masa Berlaku</th>
+                        <th width="20%">Nama SIP</th> {{-- Kolom Baru --}}
+                        <th width="25%">Nomor SIP</th>
+                        <th width="20%">Masa Berlaku</th>
                         <th width="15%">Status</th>
-                        <th width="15%">Dokumen</th>
-                        <th width="10%" class="text-end">Aksi</th>
+                        <th width="10%">Dokumen</th>
+                        <th width="5%" class="text-end">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -256,22 +247,25 @@
                         <tr>
                             <td>{{ $loop->iteration }}</td>
 
-                            {{-- Nomor SIP --}}
+                            {{-- NEW: Nama & Lembaga --}}
                             <td>
-                                <span class="data-title">{{ $item->nomor }}</span>
+                                <span class="data-title">{{ $item->nama }}</span>
+                                <span class="text-muted" style="font-size: 0.8rem;">
+                                    <i class="bi bi-building"></i> {{ $item->lembaga }}
+                                </span>
                             </td>
+
+                            {{-- Nomor --}}
+                            <td><span class="data-title">{{ $item->nomor }}</span></td>
 
                             {{-- Tanggal --}}
                             <td>
                                 <span class="data-sub">
-                                    <i class="bi bi-calendar-event"></i>
-                                    {{ \Carbon\Carbon::parse($item->tgl_terbit)->format('d-m-Y') }}
-                                    s/d
-                                    {{ \Carbon\Carbon::parse($item->tgl_expired)->format('d-m-Y') }}
+                                    {{ \Carbon\Carbon::parse($item->tgl_terbit)->format('d-m-Y') }} s/d {{ \Carbon\Carbon::parse($item->tgl_expired)->format('d-m-Y') }}
                                 </span>
                             </td>
 
-                            {{-- Status Badge (Updated Logic) --}}
+                            {{-- Status --}}
                             <td>
                                 @php
                                     $expired = \Carbon\Carbon::parse($item->tgl_expired);
@@ -280,53 +274,41 @@
                                 @endphp
 
                                 @if($diff < 0)
-                                    <span class="status-badge status-danger">
-                                        <i class="bi bi-x-circle-fill"></i> Expired
-                                    </span>
+                                    <span class="status-badge status-danger"><i class="bi bi-x-circle-fill"></i> Expired</span>
                                 @elseif($diff < 90)
-                                    <span class="status-badge status-warning">
-                                        <i class="bi bi-exclamation-triangle-fill"></i> Hampir Expired
-                                    </span>
+                                    <span class="status-badge status-warning"><i class="bi bi-exclamation-triangle-fill"></i> Hampir Expired</span>
                                 @else
-                                    <span class="status-badge status-active">
-                                        <i class="bi bi-check-circle-fill"></i> Aktif
-                                    </span>
+                                    <span class="status-badge status-active"><i class="bi bi-check-circle-fill"></i> Aktif</span>
                                 @endif
                             </td>
 
-                            {{-- Dokumen --}}
+                            {{-- File --}}
                             <td>
                                 @if($item->file_path)
-                                    <a href="{{ Storage::url($item->file_path) }}" target="_blank" class="text-decoration-none" style="font-weight: 500; color: var(--primary-blue);">
-                                        <i class="bi bi-file-earmark-pdf-fill"></i> Lihat File
+                                    <a href="{{ Storage::url($item->file_path) }}" target="_blank" class="action-btn" title="Lihat File" style="color: var(--primary-blue);">
+                                        <i class="bi bi-file-earmark-pdf-fill"></i>
                                     </a>
                                 @else
-                                    <span class="text-muted text-xs">Tidak ada file</span>
+                                    <span class="text-muted">-</span>
                                 @endif
                             </td>
 
                             {{-- Aksi --}}
                             <td class="text-end">
                                 <div class="d-flex gap-1 justify-content-end">
-                                    <a href="{{ route('perawat.sip.edit', $item->id) }}" class="action-btn" title="Edit">
-                                        <i class="bi bi-pencil-fill"></i>
-                                    </a>
+                                    <a href="{{ route('perawat.sip.edit', $item->id) }}" class="action-btn" title="Edit"><i class="bi bi-pencil-fill"></i></a>
                                     <form action="{{ route('perawat.sip.destroy', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus SIP ini?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="action-btn delete" title="Hapus">
-                                            <i class="bi bi-trash-fill"></i>
-                                        </button>
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="action-btn delete" title="Hapus"><i class="bi bi-trash-fill"></i></button>
                                     </form>
                                 </div>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center py-5">
+                            <td colspan="7" class="text-center py-5">
                                 <div class="text-muted" style="opacity: 0.6;">
-                                    <i class="bi bi-clipboard-x fs-1 d-block mb-2"></i>
-                                    Belum ada data SIP.
+                                    <i class="bi bi-clipboard-x fs-1 d-block mb-2"></i> Belum ada data SIP.
                                 </div>
                             </td>
                         </tr>

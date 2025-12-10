@@ -137,74 +137,62 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-
-            {{-- Header: Judul & Tombol Kembali --}}
             <div class="page-header">
-                <div>
-                    <h1 class="page-title">Tambah STR Baru</h1>
-                </div>
-                <a href="{{ route('perawat.str.index') }}" class="btn-back">
-                    <i class="bi bi-arrow-left"></i> Kembali
-                </a>
+                <div><h1 class="page-title">Tambah STR Baru</h1></div>
+                <a href="{{ route('perawat.str.index') }}" class="btn-back"><i class="bi bi-arrow-left"></i> Kembali</a>
             </div>
 
-            {{-- Form Card --}}
             <div class="form-card">
-
-                {{-- Global Error Alert --}}
                 @if($errors->any())
                     <div class="alert alert-danger py-3 px-4 mb-4">
-                        <ul class="mb-0 ps-3">
-                            @foreach($errors->all() as $e) <li>{{ $e }}</li> @endforeach
-                        </ul>
+                        <ul class="mb-0 ps-3">@foreach($errors->all() as $e) <li>{{ $e }}</li> @endforeach</ul>
                     </div>
                 @endif
 
                 <form action="{{ route('perawat.str.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
-
                     <div class="row g-4">
 
+                        {{-- NEW: Nama & Lembaga --}}
+                        <div class="col-md-6">
+                            <label class="form-label">Nama STR <span class="required-star">*</span></label>
+                            <input type="text" name="nama" class="form-control @error('nama') is-invalid @enderror" value="{{ old('nama') }}" placeholder="Contoh: STR Baru, STR Perpanjangan" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Lembaga Penerbit <span class="required-star">*</span></label>
+                            <input type="text" name="lembaga" class="form-control @error('lembaga') is-invalid @enderror" value="{{ old('lembaga') }}" placeholder="Contoh: KTKI, MTKI" required>
+                        </div>
+
                         {{-- Nomor STR --}}
-                        <div class="col-12 mb-3">
+                        <div class="col-12">
                             <label class="form-label">Nomor STR <span class="required-star">*</span></label>
                             <input type="text" name="nomor" class="form-control @error('nomor') is-invalid @enderror" value="{{ old('nomor') }}" placeholder="Masukkan nomor STR" required>
-                            @error('nomor')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
 
-                        {{-- Tanggal Terbit & Expired --}}
-                        <div class="col-md-6 mb-3">
+                        {{-- Tanggal --}}
+                        <div class="col-md-6">
                             <label class="form-label">Tanggal Terbit <span class="required-star">*</span></label>
                             <input type="date" name="tgl_terbit" class="form-control @error('tgl_terbit') is-invalid @enderror" value="{{ old('tgl_terbit') }}" required>
-                            @error('tgl_terbit')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
-
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-6">
                             <label class="form-label">Tanggal Expired <span class="required-star">*</span></label>
                             <input type="date" name="tgl_expired" class="form-control @error('tgl_expired') is-invalid @enderror" value="{{ old('tgl_expired') }}" required>
-                            @error('tgl_expired')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
 
-                        {{-- Upload Dokumen --}}
-                        <div class="col-12 mb-3">
+                        {{-- Upload --}}
+                        <div class="col-12">
                             <label class="form-label">Upload Dokumen STR (PDF/Gambar, Max 5MB) <span class="required-star">*</span></label>
-                            {{-- Menggunakan class form-control agar tampilan kotak inputnya seragam --}}
                             <input type="file" name="dokumen" class="form-control @error('dokumen') is-invalid @enderror" style="padding-top: 9px;" required>
-                            @error('dokumen')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                         </div>
-
                     </div>
 
-                    {{-- Tombol Simpan --}}
                     <div class="mt-5">
                         <button type="submit" class="btn-submit">
                             <i class="bi bi-save2"></i> Simpan Data STR
                         </button>
                     </div>
-
                 </form>
             </div>
-
         </div>
     </div>
 </div>

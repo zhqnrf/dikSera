@@ -213,43 +213,33 @@
 
 @section('content')
 <div class="container py-5">
-
-    {{-- Header --}}
     <div class="page-header">
         <div>
             <h1 class="page-title">Data Dokumen Tambahan</h1>
             <p class="page-subtitle">Kelola dokumen pendukung lainnya (Sertifikat, dll).</p>
         </div>
         <div class="d-flex gap-2">
-            <a href="{{ route('perawat.drh') }}" class="btn-white">
-                <i class="bi bi-arrow-left"></i> Kembali
-            </a>
-            <a href="{{ route('perawat.tambahan.create') }}" class="btn-blue">
-                <i class="bi bi-plus-lg"></i> Tambah Dokumen
-            </a>
+            <a href="{{ route('perawat.drh') }}" class="btn-white"><i class="bi bi-arrow-left"></i> Kembali</a>
+            <a href="{{ route('perawat.tambahan.create') }}" class="btn-blue"><i class="bi bi-plus-lg"></i> Tambah Dokumen</a>
         </div>
     </div>
 
-    {{-- Alert --}}
     @if(session('success'))
-        <div class="alert-blue">
-            <i class="bi bi-check-circle-fill"></i> {{ session('success') }}
-        </div>
+        <div class="alert-blue"><i class="bi bi-check-circle-fill"></i> {{ session('success') }}</div>
     @endif
 
-    {{-- Content Card --}}
     <div class="table-card">
         <div class="table-responsive">
             <table class="custom-table">
                 <thead>
                     <tr>
                         <th width="5%">No</th>
-                        <th width="25%">Jenis Dokumen</th>
-                        <th width="25%">Nomor Dokumen</th>
+                        <th width="30%">Dokumen</th>
+                        <th width="20%">Nomor Dokumen</th>
                         <th width="20%">Masa Berlaku</th>
                         <th width="15%">Status</th>
                         <th width="10%" class="text-center">File</th>
-                        <th width="10%" class="text-end">Aksi</th>
+                        <th width="5%" class="text-end">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -257,17 +247,19 @@
                         <tr>
                             <td>{{ $loop->iteration }}</td>
 
-                            {{-- Jenis Dokumen --}}
                             <td>
-                                <span class="data-title">{{ $item->jenis }}</span>
+                                {{-- Nama (Tebal) --}}
+                                <span class="data-title">{{ $item->nama }}</span>
+
+                                {{-- Jenis (Badge) & Lembaga (Building Icon) --}}
+                                <div class="text-muted" style="font-size: 0.8rem; margin-top: 2px;">
+                                    <span class="badge bg-light text-dark border me-1">{{ $item->jenis }}</span>
+                                    <span><i class="bi bi-building"></i> {{ $item->lembaga }}</span>
+                                </div>
                             </td>
 
-                            {{-- Nomor Dokumen --}}
-                            <td>
-                                <span class="text-dark">{{ $item->nomor }}</span>
-                            </td>
+                            <td><span class="text-dark">{{ $item->nomor }}</span></td>
 
-                            {{-- Tanggal Expired --}}
                             <td>
                                 <span class="data-sub">
                                     <i class="bi bi-calendar-event"></i>
@@ -275,7 +267,6 @@
                                 </span>
                             </td>
 
-                            {{-- Status Badge Logic --}}
                             <td>
                                 @php
                                     $expired = \Carbon\Carbon::parse($item->tgl_expired);
@@ -284,21 +275,14 @@
                                 @endphp
 
                                 @if($diff < 0)
-                                    <span class="status-badge status-danger">
-                                        <i class="bi bi-x-circle-fill"></i> Expired
-                                    </span>
+                                    <span class="status-badge status-danger"><i class="bi bi-x-circle-fill"></i> Expired</span>
                                 @elseif($diff < 90)
-                                    <span class="status-badge status-warning">
-                                        <i class="bi bi-exclamation-triangle-fill"></i> Hampir Expired
-                                    </span>
+                                    <span class="status-badge status-warning"><i class="bi bi-exclamation-triangle-fill"></i> Hampir Expired</span>
                                 @else
-                                    <span class="status-badge status-active">
-                                        <i class="bi bi-check-circle-fill"></i> Aktif
-                                    </span>
+                                    <span class="status-badge status-active"><i class="bi bi-check-circle-fill"></i> Aktif</span>
                                 @endif
                             </td>
 
-                            {{-- File --}}
                             <td class="text-center">
                                 @if($item->file_path)
                                     <a href="{{ Storage::url($item->file_path) }}" target="_blank" class="action-btn" title="Lihat File" style="color: var(--primary-blue);">
@@ -309,18 +293,12 @@
                                 @endif
                             </td>
 
-                            {{-- Aksi --}}
                             <td class="text-end">
                                 <div class="d-flex gap-1 justify-content-end">
-                                    <a href="{{ route('perawat.tambahan.edit', $item->id) }}" class="action-btn" title="Edit">
-                                        <i class="bi bi-pencil-fill"></i>
-                                    </a>
+                                    <a href="{{ route('perawat.tambahan.edit', $item->id) }}" class="action-btn" title="Edit"><i class="bi bi-pencil-fill"></i></a>
                                     <form action="{{ route('perawat.tambahan.destroy', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus dokumen ini?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="action-btn delete" title="Hapus">
-                                            <i class="bi bi-trash-fill"></i>
-                                        </button>
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="action-btn delete" title="Hapus"><i class="bi bi-trash-fill"></i></button>
                                     </form>
                                 </div>
                             </td>
@@ -329,8 +307,7 @@
                         <tr>
                             <td colspan="7" class="text-center py-5">
                                 <div class="text-muted" style="opacity: 0.6;">
-                                    <i class="bi bi-folder-x fs-1 d-block mb-2"></i>
-                                    Belum ada dokumen tambahan.
+                                    <i class="bi bi-folder-x fs-1 d-block mb-2"></i> Belum ada dokumen tambahan.
                                 </div>
                             </td>
                         </tr>

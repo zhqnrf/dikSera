@@ -16,7 +16,8 @@ class CreatePerawatStrsTable extends Migration
     Schema::create('perawat_strs', function (Blueprint $table) {
         $table->id();
         $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-
+        $table->string('nama');
+        $table->string('lembaga');
         $table->string('nomor');
         $table->date('tgl_terbit');
         $table->date('tgl_expired');

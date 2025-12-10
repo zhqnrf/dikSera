@@ -157,25 +157,15 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-
-            {{-- Header --}}
             <div class="page-header">
-                <div>
-                    <h1 class="page-title">Edit Dokumen Tambahan</h1>
-                </div>
-                <a href="{{ route('perawat.tambahan.index') }}" class="btn-back">
-                    <i class="bi bi-arrow-left"></i> Kembali
-                </a>
+                <div><h1 class="page-title">Edit Dokumen Tambahan</h1></div>
+                <a href="{{ route('perawat.tambahan.index') }}" class="btn-back"><i class="bi bi-arrow-left"></i> Kembali</a>
             </div>
 
-            {{-- Form Card --}}
             <div class="form-card">
-
                 @if($errors->any())
                     <div class="alert alert-danger py-3 px-4 mb-4">
-                        <ul class="mb-0 ps-3">
-                            @foreach($errors->all() as $e) <li>{{ $e }}</li> @endforeach
-                        </ul>
+                        <ul class="mb-0 ps-3">@foreach($errors->all() as $e) <li>{{ $e }}</li> @endforeach</ul>
                     </div>
                 @endif
 
@@ -185,36 +175,40 @@
 
                     <div class="row g-4">
 
-                        {{-- Jenis Dokumen (Datalist) --}}
-                        <div class="col-12">
+                        {{-- Jenis (TEXT MANUAL) --}}
+                        <div class="col-md-6">
                             <label class="form-label">Jenis Dokumen <span class="required-star">*</span></label>
-                            <input list="jenis_options" name="jenis" class="form-control" value="{{ old('jenis', $data->jenis) }}" required placeholder="Pilih atau ketik jenis dokumen...">
-                            <datalist id="jenis_options">
-                                <option value="Sertifikat Kompetensi">
-                                <option value="Sertifikat ACLS">
-                                <option value="Sertifikat BCLS">
-                                <option value="Surat Penugasan Klinis">
-                            </datalist>
+                            <input type="text" name="jenis" class="form-control" value="{{ old('jenis', $data->jenis) }}" required placeholder="Contoh: Sertifikat">
                         </div>
 
-                        {{-- Nomor Dokumen --}}
-                        <div class="col-12">
+                        {{-- Nama --}}
+                        <div class="col-md-6">
+                            <label class="form-label">Nama Dokumen <span class="required-star">*</span></label>
+                            <input type="text" name="nama" class="form-control" value="{{ old('nama', $data->nama) }}" required placeholder="Contoh: ACLS">
+                        </div>
+
+                        {{-- Lembaga & Nomor --}}
+                        <div class="col-md-6">
+                            <label class="form-label">Lembaga Penerbit <span class="required-star">*</span></label>
+                            <input type="text" name="lembaga" class="form-control" value="{{ old('lembaga', $data->lembaga) }}" required placeholder="Contoh: PERKI">
+                        </div>
+
+                        <div class="col-md-6">
                             <label class="form-label">Nomor Dokumen <span class="required-star">*</span></label>
-                            <input type="text" name="nomor" class="form-control" value="{{ old('nomor', $data->nomor) }}" required placeholder="Masukkan nomor dokumen">
+                            <input type="text" name="nomor" class="form-control" value="{{ old('nomor', $data->nomor) }}" required>
                         </div>
 
-                        {{-- Tanggal Terbit & Expired --}}
+                        {{-- Tanggal --}}
                         <div class="col-md-6">
                             <label class="form-label">Tanggal Terbit <span class="required-star">*</span></label>
                             <input type="date" name="tgl_terbit" class="form-control" value="{{ old('tgl_terbit', $data->tgl_terbit) }}" required>
                         </div>
-
                         <div class="col-md-6">
                             <label class="form-label">Tanggal Expired <span class="required-star">*</span></label>
                             <input type="date" name="tgl_expired" class="form-control" value="{{ old('tgl_expired', $data->tgl_expired) }}" required>
                         </div>
 
-                        {{-- Upload Dokumen --}}
+                        {{-- Upload --}}
                         <div class="col-12">
                             <label class="form-label">Upload Dokumen Baru</label>
                             <input type="file" name="dokumen" class="form-control pt-2 pb-2">
@@ -226,7 +220,6 @@
                                 </a>
                             @endif
                         </div>
-
                     </div>
 
                     <div class="mt-5">
@@ -236,7 +229,6 @@
                     </div>
                 </form>
             </div>
-
         </div>
     </div>
 </div>
