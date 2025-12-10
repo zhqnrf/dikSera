@@ -649,6 +649,12 @@
                             <i class="bi bi-people"></i> {{-- Icon baru --}}
                             <span class="link-text">Data Perawat</span>
                         </a>
+
+                        <div class="nav-section-title">Lainnya</div>
+                        <a href="{{ route('admin.profile.index') }}" class="nav-linkx">
+                            <i class="bi bi-gear-fill"></i>
+                            <span class="link-text">Profile</span>
+                        </a>
                     @endif
                 </div>
 

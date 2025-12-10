@@ -5,6 +5,7 @@ use App\Http\Controllers\LandingController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AdminPerawatController;
+use App\Http\Controllers\AdminProfileController;
 use App\Http\Controllers\PerawatDrhController;
 use App\Http\Controllers\TelegramController;
 
@@ -41,6 +42,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/perawat/{id}/edit', [AdminPerawatController::class, 'edit'])->name('perawat.edit');
         Route::put('/perawat/{id}', [AdminPerawatController::class, 'update'])->name('perawat.update');
         Route::delete('/perawat/{id}', [AdminPerawatController::class, 'destroy'])->name('perawat.destroy');
+
+        Route::get('/profile', [AdminProfileController::class, 'index'])->name('profile.index');
+        Route::post('/telegram/generate', [AdminProfileController::class, 'generateCode'])->name('telegram.generate');
+        Route::post('/telegram/unlink', [AdminProfileController::class, 'unlink'])->name('telegram.unlink');
+        Route::post('/telegram/test', [AdminProfileController::class, 'testMessage'])->name('telegram.test');
     });
 
     // === GROUP PERAWAT ===
