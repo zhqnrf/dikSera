@@ -27,7 +27,6 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
             padding: 12px 16px;
-            /* Padding lebih besar untuk list admin */
             vertical-align: middle;
         }
 
@@ -38,15 +37,14 @@
             font-size: 13px;
         }
 
-        /* Tombol Aksi */
+        /* Tombol Aksi Container */
         .action-group {
             display: flex;
             gap: 6px;
-            /* Jarak antar tombol */
             justify-content: center;
         }
 
-        /* Tombol Khusus Icon (Kotak Kecil) */
+        /* Tombol Khusus Icon */
         .btn-icon {
             width: 32px;
             height: 32px;
@@ -64,7 +62,7 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        /* Avatar Initials (Opsional jika tidak ada foto) */
+        /* Avatar Styling */
         .avatar-circle {
             width: 36px;
             height: 36px;
@@ -84,6 +82,19 @@
             border-radius: 50%;
             object-fit: cover;
         }
+
+        /* Search Input Style */
+        .search-input {
+            border-radius: 8px;
+            border: 1px solid var(--border-soft);
+            font-size: 13px;
+            padding-left: 12px;
+        }
+
+        .search-input:focus {
+            border-color: var(--blue-main);
+            box-shadow: 0 0 0 3px var(--blue-soft);
+        }
     </style>
 @endpush
 
@@ -91,27 +102,33 @@
 
     <div class="content-card">
 
-        {{-- Header Tools (Opsional: Search Bar placeholder) --}}
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h6 class="m-0 text-muted" style="font-size: 13px;">Total: <strong
-                        class="text-dark">{{ $perawat->count() }}</strong> Perawat</h6>
-            </div>
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h6 class="m-0 text-muted" style="font-size: 13px;">
-                        Total: <strong class="text-dark">{{ $perawat->total() }}</strong> Perawat
-                    </h6>
-                </div>
+        {{-- Header Tools: Total & Search Bar --}}
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">
 
-                <form method="GET" class="d-flex" style="gap:10px;">
-                    <input type="text" name="search" class="form-control form-control-sm"
-                        placeholder="Cari nama, NIK, no HP, alamat..." value="{{ request('search') }}" style="width:220px;">
-                    <button class="btn btn-sm btn-primary">Cari</button>
-                </form>
+            {{-- Bagian Kiri: Total Data --}}
+            <div>
+                <h6 class="m-0 text-muted" style="font-size: 13px;">
+                    Total Data: <strong class="text-dark">{{ $perawat->total() }}</strong> Perawat
+                </h6>
             </div>
+
+            {{-- Bagian Kanan: Search Form --}}
+            <form method="GET" class="d-flex gap-2">
+                <input type="text" name="search" class="form-control form-control-sm search-input"
+                    placeholder="Cari nama, NIK, HP..." value="{{ request('search') }}" style="width: 240px;">
+                <button type="submit" class="btn btn-sm btn-primary px-3" style="border-radius: 8px;">
+                    <i class="bi bi-search"></i>
+                </button>
+                @if (request('search'))
+                    <a href="{{ route('admin.perawat.index') }}" class="btn btn-sm btn-outline-secondary px-3"
+                        style="border-radius: 8px;" title="Reset">
+                        <i class="bi bi-x-lg"></i>
+                    </a>
+                @endif
+            </form>
         </div>
 
+        {{-- Tabel Data --}}
         <div class="table-responsive">
             <table class="table table-custom table-hover mb-0">
                 <thead>
@@ -120,22 +137,23 @@
                         <th>Identitas Perawat</th>
                         <th>Kontak & NIK</th>
                         <th>Alamat Domisili</th>
-                        <th style="width:140px;" class="text-center">Aksi</th>
+                        <th style="width:160px;" class="text-center">Aksi</th> {{-- Lebar ditambah dikit biar muat 4 tombol --}}
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($perawat as $i => $p)
                         <tr>
-                            <td class="text-center text-muted">{{ $i + 1 }}</td>
+                            <td class="text-center text-muted">{{ $loop->iteration + $perawat->firstItem() - 1 }}</td>
                             <td>
                                 <div class="d-flex align-items-center gap-3">
-                                    {{-- Avatar Simple dari Inisial Nama --}}
+                                    {{-- Avatar --}}
                                     <div class="avatar-wrapper">
-                                        @if (!empty($p->foto_3x4))
-                                            <img src="{{ asset('storage/' . $p->foto_3x4) }}" class="avatar-img"
+                                        @if (!empty($p->profile->foto_3x4))
+                                            {{-- Cek relasi profile --}}
+                                            <img src="{{ asset('storage/' . $p->profile->foto_3x4) }}" class="avatar-img"
                                                 alt="{{ $p->name }}">
                                         @else
-                                            <div class="avatar-circle">{{ strtoupper($p->name[0]) }}</div>
+                                            <div class="avatar-circle">{{ strtoupper(substr($p->name, 0, 1)) }}</div>
                                         @endif
                                     </div>
                                     <div>
@@ -166,21 +184,30 @@
                             </td>
                             <td class="text-center">
                                 <div class="action-group">
-                                    {{-- Tombol Detail --}}
+                                    {{-- 1. Detail --}}
                                     <a href="{{ route('admin.perawat.show', $p->id) }}"
                                         class="btn btn-icon btn-outline-primary" title="Detail DRH"
                                         data-bs-toggle="tooltip">
                                         <i class="bi bi-eye"></i>
                                     </a>
-                                    {{-- Tombol Edit --}}
+
+                                    {{-- 2. Sertifikat (Menggunakan Icon agar muat) --}}
+                                    <a href="{{ route('admin.perawat.sertifikat', $p->id) }}"
+                                        class="btn btn-icon btn-outline-success" title="Lihat Sertifikat & Dokumen"
+                                        data-bs-toggle="tooltip">
+                                        <i class="bi bi-patch-check"></i>
+                                    </a>
+
+                                    {{-- 3. Edit --}}
                                     <a href="{{ route('admin.perawat.edit', $p->id) }}"
                                         class="btn btn-icon btn-outline-warning" title="Edit Data" data-bs-toggle="tooltip">
                                         <i class="bi bi-pencil"></i>
                                     </a>
-                                    {{-- Tombol Hapus --}}
+
+                                    {{-- 4. Hapus --}}
                                     <form action="{{ route('admin.perawat.destroy', $p->id) }}" method="POST"
                                         class="d-inline"
-                                        onsubmit="return confirm('Yakin ingin menghapus data perawat ini?');">
+                                        onsubmit="return confirm('Yakin ingin menghapus data perawat ini beserta seluruh riwayatnya?');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-icon btn-outline-danger" title="Hapus"
@@ -195,14 +222,16 @@
                         <tr>
                             <td colspan="5" class="text-center py-5">
                                 <div class="text-muted mb-2">
-                                    <i class="bi bi-people display-6 opacity-25"></i>
+                                    <i class="bi bi-search display-6 opacity-25"></i>
                                 </div>
-                                <span class="text-muted small">Belum ada data perawat yang terdaftar.</span>
+                                <span class="text-muted small">Data tidak ditemukan.</span>
                             </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
+
+            {{-- Pagination --}}
             <div class="mt-4">
                 {{ $perawat->links('vendor.pagination.diksera') }}
             </div>
