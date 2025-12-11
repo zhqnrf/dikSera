@@ -563,7 +563,7 @@
                                 <i class="bi bi-award-fill"></i> Pelatihan
                             </a>
 
-                             <a href="{{ route('perawat.pendidikan.index') }}"
+                            <a href="{{ route('perawat.pendidikan.index') }}"
                                 class="nav-linkx {{ request()->routeIs('perawat.pendidikan.*') ? 'active' : '' }}">
                                 <i class="bi bi-book-fill"></i> Pendidikan
                             </a>
@@ -591,13 +591,15 @@
 
                         {{-- DROPDOWN 2: DOKUMEN (BARU DITAMBAHKAN) --}}
                         @php
-                            $isDokumenActive = request()->routeIs('perawat.lisensi.*') ||
-                                               request()->routeIs('perawat.str.*') ||
-                                               request()->routeIs('perawat.sip.*') ||
-                                               request()->routeIs('perawat.tambahan.*');
+                            $isDokumenActive =
+                                request()->routeIs('perawat.lisensi.*') ||
+                                request()->routeIs('perawat.str.*') ||
+                                request()->routeIs('perawat.sip.*') ||
+                                request()->routeIs('perawat.tambahan.*');
                         @endphp
 
-                        <div class="nav-linkx nav-dropdown {{ $isDokumenActive ? 'active' : '' }}" data-dropdown="#submenu-dokumen">
+                        <div class="nav-linkx nav-dropdown {{ $isDokumenActive ? 'active' : '' }}"
+                            data-dropdown="#submenu-dokumen">
                             <i class="bi bi-folder-fill"></i>
                             <span class="link-text">Dokumen</span>
                             <i class="bi bi-chevron-down dropdown-icon"></i>
@@ -607,25 +609,25 @@
 
                             {{-- Lisensi --}}
                             <a href="{{ route('perawat.lisensi.index') }}"
-                               class="nav-linkx {{ request()->routeIs('perawat.lisensi.*') ? 'active' : '' }}">
+                                class="nav-linkx {{ request()->routeIs('perawat.lisensi.*') ? 'active' : '' }}">
                                 <i class="bi bi-file-earmark-fill"></i> Dokumen Lisensi
                             </a>
 
                             {{-- STR --}}
                             <a href="{{ route('perawat.str.index') }}"
-                               class="nav-linkx {{ request()->routeIs('perawat.str.*') ? 'active' : '' }}">
+                                class="nav-linkx {{ request()->routeIs('perawat.str.*') ? 'active' : '' }}">
                                 <i class="bi bi-file-earmark-text-fill"></i> Dokumen STR
                             </a>
 
                             {{-- SIP --}}
                             <a href="{{ route('perawat.sip.index') }}"
-                               class="nav-linkx {{ request()->routeIs('perawat.sip.*') ? 'active' : '' }}">
+                                class="nav-linkx {{ request()->routeIs('perawat.sip.*') ? 'active' : '' }}">
                                 <i class="bi bi-file-earmark-check-fill"></i> Dokumen SIP
                             </a>
 
                             {{-- Data Tambahan --}}
                             <a href="{{ route('perawat.tambahan.index') }}"
-                               class="nav-linkx {{ request()->routeIs('perawat.tambahan.*') ? 'active' : '' }}">
+                                class="nav-linkx {{ request()->routeIs('perawat.tambahan.*') ? 'active' : '' }}">
                                 <i class="bi bi-file-earmark-plus-fill"></i> Data Tambahan
                             </a>
 
@@ -648,6 +650,15 @@
                             <i class="bi bi-speedometer2"></i> {{-- Icon baru --}}
                             <span class="link-text">Dashboard</span>
                         </a>
+
+
+
+                        <a href="{{ route('admin.manajemen_akun.index') }}"
+                             class="nav-linkx {{ request()->routeIs('admin.manajemen_akun*') ? 'active' : '' }}">
+                            <i class="bi bi-people"></i> {{-- Icon baru --}}
+                            <span class="link-text">Manajemen Akun</span>
+                        </a>
+
 
                         <a href="{{ route('admin.perawat.index') }}"
                             class="nav-linkx {{ request()->routeIs('admin.perawat.*') ? 'active' : '' }}">

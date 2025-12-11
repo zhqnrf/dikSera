@@ -10,7 +10,7 @@ class UserSeeder extends Seeder
 {
     public function run()
     {
-        // Admin
+        // 1. Admin (Otomatis Active)
         User::updateOrCreate(
             ['email' => 'admin@gmail'],
             [
@@ -18,10 +18,11 @@ class UserSeeder extends Seeder
                 'password'         => Hash::make('password'),
                 'role'             => 'admin',
                 'telegram_chat_id' => null,
+                'status_akun'      => 'active', // <--- Tambahkan ini
             ]
         );
 
-        // Contoh Perawat
+        // 2. Contoh Perawat (Otomatis Active)
         User::updateOrCreate(
             ['email' => 'perawat@gmail'],
             [
@@ -29,10 +30,11 @@ class UserSeeder extends Seeder
                 'password'         => Hash::make('password'),
                 'role'             => 'perawat',
                 'telegram_chat_id' => null,
+                'status_akun'      => 'active', // <--- Tambahkan ini agar bisa langsung login
             ]
         );
 
-        // Contoh Pewawancara
+        // 3. Contoh Pewawancara (Otomatis Active)
         User::updateOrCreate(
             ['email' => 'pewawancara@gmail'],
             [
@@ -40,6 +42,7 @@ class UserSeeder extends Seeder
                 'password'         => Hash::make('password'),
                 'role'             => 'pewawancara',
                 'telegram_chat_id' => null,
+                'status_akun'      => 'active', // <--- Tambahkan ini
             ]
         );
     }

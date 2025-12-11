@@ -47,27 +47,63 @@ class AuthController extends Controller
         $remember = $request->boolean('remember');
 
         if (Auth::attempt($credentials, $remember)) {
+            $user = Auth::user();
+
+            // ============================================================
+            // CEK STATUS AKUN (LOGIKA TAMBAHAN)
+            // ============================================================
+            // Jika user BUKAN admin DAN status akunnya BUKAN 'active'
+            // Pastikan kolom 'status_akun' sudah ada di tabel users (via migration)
+            if ($user->role !== 'admin' && $user->status_akun !== 'active') {
+
+                // Keluarkan user (Logout paksa agar sesi tidak tersimpan)
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                // Tentukan pesan error berdasarkan status
+                $pesanError = 'Akun Anda sedang menunggu persetujuan Admin. Mohon tunggu verifikasi.';
+
+                if ($user->status_akun === 'rejected') {
+                    $pesanError = 'Mohon maaf, pendaftaran akun Anda telah ditolak oleh Admin.';
+                }
+
+                // Kembalikan ke halaman login dengan pesan error
+                return back()
+                    ->withInput()
+                    ->with('swal', [
+                        'icon'  => 'warning',
+                        'title' => 'Akses Dibatasi',
+                        'text'  => $pesanError,
+                    ]);
+            }
+            // ============================================================
+
+            // Jika lolos pengecekan, lanjutkan regenerasi session
             $request->session()->regenerate();
 
-            if (Auth::user()->role === 'admin') {
+            // Redirect Admin
+            if ($user->role === 'admin') {
                 return redirect()
                     ->route('dashboard.admin')
                     ->with('swal', [
                         'icon'  => 'success',
                         'title' => 'Berhasil masuk',
-                        'text'  => 'Selamat datang di DIKSERA, Admin ' . Auth::user()->name . '.',
+                        'text'  => 'Selamat datang di DIKSERA, Admin ' . $user->name . '.',
                     ]);
             }
 
+            // Redirect User Biasa (Perawat)
             return redirect()
                 ->route('dashboard')
                 ->with('swal', [
                     'icon'  => 'success',
                     'title' => 'Berhasil masuk',
-                    'text'  => 'Selamat datang di DIKSERA, ' . Auth::user()->name . '.',
+                    'text'  => 'Selamat datang di DIKSERA, ' . $user->name . '.',
                 ]);
         }
 
+        // Jika password/email salah
         return back()
             ->withErrors([
                 'email' => 'Email atau password yang Anda masukkan tidak sesuai.',
@@ -119,41 +155,41 @@ class AuthController extends Controller
         // VALIDASI
         $request->validate([
             // Step 1: akun + identitas utama
-            'name'              => 'required|string|max:150',
-            'email'             => 'required|email|unique:users,email',
-            'password'          => 'required|string|min:6|confirmed',
+            'name'             => 'required|string|max:150',
+            'email'            => 'required|email|unique:users,email',
+            'password'         => 'required|string|min:6|confirmed',
 
-            'nik'               => 'nullable|string|max:30',
-            'nip'               => 'nullable|string|max:50',
-            'nirp'              => 'nullable|string|max:50',
-            'tempat_lahir'      => 'nullable|string|max:100',
-            'tanggal_lahir'     => 'nullable|date',
-            'jenis_kelamin'     => 'nullable|string|max:20',
-            'agama'             => 'nullable|string|max:30',
+            'nik'              => 'nullable|string|max:30',
+            'nip'              => 'nullable|string|max:50',
+            'nirp'             => 'nullable|string|max:50',
+            'tempat_lahir'     => 'nullable|string|max:100',
+            'tanggal_lahir'    => 'nullable|date',
+            'jenis_kelamin'    => 'nullable|string|max:20',
+            'agama'            => 'nullable|string|max:30',
             'aliran_kepercayaan' => 'nullable|string|max:100',
             'status_perkawinan' => 'nullable|string|max:50',
-            'jabatan'           => 'nullable|string|max:100',
-            'pangkat'           => 'nullable|string|max:50',
-            'golongan'          => 'nullable|string|max:20',
-            'hobby'             => 'nullable|string|max:150',
+            'jabatan'          => 'nullable|string|max:100',
+            'pangkat'          => 'nullable|string|max:50',
+            'golongan'         => 'nullable|string|max:20',
+            'hobby'            => 'nullable|string|max:150',
 
             // Step 2: alamat + badan + foto
-            'no_hp'             => 'required|string|max:30',
-            'alamat_jalan'      => 'required|string|max:150',
-            'alamat_kelurahan'  => 'required|string|max:100',
-            'alamat_kecamatan'  => 'required|string|max:100',
-            'alamat_kabkota'    => 'required|string|max:100',
-            'alamat_provinsi'   => 'required|string|max:100',
+            'no_hp'            => 'required|string|max:30',
+            'alamat_jalan'     => 'required|string|max:150',
+            'alamat_kelurahan' => 'required|string|max:100',
+            'alamat_kecamatan' => 'required|string|max:100',
+            'alamat_kabkota'   => 'required|string|max:100',
+            'alamat_provinsi'  => 'required|string|max:100',
 
-            'golongan_darah'    => 'nullable|string|max:5',
-            'tinggi_badan'      => 'nullable|integer',
-            'berat_badan'       => 'nullable|integer',
-            'rambut'            => 'nullable|string|max:100',
-            'bentuk_muka'       => 'nullable|string|max:100',
-            'warna_kulit'       => 'nullable|string|max:100',
-            'ciri_khas'         => 'nullable|string|max:150',
-            'cacat_tubuh'       => 'nullable|string|max:150',
-            'foto_3x4'          => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'golongan_darah'   => 'nullable|string|max:5',
+            'tinggi_badan'     => 'nullable|integer',
+            'berat_badan'      => 'nullable|integer',
+            'rambut'           => 'nullable|string|max:100',
+            'bentuk_muka'      => 'nullable|string|max:100',
+            'warna_kulit'      => 'nullable|string|max:100',
+            'ciri_khas'        => 'nullable|string|max:150',
+            'cacat_tubuh'      => 'nullable|string|max:150',
+            'foto_3x4'         => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
 
             // Arrays Pendidikan
             'pendidikan_jenjang.*'     => 'nullable|string|max:50',
@@ -200,11 +236,13 @@ class AuthController extends Controller
 
         try {
             // 1. Buat user dengan role perawat
+            // Pastikan di database column status_akun defaultnya 'pending'
             $user = User::create([
                 'name'     => $request->name,
                 'email'    => $request->email,
                 'password' => Hash::make($request->password),
                 'role'     => 'perawat',
+                // 'status_akun' => 'pending' // ini otomatis jika default di migration sudah diset
             ]);
 
             // 2. Simpan foto 3x4
@@ -221,11 +259,6 @@ class AuthController extends Controller
             );
 
             // 4. Profile perawat
-            // PASTIKAN kolom berikut ada di tabel perawat_profiles (nullable):
-            // nik, nip, nirp, nama_lengkap, tempat_lahir, tanggal_lahir, jenis_kelamin, agama,
-            // aliran_kepercayaan, status_perkawinan, jabatan, pangkat, golongan, alamat, kota,
-            // no_hp, golongan_darah, tinggi_badan, berat_badan, rambut, bentuk_muka, warna_kulit,
-            // ciri_khas, cacat_tubuh, hobby, foto_3x4
             PerawatProfile::create([
                 'user_id'            => $user->id,
                 'nik'                => $request->nik,
@@ -452,14 +485,15 @@ class AuthController extends Controller
 
             DB::commit();
 
-            Auth::login($user);
+            // PENTING: Jangan Auth::login($user) di sini!
+            // Agar user harus login manual dan melewati pengecekan status di fungsi login().
 
             return redirect()
-                ->route('dashboard')
+                ->route('login') // Arahkan ke login, bukan dashboard
                 ->with('swal', [
                     'icon'  => 'success',
-                    'title' => 'Registrasi berhasil',
-                    'text'  => 'Selamat datang, ' . $user->name . '. DRH Anda telah tersimpan di DIKSERA.',
+                    'title' => 'Registrasi Berhasil',
+                    'text'  => 'Data Anda telah tersimpan. Mohon tunggu verifikasi Admin sebelum bisa masuk.',
                 ]);
         } catch (\Throwable $th) {
             DB::rollBack();

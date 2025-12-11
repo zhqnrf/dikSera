@@ -8,6 +8,7 @@ use App\Http\Controllers\AdminPerawatController;
 use App\Http\Controllers\AdminProfileController;
 use App\Http\Controllers\PerawatDrhController;
 use App\Http\Controllers\TelegramController;
+use App\Http\Controllers\ManajemenAkunController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,6 +50,11 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/telegram/generate', [AdminProfileController::class, 'generateCode'])->name('telegram.generate');
         Route::post('/telegram/unlink', [AdminProfileController::class, 'unlink'])->name('telegram.unlink');
         Route::post('/telegram/test', [AdminProfileController::class, 'testMessage'])->name('telegram.test');
+
+        // === MANAJEMEN AKUN ===
+    Route::get('/manajemen-akun', [ManajemenAkunController::class, 'index'])->name('manajemen_akun.index');
+    Route::put('/manajemen-akun/{id}/update', [ManajemenAkunController::class, 'updateStatus'])->name('manajemen_akun.update');
+    Route::delete('/manajemen-akun/{id}', [ManajemenAkunController::class, 'destroy'])->name('manajemen_akun.destroy');
     });
 
     // === GROUP PERAWAT ===
