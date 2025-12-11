@@ -17,7 +17,7 @@ class TelegramPolling extends Command
         $botToken = env('TELEGRAM_BOT_TOKEN');
         $offset = 0;
 
-        $this->info("🤖 Bot sedang berjalan... Menunggu pesan masuk.");
+        $this->info("🤖 Bot Sistem Kepegawaian RSUD SLG berjalan...");
 
         while (true) {
             try {
@@ -34,11 +34,32 @@ class TelegramPolling extends Command
 
                         if (isset($update['message']['text'])) {
                             $chatId = $update['message']['chat']['id'];
-                            $text = strtoupper(trim($update['message']['text']));
+                            $text = strtoupper(trim($update['message']['text'])); // Convert ke Uppercase biar aman
+                            $firstName = $update['message']['from']['first_name'] ?? 'User';
 
-                            $this->comment("📩 Pesan diterima: {$text} dari ID: {$chatId}");
+                            $this->comment("📩 Pesan: {$text} | ID: {$chatId}");
 
-                            // 1. Cek Kode Verifikasi (Untuk Login/Link Akun)
+                            // ----------------------------------------------------
+                            // 1. LOGIKA UTAMA: Handle Command /START
+                            // ----------------------------------------------------
+                            if ($text === '/START') {
+                                $welcomeMsg = "👋 <b>Selamat Datang di Bot Notifikasi Kepegawaian</b>\n";
+                                $welcomeMsg .= "<b>RSUD Simpang Lima Gumul Kediri</b>\n\n";
+                                $welcomeMsg .= "Silahkan kirimkan <b>Kode Verifikasi</b> yang Anda dapatkan dari aplikasi web.\n";
+                                $welcomeMsg .= "⚠️ <i>Pastikan kode tersebut belum kadaluarsa.</i>";
+
+                                Http::post("https://api.telegram.org/bot{$botToken}/sendMessage", [
+                                    'chat_id' => $chatId,
+                                    'text' => $welcomeMsg,
+                                    'parse_mode' => 'HTML'
+                                ]);
+                                
+                                continue; // Lanjut ke pesan berikutnya, jangan cek DB
+                            }
+
+                            // ----------------------------------------------------
+                            // 2. LOGIKA UTAMA: Cek Kode Verifikasi
+                            // ----------------------------------------------------
                             $user = User::where('telegram_verification_code', $text)
                                 ->where('telegram_verification_expires_at', '>', Carbon::now())
                                 ->first();
@@ -51,26 +72,36 @@ class TelegramPolling extends Command
                                 $user->save();
 
                                 // Pesan Berbeda tergantung Role
-                                $msgRole = $user->role === 'admin' ? 'Admin' : 'Perawat';
+                                $msgRole = $user->role === 'admin' ? 'Administrator' : 'Staf Perawat';
                                 
+                                $successMsg = "✅ <b>AKUN TERHUBUNG!</b>\n\n";
+                                $successMsg .= "Yth. <b>{$user->name}</b> ({$msgRole}),\n";
+                                $successMsg .= "Akun Telegram Anda telah berhasil ditautkan dengan sistem DIKSERA RSUD SLG.\n\n";
+                                $successMsg .= "Anda akan menerima notifikasi resmi terkait masa berlaku dokumen melalui chat ini.";
+
                                 Http::post("https://api.telegram.org/bot{$botToken}/sendMessage", [
                                     'chat_id' => $chatId,
-                                    'text' => "✅ *Berhasil Terhubung!*\n\nHalo {$user->name} ({$msgRole}), akun Anda telah berhasil ditautkan. Anda sekarang akan menerima notifikasi sistem di sini.",
-                                    'parse_mode' => 'Markdown'
+                                    'text' => $successMsg,
+                                    'parse_mode' => 'HTML'
                                 ]);
 
-                                $this->info("✓ User {$user->name} ({$user->role}) connected!");
+                                $this->info("✓ User {$user->name} connected!");
+                            } else {
+                                // Balas jika kode salah 
+                                Http::post("https://api.telegram.org/bot{$botToken}/sendMessage", [
+                                    'chat_id' => $chatId,
+                                    'text' => "❌ Kode tidak valid atau sudah kadaluarsa. Silahkan generate ulang di website.",
+                                ]);
                             }
                         }
                     }
                 }
             } catch (\Exception $e) {
                 $this->error("Connection Error: " . $e->getMessage());
-                sleep(5); // Tunggu 5 detik jika koneksi putus
+                sleep(5);
             }
 
-            // Hindari CPU spike
-            usleep(500000); // 0.5 detik
+            usleep(500000); 
         }
     }
 }

@@ -4,7 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use App\Models\User; // Import Model User
+use App\Models\User;
 
 class TelegramService
 {
@@ -15,9 +15,6 @@ class TelegramService
         $this->botToken = env('TELEGRAM_BOT_TOKEN');
     }
 
-    /**
-     * Helper internal untuk kirim request ke Telegram
-     */
     private function executeSendMessage($chatId, $message)
     {
         if (empty($this->botToken) || empty($chatId)) {
@@ -28,7 +25,7 @@ class TelegramService
             $response = Http::post("https://api.telegram.org/bot{$this->botToken}/sendMessage", [
                 'chat_id' => $chatId,
                 'text' => $message,
-                'parse_mode' => 'HTML'
+                'parse_mode' => 'HTML' 
             ]);
 
             return $response->successful();
@@ -39,35 +36,40 @@ class TelegramService
     }
 
     /**
-     * 1. Notifikasi untuk ADMIN (Broadcast ke semua Admin)
-     * Dipanggil oleh: notifySertifikatExpiring di Command
+     * Notifikasi untuk ADMIN 
      */
     public function notifySertifikatExpiring($nurseUser, $sertifikat, $tipeSertifikat, $daysLeft)
     {
-        // Cari semua admin yang sudah connect telegram
         $admins = User::where('role', 'admin')
             ->whereNotNull('telegram_chat_id')
             ->get();
 
-        if ($admins->isEmpty()) {
-            return false; // Tidak ada admin yang bisa dikirim
-        }
+        if ($admins->isEmpty()) return false;
 
-        // Format Pesan Khusus Admin (Lebih Detail dengan Nama Perawat)
         $status = $this->getStatusText($daysLeft);
-        $tglExp = date('d/m/Y', strtotime($sertifikat->tgl_expired ?? $sertifikat->tgl_berakhir ?? now()));
+        $tglExp = date('d F Y', strtotime($sertifikat->tgl_expired ?? $sertifikat->tgl_berakhir ?? now()));
 
-        $message = "<b>🚨 LAPORAN DOKUMEN PERAWAT</b>\n\n";
-        $message .= "<b>Perawat:</b> {$nurseUser->name}\n";
-        $message .= "<b>NIK:</b> " . ($nurseUser->profile->nik ?? '-') . "\n\n";
+        // HEADER FORMAL
+        $message = "<b>🏛️ LAPORAN STATUS DOKUMEN PEGAWAI</b>\n";
+        $message .= "<b>RSUD SIMPANG LIMA GUMUL KEDIRI</b>\n";
+        $message .= "---------------------------------------\n\n";
 
-        $message .= "<b>Jenis:</b> {$tipeSertifikat}\n";
-        $message .= "<b>Nomor:</b> {$sertifikat->nomor}\n";
-        $message .= "<b>Expired:</b> {$tglExp}\n";
-        $message .= "<b>Status:</b> {$status}\n\n";
-        $message .= "<i>Mohon konfirmasi ke perawat terkait.</i>";
+        $message .= "Yth. Administrator,\n";
+        $message .= "Berikut dilaporkan data dokumen perawat yang memerlukan perhatian:\n\n";
 
-        // Loop kirim ke semua admin
+        $message .= "👤 <b>IDENTITAS PERAWAT</b>\n";
+        $message .= "Nama : {$nurseUser->name}\n";
+        $message .= "NIK  : " . ($nurseUser->profile->nik ?? '-') . "\n";
+        $message .= "Nomor Telepon : " . ($nurseUser->profile->no_hp ?? '-') . "\n\n";
+
+        $message .= "📄 <b>DETAIL DOKUMEN</b>\n";
+        $message .= "Jenis : {$tipeSertifikat}\n";
+        $message .= "Nomor : {$sertifikat->nomor}\n";
+        $message .= "Berlaku s.d : <b>{$tglExp}</b>\n";
+        $message .= "Status : {$status}\n\n";
+
+        $message .= "<i>Mohon untuk menindaklanjuti informasi ini kepada pegawai yang bersangkutan. Terima kasih.</i>";
+
         $successCount = 0;
         foreach ($admins as $admin) {
             if ($this->executeSendMessage($admin->telegram_chat_id, $message)) {
@@ -79,45 +81,49 @@ class TelegramService
     }
 
     /**
-     * 2. Notifikasi untuk USER/PERAWAT (Personal)
-     * Dipanggil oleh: notifySertifikatExpiringToUser di Command
+     * Notifikasi untuk USER/PERAWAT 
      */
     public function notifySertifikatExpiringToUser($chatId, $sertifikat, $tipeSertifikat, $daysLeft)
     {
-        // Format Pesan Personal
         $status = $this->getStatusText($daysLeft);
-        $tglExp = date('d/m/Y', strtotime($sertifikat->tgl_expired ?? $sertifikat->tgl_berakhir ?? now()));
+        $tglExp = date('d F Y', strtotime($sertifikat->tgl_expired ?? $sertifikat->tgl_berakhir ?? now()));
 
-        $message = "<b>🔔 PENGINGAT MASA BERLAKU</b>\n\n";
-        $message .= "Halo, dokumen <b>{$tipeSertifikat}</b> Anda membutuhkan perhatian.\n\n";
-        $message .= "<b>Nomor:</b> {$sertifikat->nomor}\n";
-        $message .= "<b>Expired:</b> {$tglExp}\n";
-        $message .= "<b>Status:</b> {$status}\n\n";
+        // HEADER FORMAL
+        $message = "<b>🏛️ SISTEM INFORMASI KEPEGAWAIAN</b>\n";
+        $message .= "<b>RSUD SIMPANG LIMA GUMUL KEDIRI</b>\n";
+        $message .= "---------------------------------------\n\n";
+
+        $message .= "<b>PEMBERITAHUAN MASA BERLAKU DOKUMEN</b>\n\n";
+
+        $message .= "Yth. Perawat,\n";
+        $message .= "Diinformasikan bahwa dokumen kepegawaian Anda dengan rincian:\n\n";
+
+        $message .= "🔹 <b>Jenis Dokumen:</b> {$tipeSertifikat}\n";
+        $message .= "🔹 <b>Nomor:</b> {$sertifikat->nomor}\n";
+        $message .= "🔹 <b>Tanggal Kadaluarsa:</b> {$tglExp}\n";
+        $message .= "🔹 <b>Status Saat Ini:</b> {$status}\n\n";
 
         if ($daysLeft <= 0) {
-            $message .= "⛔ <b>Dokumen sudah tidak aktif.</b> Segera urus perpanjangan.";
+            $message .= "⛔ <b>TINDAKAN DIPERLUKAN:</b>\n";
+            $message .= "Dokumen Anda telah habis masa berlakunya. Mohon segera lakukan pembaruan data ke bagian administrasi.\n";
         } else {
-            $message .= "📝 Segera lakukan perpanjangan sebelum tanggal tersebut.";
+            $message .= "📝 <b>TINDAKAN DIPERLUKAN:</b>\n";
+            $message .= "Mohon mempersiapkan proses perpanjangan sebelum tanggal yang ditentukan agar tidak mengganggu proses administrasi.\n";
         }
+
+        $message .= "\n<i>Pesan ini dikirim otomatis oleh sistem. Jangan membalas pesan ini.</i>";
 
         return $this->executeSendMessage($chatId, $message);
     }
 
-    /**
-     * Helper Status Text
-     */
     private function getStatusText($daysLeft)
     {
-        if ($daysLeft < 0) return "🔴 SUDAH KADALUARSA (" . abs($daysLeft) . " hari lalu)";
-        if ($daysLeft == 0) return "🔴 HARI INI KADALUARSA";
-        if ($daysLeft <= 3) return "🔴 KRITIS (Sisa {$daysLeft} hari)";
-        if ($daysLeft <= 30) return "🟠 AKAN HABIS (Sisa {$daysLeft} hari)";
-        return "⚠️ REMINDER (Sisa {$daysLeft} hari)";
+        if ($daysLeft < 0) return "🔴 <b>SUDAH KADALUARSA</b>";
+        if ($daysLeft == 0) return "🔴 <b>HABIS HARI INI</b>";
+        if ($daysLeft <= 30) return "🟠 <b>AKAN HABIS</b> (Sisa {$daysLeft} hari)";
+        return "⚠️ <b>PERLU PERHATIAN</b> (Sisa {$daysLeft} hari)";
     }
 
-    /**
-     * Fungsi Verifikasi 
-     */
     public function sendMessage($message)
     {
         return false;
