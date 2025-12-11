@@ -563,6 +563,11 @@
                                 <i class="bi bi-award-fill"></i> Pelatihan
                             </a>
 
+                             <a href="{{ route('perawat.pendidikan.index') }}"
+                                class="nav-linkx {{ request()->routeIs('perawat.pendidikan.*') ? 'active' : '' }}">
+                                <i class="bi bi-book-fill"></i> Pendidikan
+                            </a>
+
                             <a href="{{ route('perawat.pekerjaan.index') }}"
                                 class="nav-linkx {{ request()->routeIs('perawat.pekerjaan.*') ? 'active' : '' }}">
                                 <i class="bi bi-briefcase-fill"></i> Pekerjaan

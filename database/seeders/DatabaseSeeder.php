@@ -10,7 +10,9 @@ class DatabaseSeeder extends Seeder
     {
         // Panggil seeder user
         $this->call([
-            UserSeeder::class,
+           UserSeeder::class,
+           PerawatDokumenSeeder::class,
+           PerawatDataDiriSeeder::class,
         ]);
     }
 }
