@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>{{ $title ?? 'DIKSERA – Digitalisasi Kompetensi Perawat' }}</title>
+    <title>{{ $title ?? 'DIKSERA - Digitalisasi Kompetensi, Sertifikasi & Evaluasi Perawat' }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="icon" type="image/png" href="{{ asset('icon.png') }}">
@@ -152,7 +152,7 @@
 
     {{-- FOOTER --}}
     <footer class="landing-footer">
-        &copy; {{ date('Y') }} DIKSERA · Komite Keperawatan
+        &copy; {{ date('Y') }} DIKSERA · Komite Keperawatan <br> RSUD Simpang Lima Gumul
     </footer>
 </div>
 

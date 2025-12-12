@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>{{ $title ?? 'DIKSERA' }}</title>
+    <title>{{ $title ?? 'DIKSERA - Digitalisasi Kompetensi, Sertifikasi & Evaluasi Perawat' }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="icon" type="image/png" href="{{ asset('icon.png') }}">
@@ -530,7 +530,7 @@
                         </div>
                         <div class="brand-info">
                             <div class="brand-name">DIKSERA</div>
-                            <div class="brand-caption">Digitalisasi Kompetensi</div>
+                            <div class="brand-caption">Digitalisasi Kompetensi, <br> Sertifikasi & Evaluasi Perawat</div>
                         </div>
                     </div>
 
@@ -676,7 +676,7 @@
 
                 <div class="sidebar-footer">
                     &copy; {{ date('Y') }} DIKSERA<br>
-                    <span>Komite Keperawatan</span>
+                    <span>Komite Keperawatan <br>RSUD Simpang Lima Gumul</span>
                 </div>
             </aside>
         </div>
