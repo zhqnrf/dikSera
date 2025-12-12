@@ -57,4 +57,34 @@ class User extends Authenticatable
     {
         return $this->hasMany(PerawatDataTambahan::class);
     }
+
+    public function getDokumenWarningAttribute()
+    {
+        $warnings = [];
+        $threshold = now()->addMonth();
+        // 1. Cek STR
+        $str = $this->strs()->latest()->first();
+        if ($str && $str->tgl_expired <= $threshold) {
+            $warnings[] = 'STR';
+        }
+        // 2. Cek SIP
+        $sip = $this->sips()->latest()->first();
+        if ($sip && $sip->tgl_expired <= $threshold) {
+            $warnings[] = 'SIP';
+        }
+        // 3. Cek Lisensi
+        $lisensi = $this->lisensis()->latest()->first();
+        if ($lisensi && $lisensi->tgl_expired <= $threshold) {
+            $warnings[] = 'Lisensi';
+        }
+        // 4. Cek Dokumen Tambahan
+        $dokumenLain = $this->dataTambahans()
+            ->where('tgl_expired', '<=', $threshold)
+            ->exists();
+        if ($dokumenLain) {
+            $warnings[] = 'Dok. Tambahan';
+        }
+
+        return $warnings;
+    }
 }

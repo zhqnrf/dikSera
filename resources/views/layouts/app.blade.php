@@ -530,7 +530,8 @@
                         </div>
                         <div class="brand-info">
                             <div class="brand-name">DIKSERA</div>
-                            <div class="brand-caption">Digitalisasi Kompetensi, <br> Sertifikasi & Evaluasi Perawat</div>
+                            <div class="brand-caption">Digitalisasi Kompetensi, <br> Sertifikasi & Evaluasi Perawat
+                            </div>
                         </div>
                     </div>
 
@@ -651,19 +652,28 @@
                             <span class="link-text">Dashboard</span>
                         </a>
 
-
-
                         <a href="{{ route('admin.manajemen_akun.index') }}"
-                             class="nav-linkx {{ request()->routeIs('admin.manajemen_akun*') ? 'active' : '' }}">
+                            class="nav-linkx {{ request()->routeIs('admin.manajemen_akun*') ? 'active' : '' }}">
                             <i class="bi bi-people"></i> {{-- Icon baru --}}
                             <span class="link-text">Manajemen Akun</span>
                         </a>
-
 
                         <a href="{{ route('admin.perawat.index') }}"
                             class="nav-linkx {{ request()->routeIs('admin.perawat.*') ? 'active' : '' }}">
                             <i class="bi bi-people"></i> {{-- Icon baru --}}
                             <span class="link-text">Data Perawat</span>
+                        </a>
+
+                        <a href="{{ route('admin.form.index') }}"
+                            class="nav-linkx {{ request()->routeIs('admin.perawat.*') ? 'active' : '' }}">
+                            <i class="bi bi-file-earmark-text"></i>
+                            <span class="link-text">Google Form</span>
+                        </a>
+
+                        <a href="#"
+                            class="nav-linkx {{ request()->routeIs('admin.perawat.*') ? 'active' : '' }}">
+                            <i class="bi bi-file-earmark-text"></i>
+                            <span class="link-text">Bank Soal</span>
                         </a>
 
                         <div class="nav-section-title">Lainnya</div>
