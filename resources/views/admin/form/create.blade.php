@@ -83,28 +83,37 @@
             border-color: var(--blue-main);
         }
 
-        /* Participant List Item */
+        /* Participant List Item Styling (UPDATED) */
         .participant-item {
             border: 1px solid var(--border-soft);
             border-radius: 8px;
-            padding: 10px;
+            padding: 12px;
             transition: all 0.2s;
             background: #fff;
+            cursor: pointer;
+            height: 100%;
+            position: relative;
         }
 
         .participant-item:hover {
-            background: #fcfcfc;
+            border-color: var(--blue-main);
+            background: #f8fbff;
         }
 
+        /* Style khusus untuk yang Urgent (Expired) */
         .participant-item.urgent {
-            border-color: #fecaca;
-            /* Red-200 */
+            border-color: #fca5a5;
+            /* Merah soft border */
             background: #fef2f2;
-            /* Red-50 */
+            /* Merah soft bg */
+        }
+
+        .participant-item.urgent:hover {
+            border-color: #dc2626;
         }
 
         .custom-scroll {
-            max-height: 320px;
+            max-height: 350px;
             overflow-y: auto;
             padding-right: 5px;
         }
@@ -121,6 +130,16 @@
         .custom-scroll::-webkit-scrollbar-thumb {
             background: #cbd5e1;
             border-radius: 10px;
+        }
+
+        /* Badge Dokumen Expired */
+        .badge-doc {
+            font-size: 10px;
+            padding: 3px 6px;
+            border-radius: 4px;
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
         }
     </style>
 @endpush
@@ -220,56 +239,83 @@
                         </div>
                     </div>
 
-                    {{-- Daftar Peserta --}}
-                    <div id="list-peserta-container" class="card p-3 bg-light border-0 mb-4" style="display: none;">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <label class="form-label text-muted small mb-0">Silakan centang perawat yang diizinkan:</label>
-                            <small class="text-danger fw-bold" style="font-size: 0.75rem;">
-                                <i class="bi bi-exclamation-circle-fill"></i> Dokumen mau/sudah expired
-                            </small>
+                    {{-- 4. Daftar Peserta (Hidden by Default) --}}
+                    <div id="list-peserta-container" class="mb-4" style="display: none;">
+                        <div class="d-flex justify-content-between align-items-end mb-2">
+                            <label class="form-label mb-0">Pilih Perawat</label>
+                            {{-- Legenda --}}
+                            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25"
+                                style="font-size: 11px;">
+                                <i class="bi bi-exclamation-triangle-fill me-1"></i> Perhatian: Background Merah = Dokumen
+                                Expired
+                            </span>
                         </div>
 
-                        <div class="row" style="max-height: 300px; overflow-y: auto;">
-                            @foreach ($users as $user)
-                                @php
-                                    // Panggil accessor yang kita buat di Model tadi
-                                    $warnings = $user->dokumen_warning;
-                                    $isUrgent = count($warnings) > 0;
+                        {{-- Wrapper List --}}
+                        <div class="bg-light p-3 rounded-3 border">
+                            <div class="custom-scroll">
+                                <div class="row g-2">
+                                    @foreach ($users as $user)
+                                        @php
+                                            // Ambil warning dari Accessor di Model
+                                            $warnings = $user->dokumen_warning ?? [];
+                                            $isUrgent = count($warnings) > 0;
+                                        @endphp
 
-                                    $bgClass = $isUrgent ? 'bg-warning-subtle border-warning' : '';
-                                    $textClass = $isUrgent ? 'text-dark fw-bold' : 'text-secondary';
-                                @endphp
+                                        <div class="col-md-6">
+                                            {{-- Item Card --}}
+                                            <label
+                                                class="participant-item d-flex align-items-start gap-3 w-100 {{ $isUrgent ? 'urgent' : '' }}"
+                                                for="user_{{ $user->id }}">
 
-                                <div class="col-md-6 mb-2">
-                                    <div class="form-check p-2 rounded {{ $bgClass }}">
-                                        <input class="form-check-input" type="checkbox" name="participants[]"
-                                            value="{{ $user->id }}" id="user_{{ $user->id }}">
-
-                                        <label class="form-check-label w-100 {{ $textClass }}"
-                                            for="user_{{ $user->id }}">
-                                            {{ $user->name }}
-
-                                            {{-- Loop untuk menampilkan Badge dokumen apa saja yang expired --}}
-                                            @if ($isUrgent)
-                                                <div class="mt-1">
-                                                    @foreach ($warnings as $docName)
-                                                        <span class="badge bg-danger"
-                                                            style="font-size: 0.6rem;">{{ $docName }} Exp!</span>
-                                                    @endforeach
+                                                {{-- Checkbox --}}
+                                                <div class="pt-1">
+                                                    <input class="form-check-input" type="checkbox" name="participants[]"
+                                                        value="{{ $user->id }}" id="user_{{ $user->id }}"
+                                                        style="cursor: pointer; transform: scale(1.1);">
                                                 </div>
-                                            @endif
 
-                                            <div class="text-muted fw-normal mt-1" style="font-size: 0.75rem;">
-                                                {{ $user->email ?? $user->nip }}
-                                            </div>
-                                        </label>
-                                    </div>
+                                                {{-- Konten Text --}}
+                                                <div class="flex-grow-1">
+                                                    <div class="d-flex justify-content-between align-items-start">
+                                                        <span class="fw-bold {{ $isUrgent ? 'text-danger' : 'text-dark' }}"
+                                                            style="font-size: 13px;">
+                                                            {{ $user->name }}
+                                                        </span>
+                                                        @if ($isUrgent)
+                                                            <i class="bi bi-exclamation-circle-fill text-danger"
+                                                                style="font-size: 14px;"></i>
+                                                        @endif
+                                                    </div>
+
+                                                    <div class="text-muted mb-1" style="font-size: 11px;">
+                                                        {{ $user->email ?? ($user->nip ?? 'No ID') }}
+                                                    </div>
+
+                                                    {{-- Tampilkan Badge Dokumen Expired --}}
+                                                    @if ($isUrgent)
+                                                        <div class="d-flex flex-wrap gap-1 mt-1">
+                                                            @foreach ($warnings as $docName)
+                                                                <span class="badge-doc">
+                                                                    {{ $docName }}
+                                                                </span>
+                                                            @endforeach
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            </label>
+                                        </div>
+                                    @endforeach
                                 </div>
-                            @endforeach
+
+                                @if ($users->isEmpty())
+                                    <div class="text-center text-muted py-5">
+                                        <i class="bi bi-people display-6 opacity-25"></i>
+                                        <p class="small mt-2">Tidak ada data perawat ditemukan.</p>
+                                    </div>
+                                @endif
+                            </div>
                         </div>
-                        @if ($users->isEmpty())
-                            <div class="text-danger small">Belum ada data perawat di database.</div>
-                        @endif
                     </div>
 
                     {{-- Action Buttons --}}
@@ -290,8 +336,8 @@
         function togglePeserta(show) {
             const container = document.getElementById('list-peserta-container');
             if (show) {
-                // Efek fade in simple
                 container.style.display = 'block';
+                // Animasi simple
                 container.style.opacity = 0;
                 setTimeout(() => {
                     container.style.opacity = 1;
@@ -302,7 +348,7 @@
             }
         }
 
-        // Jalankan saat load (untuk handle old input jika validasi gagal)
+        // Jalankan saat load (handle old input)
         document.addEventListener("DOMContentLoaded", function() {
             const selected = document.querySelector('input[name="target_peserta"]:checked');
             if (selected && selected.value === 'khusus') {
