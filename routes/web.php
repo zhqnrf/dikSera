@@ -10,7 +10,7 @@ use App\Http\Controllers\FormController;
 use App\Http\Controllers\PerawatDrhController;
 use App\Http\Controllers\TelegramController;
 use App\Http\Controllers\ManajemenAkunController;
-
+use App\Http\Controllers\PenanggungJawabUjianController;
 /*
 |--------------------------------------------------------------------------
 | PUBLIC ROUTES (Bisa diakses tanpa login)
@@ -65,6 +65,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/forms/create', [FormController::class, 'create'])->name('form.create');
         Route::post('/forms', [FormController::class, 'store'])->name('form.store');
         Route::patch('form/{form}/update-status', [FormController::class, 'updateStatus'])->name('form.update-status');
+
+        // === PENANGGUNG JAWAB UJIAN ===
+        Route::resource('penanggung-jawab', PenanggungJawabUjianController::class);
     });
 
     // === GROUP PERAWAT ===

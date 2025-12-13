@@ -664,6 +664,12 @@
                             <span class="link-text">Data Perawat</span>
                         </a>
 
+                        <a href="{{ route('admin.penanggung-jawab.index') }}"
+                            class="nav-linkx {{ request()->routeIs('admin.penanggung-jawab*') ? 'active' : '' }}">
+                            <i class="bi bi-person-badge"></i> {{-- Icon Jabatan/Badge --}}
+                            <span class="link-text">Penanggung Jawab</span>
+                        </a>
+
                         <a href="{{ route('admin.form.index') }}"
                             class="nav-linkx {{ request()->routeIs('admin.perawat.*') ? 'active' : '' }}">
                             <i class="bi bi-file-earmark-text"></i>
