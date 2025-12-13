@@ -1,5 +1,48 @@
 @extends('layouts.auth', ['title' => 'Login DIKSERA'])
 
+@section('auth-left')
+    <div class="auth-left-inner">
+        <div class="brand-pill">
+            <span class="brand-dot"></span>
+            <span>Platform internal RSUD SLG</span>
+        </div>
+
+        <div class="auth-left-title">DIKSERA</div>
+        <div class="auth-left-subtitle">
+            Digitalisasi kompetensi, sertifikasi, dan evaluasi perawat dalam satu portal terpadu.
+        </div>
+
+        <div class="auth-left-highlight">
+            <i class="bi bi-shield-check">✓</i>
+            <span>Single sign-on untuk admin, perawat, dan pewawancara</span>
+        </div>
+
+        <ul class="auth-left-list">
+            <li>
+                <span class="bullet"></span>
+                <span>Monitoring progres kompetensi dan sertifikasi perawat secara real-time.</span>
+            </li>
+            <li>
+                <span class="bullet"></span>
+                <span>Integrasi data evaluasi dan rekam jejak pengembangan SDM keperawatan.</span>
+            </li>
+            <li>
+                <span class="bullet"></span>
+                <span>Dashboard ringkas untuk kebutuhan Diklat, Komite Keperawatan, dan Manajemen.</span>
+            </li>
+        </ul>
+
+        <div class="auth-left-meta">
+            <div class="auth-left-badge">
+                Versi beta · RSUD SLG Kediri
+            </div>
+            <div class="auth-left-hint">
+                Butuh bantuan? Hubungi tim Diklat.
+            </div>
+        </div>
+    </div>
+@endsection
+
 @section('content')
 <div class="text-center mb-3">
     <div class="logo-big mx-auto">

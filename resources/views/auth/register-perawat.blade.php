@@ -1,5 +1,7 @@
-@extends('layouts.auth', ['title' => 'Registrasi Perawat – DIKSERA'])
-
+@extends('layouts.auth', [
+    'title' => 'Registrasi Perawat – DIKSERA',
+    'fullWidth' => true
+])
 @section('content')
 <div class="text-center mb-3">
     <div class="logo-big mx-auto">
@@ -34,11 +36,23 @@
 
     {{-- STEP INDICATOR --}}
     <div class="mb-3">
-        <div class="step-dots-wrapper d-flex justify-content-between flex-wrap" style="font-size:11px;gap:6px;">
-            <div class="step-dot step-dot-active" data-step="1">1. Akun &amp; Identitas</div>
-            <div class="step-dot" data-step="2">2. Alamat &amp; Badan</div>
-            <div class="step-dot" data-step="3">3. Pendidikan &amp; Pekerjaan</div>
-            <div class="step-dot" data-step="4">4. Keluarga &amp; Organisasi</div>
+        <div class="step-dots-wrapper d-flex justify-content-between flex-wrap">
+            <div class="step-dot step-dot-active" data-step="1">
+                <span class="step-dot-index">1</span>
+                <span class="step-dot-label">Akun &amp; Identitas</span>
+            </div>
+            <div class="step-dot" data-step="2">
+                <span class="step-dot-index">2</span>
+                <span class="step-dot-label">Alamat &amp; Badan</span>
+            </div>
+            <div class="step-dot" data-step="3">
+                <span class="step-dot-index">3</span>
+                <span class="step-dot-label">Pendidikan &amp; Kerja</span>
+            </div>
+            <div class="step-dot" data-step="4">
+                <span class="step-dot-index">4</span>
+                <span class="step-dot-label">Keluarga &amp; Organisasi</span>
+            </div>
         </div>
     </div>
 
@@ -697,17 +711,46 @@
 
 @push('styles')
 <style>
+    .step-dots-wrapper{
+        font-size:11px;
+        gap:6px;
+        background: linear-gradient(135deg,#eef2ff,#e0ecff);
+        border-radius: 999px;
+        padding: 6px 6px;
+        border: 1px solid rgba(148,163,184,0.6);
+        box-shadow: 0 8px 18px rgba(15,23,42,0.06);
+    }
     .step-dot {
         flex: 1 1 0;
-        text-align: center;
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
         padding: 6px 4px;
         border-radius: 999px;
-        background: #e5edff;
+        background: rgba(255,255,255,0.85);
         color: #4b5563;
         font-weight: 500;
-        border: 1px solid #d4ddff;
-        font-size: 11px;
-        min-width: 0;
+        border: 1px solid rgba(209,213,219,0.9);
+        transition: background 0.2s ease, box-shadow 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        white-space: nowrap;
+    }
+    .step-dot-index{
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        width:18px;
+        height:18px;
+        border-radius:999px;
+        background:#e5edff;
+        font-size:11px;
+        font-weight:600;
+        color:#1d4ed8;
+    }
+    .step-dot-label{
+        overflow:hidden;
+        text-overflow:ellipsis;
     }
     .step-dot-active {
         background: linear-gradient(135deg,#2563eb,#60a5fa);
@@ -715,41 +758,104 @@
         box-shadow: 0 8px 20px rgba(37,99,235,0.45);
         border-color: transparent;
     }
-    .step-pane {
-        border-radius: 18px;
-        background: rgba(255,255,255,0.97);
-        border: 1px solid #e5e7eb;
-        padding: 14px 16px;
-        box-shadow: 0 10px 24px rgba(15,23,42,0.07);
-        margin-bottom: 2px;
+    .step-dot-active .step-dot-index{
+        background:rgba(248,250,252,0.95);
+        color:#1d4ed8;
     }
+
+    .step-pane {
+        position: relative;
+        border-radius: 18px;
+        background: linear-gradient(145deg,#ffffff,#f3f6ff);
+        border: 1px solid rgba(209,213,219,0.9);
+        padding: 16px 18px;
+        box-shadow: 0 10px 24px rgba(15,23,42,0.07);
+        margin-bottom: 4px;
+        overflow: hidden;
+    }
+    .step-pane::before{
+        content:"";
+        position:absolute;
+        top:0;
+        left:0;
+        right:0;
+        height:4px;
+        background: linear-gradient(90deg,rgba(37,99,235,0.15),transparent);
+    }
+
     .step-title {
+        position: relative;
         font-size: 13px;
         font-weight: 600;
         color: #1d4ed8;
-        margin-bottom: 8px;
+        margin-bottom: 10px;
+        padding-left: 10px;
     }
+    .step-title::before{
+        content:"";
+        position:absolute;
+        left:0;
+        top:50%;
+        transform:translateY(-50%);
+        width:4px;
+        height:16px;
+        border-radius:999px;
+        background: linear-gradient(180deg,#2563eb,#38bdf8);
+    }
+
     .sub-section-head {
         font-size: 12px;
         font-weight: 600;
         color: #111827;
         margin-bottom: 4px;
+        padding-left: 6px;
+        border-left: 3px solid #2563eb;
     }
 
-    /* RESPONSIVE STEP DOTS */
     @media (max-width: 576px){
         .step-dots-wrapper{
             gap:4px !important;
+            padding:4px 4px;
+            border-radius:14px;
         }
         .step-dot{
             flex: 1 1 calc(50% - 4px);
             font-size:10px;
             padding:5px 3px;
         }
+        .step-dot-label{
+            max-width:80px;
+        }
         .step-pane{
             padding:10px 10px;
         }
     }
+    .auth-card .form-control-sm,
+    .auth-card .form-select-sm {
+        min-height: 42px;              /* tinggi lebih nyaman */
+        padding: 0.4rem 0.75rem;       /* jarak dalam lebih lega */
+        font-size: 13px;               /* teks sedikit lebih besar */
+        border-radius: 10px;           /* biar tetap soft */
+    }
+
+    .auth-card .form-label {
+        font-size: 12px;
+    }
+
+    /* jarak antar field */
+    .auth-card .mb-2 {
+        margin-bottom: 0.6rem !important;
+    }
+
+    /* di mobile, jangan terlalu sempit */
+    @media (max-width: 576px){
+        .auth-card .form-control-sm,
+        .auth-card .form-select-sm {
+            min-height: 44px;
+            font-size: 13px;
+        }
+    }
+
 </style>
 @endpush
 
@@ -825,6 +931,22 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+
+    // klik step dot buat loncat (optional, tapi enak)
+    stepDots.forEach(dot => {
+        dot.addEventListener('click', function () {
+            const targetStep = parseInt(this.dataset.step);
+            if (!targetStep) return;
+
+            // jangan biarkan lompat kalau step current masih ada required kosong
+            if (targetStep > currentStep && hasEmptyRequired(currentStep)) {
+                return;
+            }
+
+            currentStep = targetStep;
+            renderSteps();
+        });
+    });
 
     // Show/hide password
     document.querySelectorAll('.toggle-password-btn').forEach(btn => {
@@ -903,7 +1025,7 @@ document.addEventListener('DOMContentLoaded', function () {
         initFileInputs(clone);
     }
 
-    // ADD buttons – pakai pengecekan null dulu
+    // ADD buttons
     const addPendidikanBtn = document.getElementById('add-pendidikan');
     if (addPendidikanBtn) {
         addPendidikanBtn.addEventListener('click', function () {

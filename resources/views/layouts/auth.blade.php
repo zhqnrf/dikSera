@@ -10,9 +10,11 @@
     {{-- Fonts & CSS --}}
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    {{-- Bootstrap Icons (untuk bi bi-shield-check) --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
     <style>
-        :root {
+        :root{
             --blue-main: #2563eb;
             --blue-deep: #1d4ed8;
             --blue-soft: #e0ecff;
@@ -25,9 +27,7 @@
             --transition-slow: 0.35s ease;
         }
 
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         html, body {
             margin: 0;
@@ -120,6 +120,7 @@
 
         /* ================================
            PANEL KIRI (INFO DIKSERA)
+           (Hanya muncul bila @section('auth-left') ADA dan fullWidth tidak diset)
            ================================ */
         .auth-left {
             position: relative;
@@ -132,7 +133,6 @@
             overflow: hidden;
         }
 
-        /* pattern lembut */
         .auth-left::before {
             content: "";
             position: absolute;
@@ -145,7 +145,6 @@
             pointer-events: none;
         }
 
-        /* highlight atas kiri */
         .auth-left::after {
             content: "";
             position: absolute;
@@ -286,7 +285,7 @@
         }
 
         /* ================================
-           PANEL KANAN (CARD LOGIN)
+           PANEL KANAN (CARD LOGIN / REGISTER)
            ================================ */
         .auth-right {
             padding: 22px 22px 22px 22px;
@@ -331,7 +330,7 @@
             z-index: 1;
         }
 
-        /* LOGO + TITLE DI KANAN */
+        /* LOGO + TITLE DI KANAN (dipakai login & register) */
         .logo-big {
             width: 70px;
             height: 70px;
@@ -491,10 +490,6 @@
                 padding: 14px;
             }
 
-            .auth-left {
-                display: none; /* HP: cuma card login biar fokus */
-            }
-
             .auth-right {
                 padding: 18px 14px;
             }
@@ -588,58 +583,31 @@
 
 <div class="auth-shell">
     <div class="auth-layout row g-0">
-        {{-- Panel kiri (info DIKSERA) - hidden di mobile --}}
-        <div class="auth-left col-lg-6 d-none d-lg-block">
-            <div class="auth-left-inner">
-                <div class="brand-pill">
-                    <span class="brand-dot"></span>
-                    <span>Platform internal RSUD SLG</span>
+
+        {{-- LEFT SIDE: hanya muncul jika TIDAK fullWidth dan ada section auth-left --}}
+        @if(!isset($fullWidth))
+            @hasSection('auth-left')
+                <div class="auth-left col-lg-6 d-none d-lg-block">
+                    @yield('auth-left')
                 </div>
+            @endif
+        @endif
 
-                <div class="auth-left-title">DIKSERA</div>
-                <div class="auth-left-subtitle">
-                    Digitalisasi kompetensi, sertifikasi, dan evaluasi perawat dalam satu portal terpadu.
-                </div>
+        {{-- RIGHT SIDE: col-12 kalau fullWidth, kalau tidak col-lg-6 --}}
+        @php
+            $rightColClass = (isset($fullWidth) && $fullWidth)
+                ? 'col-12'
+                : 'col-lg-6 col-12';
+        @endphp
 
-                <div class="auth-left-highlight">
-                    <i class="bi bi-shield-check">✓</i>
-                    <span>Single sign-on untuk admin, perawat, dan pewawancara</span>
-                </div>
-
-                <ul class="auth-left-list">
-                    <li>
-                        <span class="bullet"></span>
-                        <span>Monitoring progres kompetensi dan sertifikasi perawat secara real-time.</span>
-                    </li>
-                    <li>
-                        <span class="bullet"></span>
-                        <span>Integrasi data evaluasi dan rekam jejak pengembangan SDM keperawatan.</span>
-                    </li>
-                    <li>
-                        <span class="bullet"></span>
-                        <span>Dashboard ringkas untuk kebutuhan Diklat, Komite Keperawatan, dan Manajemen.</span>
-                    </li>
-                </ul>
-
-                <div class="auth-left-meta">
-                    <div class="auth-left-badge">
-                        Versi beta · RSUD SLG Kediri
-                    </div>
-                    <div class="auth-left-hint">
-                        Butuh bantuan? Hubungi tim Diklat.
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- Panel kanan (card login) --}}
-        <div class="auth-right col-lg-6">
+        <div class="auth-right {{ $rightColClass }}">
             <div class="auth-card">
                 <div class="auth-card-inner">
                     @yield('content')
                 </div>
             </div>
         </div>
+
     </div>
 </div>
 
