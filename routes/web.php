@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AdminPerawatController;
 use App\Http\Controllers\AdminProfileController;
+use App\Http\Controllers\FormController;
 use App\Http\Controllers\PerawatDrhController;
 use App\Http\Controllers\TelegramController;
 use App\Http\Controllers\ManajemenAkunController;
@@ -58,6 +59,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/manajemen-akun', [ManajemenAkunController::class, 'index'])->name('manajemen_akun.index');
         Route::put('/manajemen-akun/{id}/update', [ManajemenAkunController::class, 'updateStatus'])->name('manajemen_akun.update');
         Route::delete('/manajemen-akun/{id}', [ManajemenAkunController::class, 'destroy'])->name('manajemen_akun.destroy');
+
+        // FORM MANAGEMENT
+        Route::get('/forms', [FormController::class, 'index'])->name('form.index');
+        Route::get('/forms/create', [FormController::class, 'create'])->name('form.create');
+        Route::post('/forms', [FormController::class, 'store'])->name('form.store');
+        Route::patch('form/{form}/update-status', [FormController::class, 'updateStatus'])->name('form.update-status');
     });
 
     // === GROUP PERAWAT ===
