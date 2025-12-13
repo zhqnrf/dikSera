@@ -11,7 +11,6 @@ class Form extends Model
 
     protected $guarded = ['id'];
 
-    // Agar otomatis jadi object Carbon (bisa diformat tanggalnya)
     protected $casts = [
         'waktu_mulai' => 'datetime',
         'waktu_selesai' => 'datetime',
@@ -20,5 +19,10 @@ class Form extends Model
     public function participants()
     {
         return $this->belongsToMany(User::class, 'form_user');
+    }
+
+    public function penanggungJawab()
+    {
+        return $this->belongsTo(PenanggungJawabUjian::class, 'penanggung_jawab_id');
     }
 }

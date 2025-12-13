@@ -186,6 +186,20 @@
                     </div>
 
                     <hr class="border-light my-4">
+                    {{-- Penanggung Jawab --}}
+                    <div class="mb-4">
+                        <label class="form-label">Penanggung Jawab <span class="text-danger">*</span></label>
+                        <select name="penanggung_jawab_id" class="form-select form-control-custom" required>
+                            <option value="" disabled>-- Pilih Penanggung Jawab --</option>
+                            @foreach ($pjs as $pj)
+                                <option value="{{ $pj->id }}"
+                                    {{ old('penanggung_jawab_id', $form->penanggung_jawab_id) == $pj->id ? 'selected' : '' }}>
+                                    {{ $pj->nama }} ({{ $pj->jabatan }})
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <hr class="border-light my-4">
 
                     {{-- Target Peserta --}}
                     <div class="mb-4">
@@ -269,7 +283,8 @@
                                                 </div>
                                                 <div class="flex-grow-1">
                                                     <div class="d-flex justify-content-between align-items-start">
-                                                        <span class="fw-bold {{ $isUrgent ? 'text-danger' : 'text-dark' }}"
+                                                        <span
+                                                            class="fw-bold {{ $isUrgent ? 'text-danger' : 'text-dark' }}"
                                                             style="font-size: 13px;">{{ $user->name }}</span>
                                                         @if ($isUrgent)
                                                             <i class="bi bi-exclamation-circle-fill text-danger"

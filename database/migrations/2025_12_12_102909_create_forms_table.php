@@ -18,10 +18,16 @@ class CreateFormsTable extends Migration
             $table->string('judul');
             $table->string('slug')->unique();
             $table->text('deskripsi')->nullable();
+
+            $table->foreignId('penanggung_jawab_id')
+                ->nullable()
+                ->constrained('penanggung_jawab_ujians')
+                ->onDelete('set null');
+
             $table->dateTime('waktu_mulai');
             $table->dateTime('waktu_selesai');
             $table->enum('status', ['draft', 'publish', 'closed'])->default('draft');
-            $table->enum('target_peserta', ['semua', 'khusus'])->default('semua'); 
+            $table->enum('target_peserta', ['semua', 'khusus'])->default('semua');
             $table->timestamps();
         });
     }
