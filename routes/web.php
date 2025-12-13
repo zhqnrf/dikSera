@@ -11,6 +11,7 @@ use App\Http\Controllers\PerawatDrhController;
 use App\Http\Controllers\TelegramController;
 use App\Http\Controllers\ManajemenAkunController;
 use App\Http\Controllers\PenanggungJawabUjianController;
+use App\Http\Controllers\UserFormController;
 /*
 |--------------------------------------------------------------------------
 | PUBLIC ROUTES (Bisa diakses tanpa login)
@@ -170,6 +171,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/telegram/link', [TelegramController::class, 'linkTelegram'])->name('telegram.link');
         Route::post('/telegram/generate-code', [TelegramController::class, 'generateCode'])->name('telegram.generate-code');
         Route::post('/telegram/unlink', [TelegramController::class, 'unlinkTelegram'])->name('telegram.unlink');
+
+        // === MENU UJIAN / FORM ===
+        Route::get('/ujian-aktif', [UserFormController::class, 'index'])->name('ujian.index');
+        Route::get('/ujian-aktif/{form:slug}', [UserFormController::class, 'show'])->name('ujian.show');
     });
 
     Route::post('/webhook', [TelegramController::class, 'webhook'])->name('webhook');

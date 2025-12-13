@@ -13,10 +13,10 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-    <style>
+  <style>
         /* =========================================
         1. VARIABLES & GLOBAL RESET
-       ========================================= */
+        ========================================= */
         :root {
             --blue-main: #1d4ed8;
             --blue-soft: #e0edff;
@@ -44,8 +44,8 @@
         }
 
         /* =========================================
-       2. LAYOUT UTAMA (SHARED)
-       ========================================= */
+        2. LAYOUT UTAMA (SHARED)
+        ========================================= */
         .app-shell {
             min-height: 100vh;
             display: flex;
@@ -85,8 +85,8 @@
         }
 
         /* =========================================
-       3. SIDEBAR COMPONENTS (SHARED)
-       ========================================= */
+        3. SIDEBAR COMPONENTS (SHARED)
+        ========================================= */
         .app-sidebar {
             width: var(--sidebar-width);
             background: #ffffff;
@@ -96,8 +96,6 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
-
-            /* Default Positioning (Desktop) */
             position: sticky;
             top: 16px;
             height: calc(100vh - 32px);
@@ -108,7 +106,6 @@
             overflow-x: hidden;
         }
 
-        /* Scrollbar Cantik */
         .app-sidebar::-webkit-scrollbar {
             width: 5px;
         }
@@ -118,7 +115,6 @@
             border-radius: 10px;
         }
 
-        /* Brand Section */
         .brand-row {
             display: flex;
             align-items: center;
@@ -164,7 +160,6 @@
             line-height: 1.2;
         }
 
-        /* Navigation Header */
         .nav-section-title {
             font-size: 10px;
             text-transform: uppercase;
@@ -175,7 +170,6 @@
             white-space: nowrap;
         }
 
-        /* Single Link Style */
         .nav-linkx {
             display: flex;
             align-items: center;
@@ -188,6 +182,7 @@
             transition: all 0.2s;
             white-space: nowrap;
             cursor: pointer;
+            position: relative; /* Penting untuk badge absolute pada collapse */
         }
 
         .nav-linkx i {
@@ -219,7 +214,6 @@
             color: #fff;
         }
 
-        /* Footer */
         .sidebar-footer {
             margin-top: auto;
             font-size: 10px;
@@ -229,10 +223,37 @@
         }
 
         /* =========================================
-       4. DROPDOWN & ANIMATIONS (SHARED)
-       ========================================= */
+        4. BADGE NOTIFIKASI (UPDATED & MOVED GLOBAL)
+        ========================================= */
+        .badge-notification {
+            background: linear-gradient(135deg, #ef4444, #dc2626); /* Gradient Merah Tegas */
+            color: white;
+            font-size: 11px;
+            padding: 3px 8px; /* Sedikit lebih besar agar teks tidak sesak */
+            min-width: 22px; /* Lebar minimum agar bentuknya bulat bagus */
+            text-align: center;
+            border-radius: 12px;
+            margin-left: auto; /* Dorong ke paling kanan */
+            font-weight: 700;
+            line-height: 1.2;
+            box-shadow: 0 4px 6px rgba(220, 38, 38, 0.4); /* Shadow merah agar timbul */
+            border: 2px solid #fff; /* Border putih agar kontras dengan background */
+            animation: pulse-red 1.5s infinite; /* Animasi denyut */
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes pulse-red {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            50% { transform: scale(1.05); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        /* =========================================
+        5. DROPDOWN & ANIMATIONS
+        ========================================= */
         .nav-dropdown {
-            /* Menggunakan style dasar nav-linkx agar konsisten */
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -246,7 +267,6 @@
             white-space: nowrap;
         }
 
-        /* Ikon panah (chevron) di kanan */
         .dropdown-icon {
             transition: transform 0.3s ease;
             font-size: 12px;
@@ -267,12 +287,10 @@
 
         .nav-submenu.show {
             max-height: 500px;
-            /* Cukup tinggi untuk konten */
             opacity: 1;
             transform: translateY(0);
             margin-top: 5px;
             display: block;
-            /* Pastikan block untuk flow */
         }
 
         .nav-sublink {
@@ -294,11 +312,9 @@
         }
 
         /* =========================================
-       5. DESKTOP SPECIFIC (min-width: 992px)
-       ========================================= */
+        6. DESKTOP SPECIFIC (min-width: 992px)
+        ========================================= */
         @media (min-width: 992px) {
-
-            /* Floating Toggle Button */
             .sidebar-wrapper {
                 position: relative;
             }
@@ -330,7 +346,6 @@
 
             .sidebar-toggle-btn:hover {
                 transform: translateX(50%) scale(1.15);
-                /* Keep translateX logic */
                 border-color: var(--blue-main);
                 box-shadow: 0 0 0 4px var(--blue-soft);
             }
@@ -341,7 +356,6 @@
                 padding: 18px 8px;
             }
 
-            /* Hide texts smoothly */
             .app-shell.is-collapsed .brand-info,
             .app-shell.is-collapsed .link-text,
             .app-shell.is-collapsed .nav-section-title,
@@ -354,14 +368,12 @@
                 transition: opacity .2s ease, width .2s ease;
             }
 
-            /* Brand container fix */
             .app-shell.is-collapsed .brand-row {
                 justify-content: center;
                 gap: 0;
                 padding-left: 0;
             }
 
-            /* Link formatting */
             .app-shell.is-collapsed .nav-linkx,
             .app-shell.is-collapsed .nav-dropdown {
                 justify-content: center;
@@ -369,25 +381,34 @@
                 gap: 0;
             }
 
-            /* Icon centering */
             .app-shell.is-collapsed .nav-linkx i,
             .app-shell.is-collapsed .nav-dropdown i {
                 margin: 0 auto;
             }
 
-            /* Remove spacing for titles */
             .app-shell.is-collapsed .nav-section-title {
                 margin: 0;
                 padding: 0;
             }
 
-            /* Disable submenu */
             .app-shell.is-collapsed .nav-submenu {
                 display: none !important;
             }
 
+            /* BADGE KHUSUS SAAT COLLAPSED */
+            .app-shell.is-collapsed .badge-notification {
+                position: absolute;
+                top: 6px;
+                right: 6px;
+                width: 10px;
+                height: 10px;
+                padding: 0;
+                font-size: 0;
+                min-width: auto;
+                margin: 0;
+                border: 2px solid #fff;
+            }
 
-            /* Sembunyikan elemen mobile di desktop */
             .header-toggle,
             .mobile-overlay {
                 display: none !important;
@@ -395,43 +416,35 @@
         }
 
         /* =========================================
-       6. MOBILE SPECIFIC (max-width: 991px)
-       ========================================= */
+        7. MOBILE SPECIFIC (max-width: 991px)
+        ========================================= */
         @media (max-width: 991px) {
             .app-shell {
                 padding: 0;
                 gap: 0;
                 display: block;
-                /* Stack layout */
             }
 
-            /* Sidebar Logic: Off-Canvas */
             .app-sidebar {
                 position: fixed;
                 top: 0;
                 left: -100%;
-                /* Sembunyi total */
                 height: 100vh;
                 width: 280px !important;
-                /* Lebar fix di mobile */
                 border-radius: 0;
                 border-right: 1px solid var(--border-soft);
                 border-top: none;
                 border-bottom: none;
                 transition: left 0.3s ease-in-out;
                 z-index: 1051;
-                /* Di atas overlay */
             }
 
             .app-sidebar.mobile-active {
                 left: 0;
-                /* Muncul */
             }
 
-            /* Toggle & Button Logic */
             .sidebar-toggle-btn {
                 display: none;
-                /* Tidak butuh tombol float di mobile */
             }
 
             .header-toggle {
@@ -441,7 +454,6 @@
                 color: var(--text-main);
             }
 
-            /* Main Content */
             .app-main {
                 border-radius: 0;
                 border: none;
@@ -449,24 +461,16 @@
                 padding: 16px;
             }
 
-            /* Pastikan elemen sidebar selalu terlihat di mobile (reset collapsed logic) */
-            .brand-info,
-            .link-text,
-            .nav-section-title,
-            .sidebar-footer,
-            .dropdown-icon {
+            .brand-info, .link-text, .nav-section-title, .sidebar-footer, .dropdown-icon {
                 display: block !important;
                 opacity: 1 !important;
                 width: auto !important;
             }
 
-            .nav-linkx,
-            .nav-dropdown {
+            .nav-linkx, .nav-dropdown {
                 justify-content: flex-start !important;
-                /* Rata kiri kembali */
             }
 
-            /* Mobile Overlay */
             .mobile-overlay {
                 position: fixed;
                 top: 0;
@@ -486,7 +490,6 @@
                 opacity: 1;
             }
 
-            /* User Profile Pill di Mobile */
             .user-pill {
                 font-size: 12px;
                 padding: 6px 12px;
@@ -544,6 +547,7 @@
                         </a>
 
                         <div class="nav-section-title">Menu Utama</div>
+
 
                         {{-- DROPDOWN MASTER DATA --}}
                         <div class="nav-linkx nav-dropdown" data-dropdown="#submenu-master">
@@ -633,6 +637,18 @@
                             </a>
 
                         </div>
+
+                        {{-- MENU UJIAN DENGAN BADGE --}}
+                        <a href="{{ route('perawat.ujian.index') }}"
+                            class="nav-linkx {{ request()->routeIs('perawat.ujian.*') ? 'active' : '' }}">
+                            <i class="bi bi-clipboard-check-fill"></i>
+                            <span class="link-text">Ujian & Evaluasi</span>
+
+                            {{-- Langsung pakai variabelnya --}}
+                            @if (isset($ujianActiveCount) && $ujianActiveCount > 0)
+                                <span class="badge-notification">{{ $ujianActiveCount }}</span>
+                            @endif
+                        </a>
 
                         <div class="nav-section-title">Lainnya</div>
                         <a href="{{ route('perawat.telegram.link') }}" class="nav-linkx">
