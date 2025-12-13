@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
             PerawatDokumenSeeder::class,
             PerawatDataDiriSeeder::class,
             PenanggungJawabUjianSeeder::class,
+            FormSeeder::class,
         ]);
     }
 }
