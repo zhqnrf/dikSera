@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\BankSoal;
 use App\Models\Form;
 use App\Models\User;
 use App\Models\PenanggungJawabUjian;
@@ -123,5 +124,34 @@ class FormController extends Controller
     {
         $form->delete();
         return back()->with('success', 'Form berhasil dihapus!');
+    }
+
+    // MENAMPILKAN HALAMAN PILIH SOAL
+    public function kelolaSoal(Form $form)
+    {
+        // Ambil semua soal dari bank soal
+        $allSoals = BankSoal::latest()->get();
+
+        // Ambil ID soal yang SUDAH terpilih sebelumnya untuk form ini
+        // pluck('id') mengambil array [1, 5, 8] dst
+        $existingSoalIds = $form->questions->pluck('id')->toArray();
+
+        return view('admin.form.kelola_soal', compact('form', 'allSoals', 'existingSoalIds'));
+    }
+
+    // MENYIMPAN PILIHAN SOAL
+    public function simpanSoal(Request $request, Form $form)
+    {
+        // Validasi: soal_ids harus berupa array
+        $request->validate([
+            'soal_ids' => 'array',
+            'soal_ids.*' => 'exists:bank_soals,id',
+        ]);
+
+        // Sync akan menghapus yang tidak dicentang, dan menambah yang dicentang
+        // Jika admin mengosongkan semua centang, maka soal di form tersebut jadi kosong
+        $form->questions()->sync($request->soal_ids ?? []);
+
+        return redirect()->route('admin.form.index')->with('success', 'Soal berhasil diatur untuk form ini!');
     }
 }

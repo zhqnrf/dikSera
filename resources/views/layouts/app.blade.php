@@ -702,7 +702,7 @@
                         </a>
 
                         {{-- Bank Soal --}}
-                        <a href="#"
+                        <a href="{{ route('admin.bank-soal.index') }}"
                             class="nav-linkx {{ request()->routeIs('admin.bank-soal.*') ? 'active' : '' }}">
                             <i class="bi bi-journal-text"></i> {{-- Icon bank soal --}}
                             <span class="link-text">Bank Soal</span>

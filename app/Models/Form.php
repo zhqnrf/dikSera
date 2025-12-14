@@ -25,4 +25,16 @@ class Form extends Model
     {
         return $this->belongsTo(PenanggungJawabUjian::class, 'penanggung_jawab_id');
     }
+
+    public function questions()
+    {
+        return $this->belongsToMany(BankSoal::class, 'form_questions')
+            ->withPivot('bobot')
+            ->withTimestamps();
+    }
+
+    public function examResults()
+    {
+        return $this->hasMany(ExamResult::class);
+    }
 }
