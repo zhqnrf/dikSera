@@ -103,6 +103,29 @@
             border-color: var(--blue-main);
             box-shadow: 0 0 0 3px var(--blue-soft);
         }
+
+        /* Modal Radio Option Style */
+        .status-option-label {
+            cursor: pointer;
+            border: 1px solid var(--border-soft);
+            border-radius: 8px;
+            padding: 12px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-option-label:hover {
+            background: #f8fafc;
+        }
+
+        .status-radio:checked+.status-option-label {
+            border-color: var(--blue-main);
+            background: #eff6ff;
+            color: var(--blue-main);
+            font-weight: 600;
+        }
     </style>
 @endpush
 
@@ -200,48 +223,13 @@
                             <td class="text-center">
                                 <div class="d-flex justify-content-center gap-1">
 
-                                    {{-- Dropdown Settings --}}
-                                    <div class="dropdown">
-                                        <button class="btn btn-icon btn-outline-secondary" type="button"
-                                            data-bs-toggle="dropdown" aria-expanded="false" title="Ubah Status">
-                                            <i class="bi bi-gear"></i>
-                                        </button>
-                                        <ul class="dropdown-menu shadow border-0" style="font-size: 13px;">
-                                            <li>
-                                                <h6 class="dropdown-header">Ubah Status</h6>
-                                            </li>
-                                            <li>
-                                                <form action="{{ route('admin.form.update-status', $form->id) }}"
-                                                    method="POST">
-                                                    @csrf @method('PATCH')
-                                                    <button type="submit" name="status" value="publish"
-                                                        class="dropdown-item d-flex align-items-center gap-2 {{ $form->status == 'publish' ? 'active' : '' }}">
-                                                        <i class="bi bi-check-circle text-success"></i> Publish
-                                                    </button>
-                                                </form>
-                                            </li>
-                                            <li>
-                                                <form action="{{ route('admin.form.update-status', $form->id) }}"
-                                                    method="POST">
-                                                    @csrf @method('PATCH')
-                                                    <button type="submit" name="status" value="draft"
-                                                        class="dropdown-item d-flex align-items-center gap-2 {{ $form->status == 'draft' ? 'active' : '' }}">
-                                                        <i class="bi bi-pencil-square text-secondary"></i> Set Draft
-                                                    </button>
-                                                </form>
-                                            </li>
-                                            <li>
-                                                <form action="{{ route('admin.form.update-status', $form->id) }}"
-                                                    method="POST">
-                                                    @csrf @method('PATCH')
-                                                    <button type="submit" name="status" value="closed"
-                                                        class="dropdown-item d-flex align-items-center gap-2 {{ $form->status == 'closed' ? 'active' : '' }}">
-                                                        <i class="bi bi-x-circle text-danger"></i> Close Form
-                                                    </button>
-                                                </form>
-                                            </li>
-                                        </ul>
-                                    </div>
+                                    {{-- MODAL TRIGGER: Setting Status --}}
+                                    {{-- Kirim data form ke modal via attribute data-* --}}
+                                    <button type="button" class="btn btn-icon btn-outline-secondary btn-status-modal"
+                                        data-id="{{ $form->id }}" data-judul="{{ $form->judul }}"
+                                        data-status="{{ $form->status }}" title="Ubah Status" data-bs-toggle="tooltip">
+                                        <i class="bi bi-gear"></i>
+                                    </button>
 
                                     {{-- Edit --}}
                                     <a href="{{ route('admin.form.edit', $form->id) }}"
@@ -250,7 +238,7 @@
                                         <i class="bi bi-pencil"></i>
                                     </a>
 
-                                    {{-- Hapus (Menggunakan Class 'delete-form' untuk trigger SweetAlert) --}}
+                                    {{-- Hapus --}}
                                     <form action="{{ route('admin.form.destroy', $form->id) }}" method="POST"
                                         class="d-inline delete-form">
                                         @csrf
@@ -277,6 +265,78 @@
             </table>
         </div>
     </div>
+
+    {{-- MODAL UBAH STATUS --}}
+    <div class="modal fade" id="statusModal" tabindex="-1" aria-labelledby="statusModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow" style="border-radius: 16px;">
+                <div class="modal-header border-bottom-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="statusModalLabel">Ubah Status Form</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted small mb-4">Pilih status baru untuk form: <br><strong id="modal-form-title"
+                            class="text-dark">...</strong></p>
+
+                    {{-- Form dalam Modal --}}
+                    <form id="statusForm" action="" method="POST">
+                        @csrf
+                        @method('PATCH')
+
+                        <div class="d-flex flex-column gap-2">
+                            {{-- Option: Publish --}}
+                            <div>
+                                <input type="radio" class="d-none status-radio" name="status" value="publish"
+                                    id="status_publish">
+                                <label for="status_publish" class="status-option-label">
+                                    <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                                    <div>
+                                        <div class="small fw-bold">Publish (Aktif)</div>
+                                        <div class="text-muted" style="font-size: 10px;">Peserta dapat melihat dan mengisi
+                                            form ini.</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            {{-- Option: Draft --}}
+                            <div>
+                                <input type="radio" class="d-none status-radio" name="status" value="draft"
+                                    id="status_draft">
+                                <label for="status_draft" class="status-option-label">
+                                    <i class="bi bi-pencil-square text-secondary fs-5"></i>
+                                    <div>
+                                        <div class="small fw-bold">Draft (Konsep)</div>
+                                        <div class="text-muted" style="font-size: 10px;">Form disembunyikan dari peserta.
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            {{-- Option: Closed --}}
+                            <div>
+                                <input type="radio" class="d-none status-radio" name="status" value="closed"
+                                    id="status_closed">
+                                <label for="status_closed" class="status-option-label">
+                                    <i class="bi bi-x-circle-fill text-danger fs-5"></i>
+                                    <div>
+                                        <div class="small fw-bold">Closed (Tutup)</div>
+                                        <div class="text-muted" style="font-size: 10px;">Form tidak lagi menerima respons
+                                            baru.</div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 d-grid">
+                            <button type="submit" class="btn btn-primary" style="border-radius: 8px;">Simpan Perubahan
+                                Status</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
 @push('scripts')
@@ -284,44 +344,68 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        // 1. Handle Flash Messages dari Controller
-        @if (session('success'))
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil!',
-                text: "{{ session('success') }}",
-                showConfirmButton: false,
-                timer: 2000
+        document.addEventListener("DOMContentLoaded", function() {
+            // 1. Inisialisasi Modal
+            var statusModal = new bootstrap.Modal(document.getElementById('statusModal'));
+
+            // 2. Event Listener untuk Tombol Trigger Modal
+            document.querySelectorAll('.btn-status-modal').forEach(button => {
+                button.addEventListener('click', function() {
+                    let id = this.getAttribute('data-id');
+                    let judul = this.getAttribute('data-judul');
+                    let currentStatus = this.getAttribute('data-status');
+
+                    // Set URL Form Action (Ganti ID dummy dengan ID asli)
+                    let formAction = "{{ route('admin.form.update-status', ':id') }}";
+                    formAction = formAction.replace(':id', id);
+                    document.getElementById('statusForm').action = formAction;
+
+                    // Set Judul di Modal
+                    document.getElementById('modal-form-title').innerText = judul;
+
+                    // Set Radio Button yang sesuai
+                    // Reset dulu
+                    document.querySelectorAll('.status-radio').forEach(r => r.checked = false);
+
+                    // Cek radio yang valuenya sama dengan status saat ini
+                    let radioToCheck = document.querySelector(
+                        `.status-radio[value="${currentStatus}"]`);
+                    if (radioToCheck) radioToCheck.checked = true;
+
+                    // Tampilkan Modal
+                    statusModal.show();
+                });
             });
-        @endif
 
-        @if (session('error'))
-            Swal.fire({
-                icon: 'error',
-                title: 'Gagal!',
-                text: "{{ session('error') }}",
-            });
-        @endif
-
-        // 2. Handle Konfirmasi Hapus
-        const deleteForms = document.querySelectorAll('.delete-form');
-        deleteForms.forEach(form => {
-            form.addEventListener('submit', function(e) {
-                e.preventDefault(); // Cegah submit langsung
-
+            // 3. Handle Flash Messages
+            @if (session('success'))
                 Swal.fire({
-                    title: 'Apakah Anda yakin?',
-                    text: "Form ini beserta data peserta & nilai terkait akan dihapus secara permanen!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Ya, Hapus!',
-                    cancelButtonText: 'Batal'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        this.submit(); // Submit form jika user klik Ya
-                    }
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: "{{ session('success') }}",
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            @endif
+
+            // 4. Handle Konfirmasi Hapus
+            document.querySelectorAll('.delete-form').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: 'Apakah Anda yakin?',
+                        text: "Form ini beserta data peserta & nilai terkait akan dihapus secara permanen!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Ya, Hapus!',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            this.submit();
+                        }
+                    });
                 });
             });
         });
