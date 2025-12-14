@@ -25,16 +25,32 @@
         }
 
         /* Warna Biru Soft */
-        .bg-blue-soft { background-color: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
+        .bg-blue-soft {
+            background-color: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+        }
 
         /* Warna Ungu Soft */
-        .bg-purple-soft { background-color: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff; }
+        .bg-purple-soft {
+            background-color: #f3e8ff;
+            color: #7e22ce;
+            border: 1px solid #e9d5ff;
+        }
 
         /* Warna Hijau Soft (Status Publish) */
-        .bg-success-soft { background-color: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+        .bg-success-soft {
+            background-color: #dcfce7;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
+        }
 
         /* Warna Abu Soft (Status Draft/Closed) */
-        .bg-secondary-soft { background-color: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+        .bg-secondary-soft {
+            background-color: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+        }
 
 
         /* --- 3. Info Box (Kanan) --- */
@@ -43,7 +59,7 @@
             border: 1px solid #e2e8f0;
             border-radius: 16px;
             padding: 24px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
         }
 
         .info-item {
@@ -99,7 +115,8 @@
             border: 1px solid #e2e8f0;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             margin-top: 15px;
-            min-height: 600px; /* Tinggi minimal agar tidak scroll kecil */
+            min-height: 600px;
+            /* Tinggi minimal agar tidak scroll kecil */
         }
 
         .description-content a {
@@ -108,6 +125,7 @@
             font-weight: 500;
             border-bottom: 1px dashed #2563eb;
         }
+
         .description-content a:hover {
             border-bottom-style: solid;
         }
@@ -115,130 +133,164 @@
 @endpush
 
 @section('content')
-<div class="container-fluid py-2">
+    <div class="container-fluid py-2">
 
-    {{-- Tombol Kembali --}}
-    <div class="mb-4">
-        <a href="{{ route('perawat.ujian.index') }}" class="btn btn-sm btn-light border hover-shadow rounded-pill px-4 fw-medium text-muted">
-            <i class="bi bi-arrow-left me-2"></i> Kembali ke Daftar
-        </a>
-    </div>
+        {{-- Tombol Kembali --}}
+        <div class="mb-4">
+            <a href="{{ route('perawat.ujian.index') }}"
+                class="btn btn-sm btn-light border hover-shadow rounded-pill px-4 fw-medium text-muted">
+                <i class="bi bi-arrow-left me-2"></i> Kembali ke Daftar
+            </a>
+        </div>
 
-    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-        {{-- Header Form --}}
-        <div class="exam-header">
-            <div class="d-flex align-items-start justify-content-between gap-3 flex-column flex-lg-row">
-                <div>
-                    {{-- Judul Besar --}}
-                    <h2 class="fw-bold text-dark mb-3">{{ $form->judul }}</h2>
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+            {{-- Header Form --}}
+            <div class="exam-header">
+                <div class="d-flex align-items-start justify-content-between gap-3 flex-column flex-lg-row">
+                    <div>
+                        {{-- Judul Besar --}}
+                        <h2 class="fw-bold text-dark mb-3">{{ $form->judul }}</h2>
 
-                    {{-- Badges Group --}}
-                    <div class="d-flex flex-wrap align-items-center gap-2">
-                        @if($form->target_peserta == 'khusus')
-                            <span class="badge bg-purple-soft">
-                                <i class="bi bi-lock-fill"></i> Khusus Undangan
-                            </span>
-                        @else
-                            <span class="badge bg-blue-soft">
-                                <i class="bi bi-globe"></i> Public
-                            </span>
-                        @endif
-
-                        <span class="badge {{ $form->status == 'publish' ? 'bg-success-soft' : 'bg-secondary-soft' }}">
-                            @if($form->status == 'publish')
-                                <i class="bi bi-check-circle-fill"></i>
+                        {{-- Badges Group --}}
+                        <div class="d-flex flex-wrap align-items-center gap-2">
+                            @if ($form->target_peserta == 'khusus')
+                                <span class="badge bg-purple-soft">
+                                    <i class="bi bi-lock-fill"></i> Khusus Undangan
+                                </span>
                             @else
-                                <i class="bi bi-dash-circle-fill"></i>
+                                <span class="badge bg-blue-soft">
+                                    <i class="bi bi-globe"></i> Public
+                                </span>
                             @endif
-                            {{ ucfirst($form->status) }}
-                        </span>
-                    </div>
-                </div>
 
-                {{-- Countdown / Info Waktu --}}
-                <div class="bg-white px-4 py-3 rounded-4 border d-flex align-items-center gap-3 shadow-sm">
-                    <div class="text-end">
-                        <div class="text-muted small fw-bold text-uppercase" style="font-size: 10px;">Batas Waktu</div>
-                        <div class="fw-bold text-danger fs-6">
-                            {{ $form->waktu_selesai->format('d M Y, H:i') }}
+                            <span class="badge {{ $form->status == 'publish' ? 'bg-success-soft' : 'bg-secondary-soft' }}">
+                                @if ($form->status == 'publish')
+                                    <i class="bi bi-check-circle-fill"></i>
+                                @else
+                                    <i class="bi bi-dash-circle-fill"></i>
+                                @endif
+                                {{ ucfirst($form->status) }}
+                            </span>
                         </div>
                     </div>
-                    <div class="rounded-circle bg-danger bg-opacity-10 text-danger d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                        <i class="bi bi-hourglass-split"></i>
+
+                    {{-- Countdown / Info Waktu --}}
+                    <div class="bg-white px-4 py-3 rounded-4 border d-flex align-items-center gap-3 shadow-sm">
+                        <div class="text-end">
+                            <div class="text-muted small fw-bold text-uppercase" style="font-size: 10px;">Batas Waktu</div>
+                            <div class="fw-bold text-danger fs-6">
+                                {{ $form->waktu_selesai->format('d M Y, H:i') }}
+                            </div>
+                        </div>
+                        <div class="rounded-circle bg-danger bg-opacity-10 text-danger d-flex align-items-center justify-content-center"
+                            style="width: 40px; height: 40px;">
+                            <i class="bi bi-hourglass-split"></i>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="card-body p-4 p-md-5">
-            <div class="row g-5">
+            <div class="card-body p-4 p-md-5">
+                <div class="row g-5">
 
-                {{-- Kolom Kiri: Deskripsi & Konten --}}
-                <div class="col-lg-8">
-                    <div class="d-flex align-items-center gap-2 mb-4">
-                        <div class="bg-blue-soft text-primary rounded px-2 py-1">
-                            <i class="bi bi-file-text"></i>
-                        </div>
-                        <h5 class="fw-bold text-dark m-0">Instruksi & Soal</h5>
-                    </div>
-
-                    <div class="description-content">
-                        @if($form->deskripsi)
-                            {!! $form->deskripsi !!}
-                        @else
-                            <div class="text-center py-5 bg-light rounded-3 border border-dashed">
-                                <i class="bi bi-info-circle text-muted fs-4 mb-2 d-block"></i>
-                                <span class="text-muted">Tidak ada deskripsi atau instruksi khusus.</span>
+                    {{-- Kolom Kiri: Deskripsi & Konten --}}
+                    <div class="col-lg-8">
+                        <div class="d-flex align-items-center gap-2 mb-4">
+                            <div class="bg-blue-soft text-primary rounded px-2 py-1">
+                                <i class="bi bi-file-text"></i>
                             </div>
+                            <h5 class="fw-bold text-dark m-0">Instruksi & Soal</h5>
+                        </div>
+
+                        <div class="description-content">
+                            @if ($form->deskripsi)
+                                {!! $form->deskripsi !!}
+                            @else
+                                <div class="text-center py-5 bg-light rounded-3 border border-dashed">
+                                    <i class="bi bi-info-circle text-muted fs-4 mb-2 d-block"></i>
+                                    <span class="text-muted">Tidak ada deskripsi atau instruksi khusus.</span>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                    
+                    <div
+                        class="mt-5 p-4 bg-light rounded-3 border d-flex align-items-center justify-content-between flex-wrap gap-3">
+                        <div>
+                            <h6 class="fw-bold mb-1">Siap Mengerjakan?</h6>
+                            <p class="text-muted small mb-0">Pastikan Anda memiliki waktu luang dan koneksi stabil.</p>
+                        </div>
+
+                        @php
+                            $now = \Carbon\Carbon::now();
+                            $isStarted = $now->greaterThanOrEqualTo($form->waktu_mulai);
+                            $isEnded = $now->greaterThan($form->waktu_selesai);
+                        @endphp
+
+                        @if ($isStarted && !$isEnded)
+                            <a href="{{ route('perawat.ujian.kerjakan', $form->slug) }}"
+                                class="btn btn-primary px-5 py-2 fw-bold shadow-sm">
+                                Mulai Kerjakan <i class="bi bi-play-circle-fill ms-2"></i>
+                            </a>
+                        @elseif(!$isStarted)
+                            <button class="btn btn-secondary px-4 py-2" disabled>
+                                Belum Dimulai
+                            </button>
+                        @else
+                            <button class="btn btn-danger px-4 py-2" disabled>
+                                Waktu Habis
+                            </button>
                         @endif
                     </div>
-                </div>
 
-                {{-- Kolom Kanan: Detail Informasi --}}
-                <div class="col-lg-4">
-                    <div class="info-box sticky-top" style="top: 100px; z-index: 1;">
-                        <h6 class="fw-bold mb-4 text-dark border-bottom pb-3">
-                            Detail Pelaksanaan
-                        </h6>
+                    {{-- Kolom Kanan: Detail Informasi --}}
+                    <div class="col-lg-4">
+                        <div class="info-box sticky-top" style="top: 100px; z-index: 1;">
+                            <h6 class="fw-bold mb-4 text-dark border-bottom pb-3">
+                                Detail Pelaksanaan
+                            </h6>
 
-                        <div class="info-item">
-                            <div class="info-icon text-primary bg-primary bg-opacity-10">
-                                <i class="bi bi-calendar-check"></i>
-                            </div>
-                            <div class="info-content">
-                                <div class="info-label">Waktu Mulai</div>
-                                <div class="info-value">
-                                    {{ $form->waktu_mulai->format('d F Y') }}
-                                    <span class="text-muted small fw-normal">Pukul {{ $form->waktu_mulai->format('H:i') }}</span>
+                            <div class="info-item">
+                                <div class="info-icon text-primary bg-primary bg-opacity-10">
+                                    <i class="bi bi-calendar-check"></i>
+                                </div>
+                                <div class="info-content">
+                                    <div class="info-label">Waktu Mulai</div>
+                                    <div class="info-value">
+                                        {{ $form->waktu_mulai->format('d F Y') }}
+                                        <span class="text-muted small fw-normal">Pukul
+                                            {{ $form->waktu_mulai->format('H:i') }}</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="info-item">
-                            <div class="info-icon text-danger bg-danger bg-opacity-10">
-                                <i class="bi bi-calendar-x"></i>
-                            </div>
-                            <div class="info-content">
-                                <div class="info-label">Batas Akhir</div>
-                                <div class="info-value">
-                                    {{ $form->waktu_selesai->format('d F Y') }}
-                                    <span class="text-muted small fw-normal">Pukul {{ $form->waktu_selesai->format('H:i') }}</span>
+                            <div class="info-item">
+                                <div class="info-icon text-danger bg-danger bg-opacity-10">
+                                    <i class="bi bi-calendar-x"></i>
+                                </div>
+                                <div class="info-content">
+                                    <div class="info-label">Batas Akhir</div>
+                                    <div class="info-value">
+                                        {{ $form->waktu_selesai->format('d F Y') }}
+                                        <span class="text-muted small fw-normal">Pukul
+                                            {{ $form->waktu_selesai->format('H:i') }}</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="alert alert-warning d-flex gap-3 mt-4 mb-0 border-0 bg-warning bg-opacity-10" role="alert">
-                            <i class="bi bi-exclamation-circle-fill text-warning mt-1"></i>
-                            <div class="small text-dark lh-sm">
-                                <strong>Penting:</strong><br>
-                                Pastikan koneksi internet Anda stabil sebelum mengerjakan ujian ini.
+                            <div class="alert alert-warning d-flex gap-3 mt-4 mb-0 border-0 bg-warning bg-opacity-10"
+                                role="alert">
+                                <i class="bi bi-exclamation-circle-fill text-warning mt-1"></i>
+                                <div class="small text-dark lh-sm">
+                                    <strong>Penting:</strong><br>
+                                    Pastikan koneksi internet Anda stabil sebelum mengerjakan ujian ini.
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
+                </div>
             </div>
         </div>
     </div>
-</div>
 @endsection

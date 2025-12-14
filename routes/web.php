@@ -189,6 +189,9 @@ Route::middleware(['auth'])->group(function () {
         // === MENU UJIAN / FORM ===
         Route::get('/ujian-aktif', [UserFormController::class, 'index'])->name('ujian.index');
         Route::get('/ujian-aktif/{form:slug}', [UserFormController::class, 'show'])->name('ujian.show');
+        Route::get('/ujian/{form:slug}/kerjakan', [UserFormController::class, 'kerjakan'])->name('ujian.kerjakan');
+        Route::post('/ujian/{form:slug}/submit', [UserFormController::class, 'submit'])->name('ujian.submit');
+        Route::get('/ujian/{form:slug}/selesai', [UserFormController::class, 'selesai'])->name('ujian.selesai');
     });
 
     Route::post('/webhook', [TelegramController::class, 'webhook'])->name('webhook');
