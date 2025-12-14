@@ -141,6 +141,26 @@
             color: #991b1b;
             border: 1px solid #fecaca;
         }
+
+        .choices__inner {
+            background-color: #fff;
+            border-radius: 8px;
+            /* Sesuai tombol Anda */
+            border: 1px solid #ced4da;
+            min-height: 45px;
+            display: flex;
+            align-items: center;
+        }
+
+        .choices__list--dropdown {
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .choices.is-focused .choices__inner {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
     </style>
 @endpush
 
@@ -191,8 +211,10 @@
                     {{-- Penanggung Jawab --}}
                     <div class="mb-4">
                         <label class="form-label">Penanggung Jawab <span class="text-danger">*</span></label>
-                        <select name="penanggung_jawab_id" class="form-select form-control-custom" required>
-                            <option value="" selected disabled>-- Pilih Penanggung Jawab --</option>
+                        {{-- Tambahkan ID disini --}}
+                        <select name="penanggung_jawab_id" id="choices-penanggung-jawab"
+                            class="form-select form-control-custom" required>
+                            <option value="">-- Pilih Penanggung Jawab --</option>
                             @foreach ($pjs as $pj)
                                 <option value="{{ $pj->id }}">
                                     {{ $pj->nama }} ({{ $pj->jabatan }})
@@ -334,27 +356,25 @@
 @endsection
 
 @push('scripts')
-    {{-- SweetAlert2 JS --}}
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <script>
-        // 1. Logic Toggle & Search
-        function togglePeserta(show) {
-            const container = document.getElementById('list-peserta-container');
-            if (show) {
-                container.style.display = 'block';
-                container.style.opacity = 0;
-                setTimeout(() => {
-                    container.style.opacity = 1;
-                    container.style.transition = 'opacity 0.3s';
-                }, 10);
-            } else {
-                container.style.display = 'none';
-            }
-        }
-
         document.addEventListener("DOMContentLoaded", function() {
-            // Handle Old Input
+            
+            // --- 1. IMPLEMENTASI CHOICES.JS ---
+            const element = document.getElementById('choices-penanggung-jawab');
+            if (element) {
+                const choices = new Choices(element, {
+                    searchEnabled: true,
+                    itemSelectText: '',
+                    placeholder: true,
+                    placeholderValue: '-- Cari atau Pilih Penanggung Jawab --',
+                    noResultsText: 'Tidak ditemukan hasil',
+                    shouldSort: false, // Menjaga urutan sesuai PHP
+                });
+            }
+
+            // --- 2. LOGIC TOGGLE & SEARCH PESERTA (Kode Lama) ---
+            
+            // Handle Old Input / Edit State
             const selected = document.querySelector('input[name="target_peserta"]:checked');
             if (selected && selected.value === 'khusus') {
                 togglePeserta(true);
@@ -371,25 +391,40 @@
                     items.forEach(function(item) {
                         const searchData = item.getAttribute('data-search');
                         if (searchData.includes(keyword)) {
-                            item.style.display = 'block'; // Tampilkan (Grid col menyesuaikan)
+                            item.style.display = 'block'; 
                             visibleCount++;
                         } else {
-                            item.style.display = 'none'; // Sembunyikan
+                            item.style.display = 'none'; 
                         }
                     });
 
                     // Show/Hide No Result Message
                     const noMsg = document.getElementById('no-result-msg');
-                    if (visibleCount === 0) {
-                        noMsg.style.display = 'block';
-                    } else {
-                        noMsg.style.display = 'none';
+                    if (noMsg) {
+                        noMsg.style.display = (visibleCount === 0) ? 'block' : 'none';
                     }
                 });
             }
         });
 
-        // 2. Logic SweetAlert dari Session Flash
+        // Fungsi Toggle di luar DOMContentLoaded agar bisa dipanggil onclick HTML
+        function togglePeserta(show) {
+            const container = document.getElementById('list-peserta-container');
+            if (!container) return; // Safety check
+            
+            if (show) {
+                container.style.display = 'block';
+                container.style.opacity = 0;
+                setTimeout(() => {
+                    container.style.opacity = 1;
+                    container.style.transition = 'opacity 0.3s';
+                }, 10);
+            } else {
+                container.style.display = 'none';
+            }
+        }
+
+        // --- 3. SWEETALERT LOGIC ---
         @if (session('success'))
             Swal.fire({
                 icon: 'success',
@@ -408,7 +443,6 @@
             });
         @endif
 
-        // Jika ada validasi error
         @if ($errors->any())
             Swal.fire({
                 icon: 'warning',
