@@ -17,6 +17,7 @@ use App\Http\Controllers\AdminPengajuanController;
 use App\Http\Controllers\PengajuanSertifikatController;
 use App\Http\Controllers\AdminPengajuanWawancaraController;
 use App\Http\Controllers\AdminLisensiController;
+
 /*
 |--------------------------------------------------------------------------
 | PUBLIC ROUTES (Bisa diakses tanpa login)
@@ -63,10 +64,16 @@ Route::middleware(['auth'])->group(function () {
 
         // APPROVAL PENGAJUAN
         Route::get('/pengajuan', [AdminPengajuanController::class, 'index'])->name('pengajuan.index');
-        Route::get('/pengajuan/{id}/approve', [AdminPengajuanController::class, 'approve'])->name('pengajuan.approve');
+
+        // HAPUS SALAH SATU ROUTE APPROVE YANG DUPLIKAT (Hapus GET, Pertahankan POST)
+        // Route::get('/pengajuan/{id}/approve', [AdminPengajuanController::class, 'approve'])->name('pengajuan.approve'); <--- INI BIANG KEROK ERRORNYA
+
         Route::get('/pengajuan/{id}/reject', [AdminPengajuanController::class, 'reject'])->name('pengajuan.reject');
         Route::get('/pengajuan/{id}/approve-score', [AdminPengajuanController::class, 'approveExamScore'])->name('pengajuan.approve_score');
+
+        // POST method untuk approve (Form submit)
         Route::post('/pengajuan/{id}/approve', [AdminPengajuanController::class, 'approve'])->name('pengajuan.approve');
+
         Route::get('/pengajuan/{id}/complete', [AdminPengajuanController::class, 'completeProcess'])->name('pengajuan.complete');
         Route::get('/pengajuan/{id}', [AdminPengajuanController::class, 'show'])->name('pengajuan.show');
         Route::post('/pengajuan/bulk-approve', [AdminPengajuanController::class, 'bulkApprove'])->name('pengajuan.bulk_approve');
@@ -75,11 +82,12 @@ Route::middleware(['auth'])->group(function () {
 
         // PENGAJUAN WAWANCARA (Updated Name)
         Route::prefix('pengajuan-wawancara')->name('pengajuan_wawancara.')->group(function() {
-        Route::get('/{id}/approve', [AdminPengajuanWawancaraController::class, 'approveJadwal']) ->name('approve');
-        Route::post('/{id}/reject', [AdminPengajuanWawancaraController::class, 'rejectJadwal'])->name('reject');
-        Route::get('/{id}/penilaian', [AdminPengajuanWawancaraController::class, 'showPenilaian'])->name('penilaian');
-        Route::post('/{id}/penilaian', [AdminPengajuanWawancaraController::class, 'storePenilaian'])->name('store_penilaian');
-    });
+            Route::get('/{id}/approve', [AdminPengajuanWawancaraController::class, 'approveJadwal']) ->name('approve');
+            Route::post('/{id}/reject', [AdminPengajuanWawancaraController::class, 'rejectJadwal'])->name('reject');
+            Route::get('/{id}/penilaian', [AdminPengajuanWawancaraController::class, 'showPenilaian'])->name('penilaian');
+            Route::post('/{id}/penilaian', [AdminPengajuanWawancaraController::class, 'storePenilaian'])->name('store_penilaian');
+        });
+
         // Verifikasi kelayakan dokumen
         Route::post('/perawat/verifikasi-kelayakan', [AdminPerawatController::class, 'verifikasiKelayakan'])->name('perawat.verifikasi.kelayakan');
 
