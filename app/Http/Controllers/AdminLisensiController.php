@@ -65,11 +65,9 @@ class AdminLisensiController extends Controller
         ]);
     }
 
-    // ... (Method index, edit, update, destroy tetap sama) ...
-
     public function lisensiIndex()
     {
-        $data = PerawatLisensi::with('user')->orderBy('created_at', 'desc')->get();
+        $data = PerawatLisensi::paginate(10);
         return view('admin.lisensi.index', compact('data'));
     }
 

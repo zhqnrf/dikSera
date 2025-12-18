@@ -8,442 +8,311 @@
 @section('title', 'Bank Soal – Admin DIKSERA')
 
 @push('styles')
-    {{-- CSS SweetAlert --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <style>
-        /* Card Container */
+        :root {
+            --primary-color: #2563eb;
+            --success-color: #10b981;
+            --bg-light: #f8fafc;
+            --border-color: #e2e8f0;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+        }
+
         .content-card {
             background: #ffffff;
-            border-radius: 16px;
-            border: 1px solid var(--border-soft);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             padding: 24px;
         }
 
-        /* Custom Table */
-        .table-custom th {
-            background-color: #eff6ff;
-            /* Warna soft blue standar */
-            color: #1e293b;
-            font-weight: 700;
-            font-size: 12px;
-            border-bottom: 2px solid #dbeafe;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            padding: 14px 16px;
-            vertical-align: middle;
+        /* Unified Toolbar Theme */
+        .toolbar-container {
+            background: var(--bg-light);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            border: 1px solid var(--border-color);
         }
 
-        .table-custom td {
-            vertical-align: middle;
-            padding: 14px 16px;
-            border-bottom: 1px solid #f1f5f9;
+        .form-control,
+        .btn {
+            border-radius: 8px;
             font-size: 14px;
-            color: #334155;
         }
 
-        /* Badges */
-        .badge-soft {
-            padding: 6px 10px;
-            border-radius: 6px;
-            font-size: 11px;
+        /* Button Theme Consistency */
+        .btn-theme {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
             font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .badge-soft-info {
-            background: #e0f2fe;
-            color: #0369a1;
-            border: 1px solid #bae6fd;
-        }
-
-        /* Key Answer Badge (Circle) */
-        .badge-key {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            /* Sedikit kotak agar modern */
-            background: #dcfce7;
-            color: #15803d;
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 13px;
-            border: 1px solid #86efac;
-        }
-
-        /* Action Buttons */
-        .btn-icon {
-            width: 34px;
-            height: 34px;
-            padding: 0;
-            border-radius: 8px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+            padding: 8px 16px;
             transition: all 0.2s;
         }
 
-        .btn-icon:hover {
-            transform: translateY(-2px);
+        .btn-theme-primary {
+            background: var(--primary-color);
+            color: white;
+            border: none;
         }
 
-        /* Toolbar Styling */
-        .toolbar-container {
-            background: #f8fafc;
-            border-radius: 12px;
+        .btn-theme-primary:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        .btn-theme-success {
+            background: var(--success-color);
+            color: white;
+            border: none;
+        }
+
+        .btn-theme-success:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+
+        .btn-theme-outline {
+            background: white;
+            color: #64748b;
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-theme-outline:hover {
+            background: #f1f5f9;
+            color: var(--primary-color);
+        }
+
+        /* Table Theme */
+        .table-custom thead th {
+            background-color: #f1f5f9;
+            color: #475569;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 14px;
+            border: none;
+        }
+
+        .table-custom td {
             padding: 16px;
-            border: 1px solid #e2e8f0;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+
+        .option-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            background: #f1f5f9;
+            color: #64748b;
+            margin: 2px;
+            border: 1px solid transparent;
+        }
+
+        .option-badge.active {
+            background: #ecfdf5;
+            color: #059669;
+            border-color: #a7f3d0;
+            font-weight: 600;
+        }
+
+        .badge-key {
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            background: var(--primary-color);
+            color: white;
+            font-weight: 700;
         }
     </style>
 @endpush
 
 @section('content')
     <div class="content-card">
-
-        {{-- Header & Toolbar --}}
         <div
-            class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center mb-4 gap-3">
+            class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
             <div>
-                <h4 class="fw-bold text-dark mb-1">Daftar Pertanyaan</h4>
-                <p class="text-muted small mb-0">Total {{ $soals->total() }} soal tersedia di bank soal.</p>
+                <h4 class="fw-bold mb-1">Bank Soal</h4>
+                <p class="text-muted small mb-0">Total <span
+                        class="badge bg-light text-dark border">{{ $soals->total() }}</span> data pertanyaan tersedia.</p>
             </div>
-
-            <div class="d-flex gap-2">
-                <a href="{{ route('admin.bank-soal.create') }}" class="btn btn-primary px-4 fw-bold shadow-sm">
-                    <i class="bi bi-plus-lg me-2"></i> Tambah Soal
-                </a>
-            </div>
+            <a href="{{ route('admin.bank-soal.create') }}" class="btn btn-theme btn-theme-primary shadow-sm">
+                <i class="bi bi-plus-lg"></i> Tambah Soal Manual
+            </a>
         </div>
 
-        {{-- Toolbar Tools (Search & Excel) --}}
         <div class="toolbar-container mb-4">
             <div class="row g-3 align-items-center">
-                {{-- Search --}}
-                <div class="col-md-5 col-lg-4">
-                    <form action="" method="GET" class="position-relative">
-                        <i class="bi bi-search position-absolute text-muted"
-                            style="top: 50%; left: 12px; transform: translateY(-50%);"></i>
-                        <input type="text" name="search" value="{{ request('search') }}" class="form-control ps-5"
-                            placeholder="Cari kata kunci pertanyaan..." style="border-radius: 8px;">
-                    </form>
-                </div>
-
-                {{-- Excel Tools --}}
-                <div class="col-md-7 col-lg-8">
-                    <div class="d-flex justify-content-md-end gap-2 flex-wrap">
-                        {{-- Tombol Template --}}
-                        <button class="btn btn-light border text-secondary" onclick="downloadTemplate()">
-                            <i class="bi bi-file-earmark-arrow-down me-1"></i> Template
-                        </button>
-
-                        {{-- Group Import/Export --}}
-                        <div class="btn-group shadow-sm">
-                            <button class="btn btn-success text-white" onclick="exportExcel()">
-                                <i class="bi bi-file-earmark-spreadsheet me-1"></i> Export
-                            </button>
-                            <button class="btn btn-outline-success bg-white" data-bs-toggle="modal"
-                                data-bs-target="#importModal">
-                                <i class="bi bi-upload me-1"></i> Import
-                            </button>
-                        </div>
+                <div class="col-lg-4">
+                    <div class="position-relative">
+                        <i class="bi bi-search position-absolute text-muted" style="top: 10px; left: 12px;"></i>
+                        <input type="text" name="search" class="form-control ps-5" placeholder="Cari soal..."
+                            value="{{ request('search') }}">
                     </div>
+                </div>
+                <div class="col-lg-8 d-flex justify-content-lg-end gap-2 flex-wrap">
+                    <button class="btn btn-theme btn-theme-outline" onclick="downloadTemplate()">
+                        <i class="bi bi-file-earmark-arrow-down"></i> Template
+                    </button>
+                    <div class="h-divider mx-1 d-none d-lg-block" style="width: 1px; background: #e2e8f0; height: 30px;">
+                    </div>
+                    <button class="btn btn-theme btn-theme-success" onclick="exportExcel()">
+                        <i class="bi bi-file-earmark-spreadsheet"></i> Export
+                    </button>
+                    <button class="btn btn-theme btn-theme-outline text-success border-success" data-bs-toggle="modal"
+                        data-bs-target="#importModal">
+                        <i class="bi bi-upload"></i> Import Excel
+                    </button>
                 </div>
             </div>
         </div>
 
-        {{-- Table Content --}}
-        <div class="table-responsive rounded-3 border">
-            <table class="table table-custom table-hover mb-0">
+        <div class="table-responsive border rounded-3">
+            <table class="table table-custom mb-0">
                 <thead>
                     <tr>
-                        <th style="width: 50px;" class="text-center">No</th>
-                        <th>Pertanyaan & Opsi</th>
-                        <th style="width: 150px;">Kategori</th>
-                        <th style="width: 80px;" class="text-center">Kunci</th>
-                        <th style="width: 120px;" class="text-center">Aksi</th>
+                        <th class="text-center" style="width: 50px;">No</th>
+                        <th>Konten & Opsi</th>
+                        <th style="width: 140px;">Kategori</th>
+                        <th class="text-center" style="width: 80px;">Kunci</th>
+                        <th class="text-center" style="width: 120px;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse ($soals as $soal)
                         <tr>
                             <td class="text-center text-muted fw-bold">
-                                {{ $loop->iteration + ($soals->firstItem() ? $soals->firstItem() - 1 : 0) }}
-                            </td>
+                                {{ $loop->iteration + ($soals->firstItem() ? $soals->firstItem() - 1 : 0) }}</td>
                             <td>
-                                {{-- Pertanyaan --}}
-                                <div class="fw-bold text-dark mb-2" style="font-size: 15px; line-height: 1.5;">
-                                    {{ Str::limit($soal->pertanyaan, 100) }}
-                                </div>
-                                {{-- Preview Opsi Jawaban --}}
-                                <div class="d-flex flex-wrap gap-2">
+                                <div class="fw-semibold text-dark mb-2" style="font-size: 14px;">
+                                    {{ Str::limit($soal->pertanyaan, 100) }}</div>
+                                <div class="d-flex flex-wrap">
                                     @foreach (['a', 'b', 'c', 'd', 'e'] as $opt)
                                         @if (isset($soal->opsi_jawaban[$opt]))
                                             <span
-                                                class="badge {{ strtolower($soal->kunci_jawaban) == $opt ? 'bg-success text-white' : 'bg-light text-muted border' }} fw-normal"
-                                                style="font-size: 10px;">
-                                                {{ strtoupper($opt) }}. {{ Str::limit($soal->opsi_jawaban[$opt], 15) }}
+                                                class="option-badge {{ strtolower($soal->kunci_jawaban) == $opt ? 'active' : '' }}">
+                                                {{ strtoupper($opt) }}. {{ Str::limit($soal->opsi_jawaban[$opt], 20) }}
                                             </span>
                                         @endif
                                     @endforeach
                                 </div>
                             </td>
-                            <td>
-                                <span class="badge-soft badge-soft-info">
-                                    {{ $soal->kategori ?? 'Umum' }}
-                                </span>
+                            <td><span
+                                    class="badge bg-info-subtle text-info border border-info-subtle px-2 py-1 rounded">{{ $soal->kategori ?? 'Umum' }}</span>
                             </td>
-                            <td class="text-center">
+                            <td>
                                 <div class="d-flex justify-content-center">
-                                    <div class="badge-key" title="Kunci: {{ strtoupper($soal->kunci_jawaban) }}">
-                                        {{ strtoupper($soal->kunci_jawaban) }}
-                                    </div>
+                                    <div class="badge-key">{{ strtoupper($soal->kunci_jawaban) }}</div>
                                 </div>
                             </td>
-                            <td class="text-center">
+                            <td>
                                 <div class="d-flex justify-content-center gap-1">
-                                    {{-- Edit --}}
                                     <a href="{{ route('admin.bank-soal.edit', $soal->id) }}"
-                                        class="btn btn-icon btn-light border text-warning" title="Edit"
-                                        data-bs-toggle="tooltip">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </a>
-                                    {{-- Hapus --}}
+                                        class="btn btn-sm btn-light border text-warning"><i class="bi bi-pencil"></i></a>
                                     <form action="{{ route('admin.bank-soal.delete', $soal->id) }}" method="POST"
-                                        class="d-inline delete-form">
+                                        class="delete-form">
                                         @csrf
-                                        <button type="submit" class="btn btn-icon btn-light border text-danger"
-                                            title="Hapus" data-bs-toggle="tooltip">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
+                                        <button type="submit" class="btn btn-sm btn-light border text-danger"><i
+                                                class="bi bi-trash"></i></button>
                                     </form>
                                 </div>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="text-center py-5">
-                                <div class="d-flex flex-column align-items-center justify-content-center">
-                                    <div class="bg-light rounded-circle p-3 mb-3">
-                                        <i class="bi bi-inbox fs-1 text-muted"></i>
-                                    </div>
-                                    <h6 class="text-dark fw-bold">Belum ada data soal</h6>
-                                    <p class="text-muted small">Silakan tambah manual atau import via Excel.</p>
-                                </div>
-                            </td>
+                            <td colspan="5" class="text-center py-5 text-muted">Data soal tidak ditemukan.</td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
 
-        {{-- Pagination --}}
-        <div class="mt-4 d-flex justify-content-end">
-            @if (method_exists($soals, 'links'))
-                {{ $soals->withQueryString()->links('vendor.pagination.diksera') }}
-            @endif
+        <div class="mt-4">
+            {{ $soals->withQueryString()->links('vendor.pagination.diksera') }}
         </div>
     </div>
 
-    {{-- Modal Import --}}
     <div class="modal fade" id="importModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title fw-bold">Import Soal Excel</h5>
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0">
+                <div class="modal-header border-bottom-0 pb-0">
+                    <h5 class="fw-bold">Import Data Excel</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="alert alert-info border-0 d-flex gap-3 align-items-center mb-3">
-                        <i class="bi bi-info-circle-fill fs-4"></i>
-                        <div class="small line-height-sm">
-                            Gunakan template yang disediakan agar proses import berjalan lancar tanpa error.
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-bold small text-muted text-uppercase">1. Download Template</label>
-                        <button
-                            class="btn btn-light border w-100 text-start d-flex justify-content-between align-items-center"
-                            onclick="downloadTemplate()">
-                            <span><i class="bi bi-file-earmark-excel text-success me-2"></i> Template_Soal.xlsx</span>
-                            <span class="badge bg-secondary">Download</span>
-                        </button>
-                    </div>
-
-                    <div class="mb-2">
-                        <label class="form-label fw-bold small text-muted text-uppercase">2. Upload File</label>
+                <div class="modal-body p-4">
+                    <div class="text-center p-4 border border-2 border-dashed rounded-4 bg-light mb-3">
+                        <i class="bi bi-file-earmark-excel text-success fs-1 mb-2 d-block"></i>
                         <input type="file" id="fileExcel" class="form-control" accept=".xlsx, .xls">
+                        <p class="text-muted smallest mt-2 mb-0">Pastikan format kolom sesuai dengan template.</p>
                     </div>
+                    <button class="btn btn-theme btn-theme-outline w-100" onclick="downloadTemplate()">
+                        <i class="bi bi-download"></i> Belum punya template? Unduh di sini
+                    </button>
                 </div>
-                <div class="modal-footer border-0 pt-0">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
-                    <button type="button" class="btn btn-primary" onclick="processImport()">Proses Import</button>
+                <div class="modal-footer border-top-0 pt-0">
+                    <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-theme btn-theme-success px-4" onclick="processImport()">Proses
+                        Sekarang</button>
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- Scripts --}}
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Tooltip Init
-            document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => new bootstrap.Tooltip(el));
-
-            // Flash Success
-            @if (session('success'))
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil!',
-                    text: "{{ session('success') }}",
-                    showConfirmButton: false,
-                    timer: 2000
-                });
-            @endif
-
-            // Delete Confirm
-            document.querySelectorAll('.delete-form').forEach(form => {
-                form.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    Swal.fire({
-                        title: 'Hapus Soal?',
-                        text: "Data tidak dapat dikembalikan.",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#ef4444',
-                        confirmButtonText: 'Ya, Hapus!',
-                        cancelButtonText: 'Batal'
-                    }).then(result => {
-                        if (result.isConfirmed) form.submit();
-                    });
-                });
-            });
-        });
-
-        // --- 1. DOWNLOAD TEMPLATE ---
+        // Gunakan script yang sama dengan sebelumnya, fungsi processImport dan downloadTemplate tetap valid.
         function downloadTemplate() {
-            // Data dummy untuk contoh format
             const templateData = [{
-                    "pertanyaan": "Ibu kota Indonesia adalah?",
-                    "kategori": "Pengetahuan Umum",
-                    "opsi_a": "Bandung",
-                    "opsi_b": "Jakarta",
-                    "opsi_c": "Surabaya",
-                    "opsi_d": "Medan",
-                    "opsi_e": "Bali",
-                    "kunci_jawaban": "b"
-                },
-                {
-                    "pertanyaan": "Rumus kimia air adalah?",
-                    "kategori": "Sains",
-                    "opsi_a": "H2O",
-                    "opsi_b": "CO2",
-                    "opsi_c": "O2",
-                    "opsi_d": "NaCl",
-                    "opsi_e": "N2",
-                    "kunci_jawaban": "a"
-                }
-            ];
-
-            // Buat Worksheet
+                "pertanyaan": "...",
+                "kategori": "...",
+                "opsi_a": "...",
+                "opsi_b": "...",
+                "opsi_c": "...",
+                "opsi_d": "...",
+                "opsi_e": "...",
+                "kunci_jawaban": "a"
+            }];
             const ws = XLSX.utils.json_to_sheet(templateData);
-
-            // Atur lebar kolom agar rapi saat dibuka di Excel
-            const wscols = [{
-                    wch: 40
-                }, // Pertanyaan
-                {
-                    wch: 20
-                }, // Kategori
-                {
-                    wch: 15
-                }, // Opsi A
-                {
-                    wch: 15
-                }, // Opsi B
-                {
-                    wch: 15
-                }, // Opsi C
-                {
-                    wch: 15
-                }, // Opsi D
-                {
-                    wch: 15
-                }, // Opsi E
-                {
-                    wch: 10
-                } // Kunci
-            ];
-            ws['!cols'] = wscols;
-
-            // Buat Workbook dan Download
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Template Import");
-            XLSX.writeFile(wb, 'Template_Soal_Diksera.xlsx');
+            XLSX.utils.book_append_sheet(wb, ws, "Template");
+            XLSX.writeFile(wb, 'Template_Soal.xlsx');
         }
 
-        // --- 2. EXPORT EXCEL ---
         function exportExcel() {
-            const table = document.getElementsByTagName("table")[0];
+            const table = document.querySelector("table");
             const wb = XLSX.utils.table_to_book(table, {
                 sheet: "Bank Soal"
             });
-            XLSX.writeFile(wb, 'Bank_Soal_Export.xlsx');
+            XLSX.writeFile(wb, 'Export_Bank_Soal.xlsx');
         }
 
-        // --- 3. IMPORT EXCEL ---
         function processImport() {
             const fileInput = document.getElementById('fileExcel');
-            if (!fileInput.files.length) {
-                Swal.fire('Oops', 'Silakan pilih file Excel terlebih dahulu.', 'warning');
-                return;
-            }
+            if (!fileInput.files.length) return Swal.fire('Oops', 'Pilih file dahulu', 'info');
 
-            // Tampilkan loading
             Swal.fire({
-                title: 'Sedang memproses...',
-                text: 'Mohon tunggu sebentar',
+                title: 'Memproses...',
                 allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading()
-                }
+                didOpen: () => Swal.showLoading()
             });
-
             const reader = new FileReader();
             reader.onload = function(e) {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, {
+                const workbook = XLSX.read(new Uint8Array(e.target.result), {
                     type: 'array'
                 });
-                const sheet = workbook.Sheets[workbook.SheetNames[0]];
-                const jsonData = XLSX.utils.sheet_to_json(sheet);
-
-                if (jsonData.length === 0) {
-                    Swal.fire('Error', 'File Excel kosong atau format salah.', 'error');
-                    return;
-                }
-
+                const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
                 axios.post('{{ route('admin.bank-soal.import-json') }}', jsonData)
-                    .then(res => {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Berhasil!',
-                            text: res.data.message,
-                            timer: 2000,
-                            showConfirmButton: false
-                        }).then(() => location.reload());
-                    })
-                    .catch(err => {
-                        console.error(err);
-                        Swal.fire('Gagal Import', 'Periksa kembali format Excel Anda.', 'error');
-                    });
+                    .then(() => location.reload())
+                    .catch(() => Swal.fire('Error', 'Format tidak sesuai', 'error'));
             };
             reader.readAsArrayBuffer(fileInput.files[0]);
         }

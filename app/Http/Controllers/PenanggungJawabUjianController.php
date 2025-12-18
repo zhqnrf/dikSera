@@ -9,7 +9,7 @@ class PenanggungJawabUjianController extends Controller
 {
     public function index()
     {
-        $data = PenanggungJawabUjian::latest()->get();
+        $data = PenanggungJawabUjian::paginate(10);
         return view('admin.penanggung_jawab_ujian.index', compact('data'));
     }
 

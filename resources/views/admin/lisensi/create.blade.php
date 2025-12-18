@@ -3,195 +3,196 @@
 @section('title', 'Tambah Lisensi – DIKSERA')
 
 @push('styles')
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    {{-- 1. Load CSS Choices --}}
+    {{-- Load CSS Choices --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
 
     <style>
-        /* ... (CSS SAMA SEPERTI SEBELUMNYA) ... */
         :root {
-            --primary-blue: #2563eb;
-            --primary-hover: #1d4ed8;
-            --primary-light: #eff6ff;
-            --text-dark: #0f172a;
+            --text-dark: #1e293b;
             --text-gray: #64748b;
-            --bg-light: #f8fafc;
-            --input-border: #e2e8f0;
-            --input-bg: #ffffff;
+            --bg-light: #f1f5f9;
+            --input-border: #cbd5e1;
+            /* Warna Tema Create: Biru */
+            --accent-color: #2563eb;
+            --accent-hover: #1d4ed8;
+            --accent-light: #eff6ff;
+            --accent-border: #dbeafe;
         }
 
         body {
             background-color: var(--bg-light);
-            font-family: 'Inter', sans-serif;
             color: var(--text-dark);
+            font-size: 14px;
         }
 
+        /* --- Header Area --- */
         .page-header {
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
         }
 
         .page-title {
-            font-size: 1.75rem;
+            font-size: 1.5rem;
             font-weight: 700;
             color: var(--text-dark);
             margin: 0;
         }
 
-        .page-subtitle {
-            font-size: 0.9rem;
-            color: var(--text-gray);
-            margin-top: 5px;
-        }
-
+        /* --- Form Card --- */
         .form-card {
             background: white;
-            border-radius: 16px;
-            border: 1px solid var(--input-border);
-            padding: 40px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.03);
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            padding: 30px;
         }
 
+        /* --- Inputs Styling (COMPACT) --- */
         .form-label {
-            font-size: 0.875rem;
+            font-size: 0.85rem;
             font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 8px;
-            display: block;
+            color: #334155;
+            margin-bottom: 6px;
         }
 
         .required-star {
             color: #ef4444;
-            margin-left: 2px;
+            font-size: 12px;
+            vertical-align: top;
         }
 
         .form-control,
         .form-select {
             border: 1px solid var(--input-border);
-            border-radius: 10px;
-            padding: 12px 16px;
-            font-size: 0.95rem;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            height: auto;
         }
 
         .form-control:focus,
         .form-select:focus {
-            border-color: var(--primary-blue);
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
             outline: none;
         }
 
+        /* Input Group Icons */
         .input-group-text {
-            background-color: var(--bg-light);
+            background-color: #f8fafc;
             border: 1px solid var(--input-border);
             border-right: none;
-            border-top-left-radius: 10px;
-            border-bottom-left-radius: 10px;
             color: var(--text-gray);
-            padding-left: 16px;
-            padding-right: 16px;
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.9rem;
         }
 
-        .input-group .form-control,
-        .input-group .form-select {
-            border-top-left-radius: 0;
-            border-bottom-left-radius: 0;
-        }
-
+        /* --- Choices JS (Compact) --- */
         .choices__inner {
             background-color: #fff;
             border: 1px solid var(--input-border);
-            border-radius: 10px;
-            min-height: 50px;
+            border-radius: 8px;
+            min-height: 38px;
+            padding: 4px 8px !important;
             display: flex;
             align-items: center;
+            font-size: 0.9rem;
         }
 
-        .choices:focus-within .choices__inner {
-            border-color: var(--primary-blue);
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
-        }
-
-        .choices__input {
-            background-color: transparent;
-            margin-bottom: 0;
+        .choices.is-focused .choices__inner {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
         }
 
         .choices__list--multiple .choices__item {
-            background-color: var(--primary-blue);
-            border: 1px solid var(--primary-blue);
-            border-radius: 6px;
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            font-size: 0.85rem;
         }
 
+        .choices__list--dropdown .choices__item {
+            font-size: 0.9rem;
+            padding: 8px 12px;
+        }
+
+        /* --- Metode Wrapper --- */
+        .metode-wrapper {
+            background-color: var(--accent-light);
+            border: 1px solid var(--accent-border);
+            border-left: 4px solid var(--accent-color);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        /* --- Buttons --- */
         .btn-submit {
-            background-color: var(--primary-blue);
+            background-color: var(--accent-color);
             color: white;
             width: 100%;
-            padding: 16px;
-            border-radius: 10px;
+            padding: 10px;
+            border-radius: 8px;
             font-weight: 600;
+            font-size: 0.95rem;
             border: none;
+            box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
             transition: all 0.2s;
         }
 
         .btn-submit:hover {
-            background-color: var(--primary-hover);
-            transform: translateY(-2px);
+            background-color: var(--accent-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
+            color: white;
         }
 
         .btn-back {
             background: white;
-            border: 1px solid var(--input-border);
+            border: 1px solid #cbd5e1;
             color: var(--text-gray);
-            padding: 10px 20px;
+            padding: 8px 16px;
             border-radius: 8px;
+            font-size: 0.85rem;
             font-weight: 600;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
+            gap: 6px;
+            transition: 0.2s;
         }
 
         .btn-back:hover {
-            background-color: var(--bg-light);
+            background: #f1f5f9;
             color: var(--text-dark);
-        }
-
-        .metode-wrapper {
-            background-color: var(--primary-light);
-            border: 1px solid #dbeafe;
-            border-left: 5px solid var(--primary-blue);
-            border-radius: 8px;
-            padding: 24px;
+            border-color: #94a3b8;
         }
     </style>
 @endpush
 
 @section('content')
-    <div class="container py-5">
+    <div class="container py-4">
         <div class="row justify-content-center">
-            <div class="col-md-9 col-lg-8">
+            <div class="col-md-10 col-lg-8">
 
                 {{-- Header --}}
                 <div class="page-header">
                     <div>
                         <h1 class="page-title">Tambah Lisensi Baru</h1>
-                        <p class="page-subtitle">Formulir administrasi data lisensi perawat</p>
+                        <p class="text-muted small mb-0">Formulir administrasi data lisensi perawat.</p>
                     </div>
                     <a href="{{ route('admin.lisensi.index') }}" class="btn-back">
                         <i class="bi bi-arrow-left"></i> Kembali
                     </a>
                 </div>
 
-                {{-- Form Card --}}
                 <div class="form-card">
                     @if ($errors->any())
-                        <div class="alert alert-danger py-3 px-4 mb-4"
-                            style="border-radius: 10px; background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c;">
+                        <div
+                            class="alert alert-danger border-0 bg-danger bg-opacity-10 text-danger mb-4 rounded-2 py-2 px-3 small">
                             <ul class="mb-0 ps-3">
                                 @foreach ($errors->all() as $e)
                                     <li>{{ $e }}</li>
@@ -202,58 +203,65 @@
 
                     <form action="{{ route('admin.lisensi.store') }}" method="POST">
                         @csrf
-                        <div class="row g-4">
 
-                            {{-- Pilih Perawat (Multi Select) --}}
+                        <div class="row g-3">
+
+                            {{-- 1. Pilih Perawat (Multi Select) --}}
                             <div class="col-12">
                                 <label class="form-label">Pilih Perawat (Bisa Banyak) <span
                                         class="required-star">*</span></label>
-                                <div class="mb-1">
-                                    <select name="user_ids[]" id="choice-users" class="form-select" multiple required>
-                                        <option value="">Cari Nama Perawat...</option>
-                                        @foreach ($users as $user)
-                                            <option value="{{ $user->id }}"
-                                                {{ collect(old('user_ids'))->contains($user->id) ? 'selected' : '' }}>
-                                                {{ $user->name }} ({{ $user->email }})
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                <select name="user_ids[]" id="choice-users" class="form-select" multiple required>
+                                    <option value="">Ketik nama perawat...</option>
+                                    @foreach ($users as $user)
+                                        <option value="{{ $user->id }}"
+                                            {{ collect(old('user_ids'))->contains($user->id) ? 'selected' : '' }}>
+                                            {{ $user->name }} ({{ $user->email }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <div class="text-muted mt-1" style="font-size: 11px;">
+                                    <i class="bi bi-info-circle me-1"></i> Nomor lisensi akan digenerate otomatis berurutan.
                                 </div>
-                                <div class="form-text">Nomor lisensi akan digenerate otomatis berurutan untuk setiap perawat
-                                    yang dipilih.</div>
                             </div>
 
-                            {{-- Aturan Perpanjangan --}}
+                            {{-- 2. Aturan Perpanjangan --}}
                             <div class="col-12">
                                 <div class="metode-wrapper">
-                                    <div class="d-flex align-items-start gap-3">
-                                        <i class="bi bi-sliders text-primary fs-4 mt-1"></i>
-                                        <div class="w-100">
-                                            <label class="form-label text-primary mb-1">Aturan Perpanjangan <span
-                                                    class="required-star">*</span></label>
-                                            <p class="small text-muted mb-3">Tentukan metode evaluasi otomatis untuk
-                                                perpanjangan lisensi ini.</p>
-
-                                            <select name="metode_perpanjangan" class="form-select border-primary" required>
-                                                <option value="pg_only"
-                                                    {{ old('metode_perpanjangan') == 'pg_only' ? 'selected' : '' }}>
-                                                    Hanya Ujian Tulis (Pilihan Ganda)
-                                                </option>
-                                                <option value="pg_interview"
-                                                    {{ old('metode_perpanjangan') == 'pg_interview' ? 'selected' : '' }}>
-                                                    Ujian Tulis + Wawancara
-                                                </option>
-                                            </select>
+                                    <div class="d-flex gap-3 align-items-center">
+                                        <i class="bi bi-sliders text-primary fs-5"></i>
+                                        <div class="flex-grow-1">
+                                            <div class="row align-items-center">
+                                                <div class="col-md-7">
+                                                    <label class="form-label text-dark mb-0">Metode Perpanjangan <span
+                                                            class="required-star">*</span></label>
+                                                    <div class="text-muted" style="font-size: 11px;">Pilih cara evaluasi
+                                                        untuk lisensi ini.</div>
+                                                </div>
+                                                <div class="col-md-5">
+                                                    <select name="metode_perpanjangan"
+                                                        class="form-select border-primary fw-bold text-dark form-select-sm"
+                                                        required>
+                                                        <option value="pg_only"
+                                                            {{ old('metode_perpanjangan') == 'pg_only' ? 'selected' : '' }}>
+                                                            Hanya Ujian Tulis
+                                                        </option>
+                                                        <option value="pg_interview"
+                                                            {{ old('metode_perpanjangan') == 'pg_interview' ? 'selected' : '' }}>
+                                                            Ujian Tulis + Wawancara
+                                                        </option>
+                                                    </select>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="col-12">
-                                <hr class="text-muted opacity-25">
+                                <hr class="border-light m-0">
                             </div>
 
-                            {{-- Nama & Lembaga --}}
+                            {{-- 3. Identitas Lisensi --}}
                             <div class="col-md-6">
                                 <label class="form-label">Nama Lisensi <span class="required-star">*</span></label>
                                 <div class="input-group">
@@ -262,6 +270,7 @@
                                         placeholder="Contoh: STR, SIP" required>
                                 </div>
                             </div>
+
                             <div class="col-md-6">
                                 <label class="form-label">Lembaga Penerbit <span class="required-star">*</span></label>
                                 <div class="input-group">
@@ -271,9 +280,7 @@
                                 </div>
                             </div>
 
-                            {{-- NOMOR LISENSI DIHAPUS (AUTO GENERATE) --}}
-
-                            {{-- Tanggal --}}
+                            {{-- 4. Tanggal --}}
                             <div class="col-md-6">
                                 <label class="form-label">Tanggal Terbit <span class="required-star">*</span></label>
                                 <div class="input-group">
@@ -282,6 +289,7 @@
                                         value="{{ old('tgl_terbit') }}" required>
                                 </div>
                             </div>
+
                             <div class="col-md-6">
                                 <label class="form-label">Tanggal Expired <span class="required-star">*</span></label>
                                 <div class="input-group">
@@ -293,11 +301,13 @@
 
                         </div>
 
-                        <div class="mt-5">
+                        {{-- Submit Button --}}
+                        <div class="mt-4 pt-2">
                             <button type="submit" class="btn-submit">
-                                <i class="bi bi-save2"></i> Simpan Data Lisensi
+                                <i class="bi bi-save2 me-1"></i> Simpan Data Lisensi
                             </button>
                         </div>
+
                     </form>
                 </div>
             </div>
@@ -314,10 +324,14 @@
             const choices = new Choices(element, {
                 removeItemButton: true,
                 searchEnabled: true,
-                placeholder: true,
                 placeholderValue: 'Cari dan pilih perawat...',
-                noResultsText: 'Tidak ada perawat ditemukan',
-                itemSelectText: 'Tekan untuk memilih',
+                noResultsText: 'Tidak ditemukan',
+                itemSelectText: '',
+                shouldSort: false,
+                classNames: {
+                    containerInner: 'choices__inner',
+                    input: 'choices__input',
+                }
             });
         });
     </script>

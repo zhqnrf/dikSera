@@ -25,10 +25,10 @@ class ManajemenAkunController extends Controller
         if (!empty($search)) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhereHas('profile', function ($sub) use ($search) {
-                      $sub->where('nik', 'like', "%{$search}%");
-                  });
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhereHas('profile', function ($sub) use ($search) {
+                        $sub->where('nik', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -44,14 +44,14 @@ class ManajemenAkunController extends Controller
 
         // Urutkan & paginate
         $users = $query->orderBy('created_at', 'desc')
-                       ->paginate(10)            // jumlah per halaman
-                       ->withQueryString();     // pertahankan query di URL
+            ->paginate(10)            // jumlah per halaman
+            ->withQueryString();     // pertahankan query di URL
 
         // Ambil daftar role unik (untuk dropdown filter)
         $roles = User::where('role', '!=', 'admin')
-                     ->select('role')
-                     ->distinct()
-                     ->pluck('role');
+            ->select('role')
+            ->distinct()
+            ->pluck('role');
 
         return view('admin.manajemen_akun.index', compact('users', 'roles'));
     }

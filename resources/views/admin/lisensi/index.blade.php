@@ -1,300 +1,258 @@
 @extends('layouts.app')
 
-@section('title', 'Data Lisensi Perawat')
+@section('title', 'Manajemen Lisensi Perawat')
 
 @push('styles')
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-    :root {
-        --primary-blue: #2563eb;
-        --primary-hover: #1d4ed8;
-        --text-dark: #0f172a;
-        --text-gray: #64748b;
-        --bg-light: #f1f5f9;
-    }
+    {{-- CSS SweetAlert --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
-    body {
-        background-color: #f8fafc;
-        font-family: 'Inter', sans-serif;
-        color: var(--text-dark);
-    }
+    <style>
+        /* --- Card Container --- */
+        .content-card {
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid var(--border-soft, #e2e8f0);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+            padding: 24px;
+        }
 
-    /* --- Header Area --- */
-    .page-header {
-        margin-bottom: 25px;
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-end;
-    }
+        /* --- Search Bar --- */
+        .search-input {
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            font-size: 13px;
+            padding-left: 12px;
+            height: 40px;
+            transition: all 0.2s;
+        }
 
-    .page-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--text-dark);
-        margin: 0;
-        letter-spacing: -0.5px;
-    }
+        .search-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
 
-    .page-subtitle {
-        color: var(--text-gray);
-        font-size: 0.9rem;
-        margin-top: 4px;
-    }
+        /* --- Custom Table --- */
+        .table-custom th {
+            background-color: #f8fafc;
+            color: #475569;
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #e2e8f0;
+            padding: 14px 16px;
+            vertical-align: middle;
+        }
 
-    /* --- Buttons --- */
-    .btn-blue {
-        background-color: var(--primary-blue);
-        color: white;
-        padding: 10px 24px;
-        border-radius: 8px;
-        font-weight: 600;
-        font-size: 0.9rem;
-        border: 1px solid var(--primary-blue);
-        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
-        transition: all 0.2s ease;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-    }
+        .table-custom td {
+            vertical-align: middle;
+            padding: 14px 16px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 13px;
+            color: #334155;
+        }
 
-    .btn-blue:hover {
-        background-color: var(--primary-hover);
-        border-color: var(--primary-hover);
-        color: white;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 10px -1px rgba(37, 99, 235, 0.3);
-    }
+        /* --- Avatar Inisial --- */
+        .avatar-initial {
+            width: 38px;
+            height: 38px;
+            background: #eff6ff;
+            color: #3b82f6;
+            font-weight: 700;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+            border: 1px solid #dbeafe;
+        }
 
-    .btn-white {
-        background: white;
-        color: var(--text-gray);
-        border: 1px solid #e2e8f0;
-        padding: 10px 18px;
-        border-radius: 8px;
-        font-weight: 600;
-        font-size: 0.9rem;
-        transition: all 0.2s;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-    }
-    .btn-white:hover {
-        background-color: #f8fafc;
-        color: var(--text-dark);
-        border-color: #cbd5e1;
-    }
+        /* --- Badges --- */
+        .badge-soft {
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
 
-    /* --- Table Card --- */
-    .table-card {
-        background: white;
-        border-radius: 12px;
-        border: 1px solid #e2e8f0;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        overflow: hidden;
-    }
+        .badge-active {
+            background: #dcfce7;
+            color: #166534;
+        }
 
-    .custom-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
+        .badge-warning {
+            background: #fef9c3;
+            color: #854d0e;
+        }
 
-    .custom-table thead th {
-        background-color: #f1f5f9;
-        color: #475569;
-        font-size: 0.75rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        padding: 16px 24px;
-        border-bottom: 1px solid #e2e8f0;
-        text-align: left;
-    }
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
 
-    .custom-table tbody tr {
-        transition: background-color 0.2s;
-        border-bottom: 1px solid #f1f5f9;
-    }
+        .badge-info {
+            background: #e0f2fe;
+            color: #075985;
+        }
 
-    .custom-table tbody tr:last-child {
-        border-bottom: none;
-    }
+        /* --- Action Buttons --- */
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
 
-    .custom-table tbody tr:hover {
-        background-color: #eff6ff;
-    }
+        .btn-icon:hover {
+            transform: translateY(-2px);
+        }
 
-    .custom-table td {
-        padding: 20px 24px;
-        vertical-align: middle;
-        font-size: 0.95rem;
-        color: var(--text-gray);
-    }
+        .btn-icon-primary {
+            color: #3b82f6;
+            background: #eff6ff;
+        }
 
-    /* --- Typography & Elements --- */
-    .data-title {
-        font-weight: 600;
-        color: var(--text-dark);
-        display: block;
-        margin-bottom: 4px;
-        font-size: 1rem;
-    }
+        .btn-icon-primary:hover {
+            background: #3b82f6;
+            color: #fff;
+        }
 
-    .data-sub {
-        font-size: 0.85rem;
-        color: var(--text-gray);
-        display: flex;
-        align-items: center;
-        gap: 5px;
-    }
+        .btn-icon-danger {
+            color: #ef4444;
+            background: #fef2f2;
+        }
 
-    /* --- Custom Status Badges (NEW) --- */
-    .status-badge {
-        padding: 6px 12px;
-        border-radius: 50px; /* Bentuk Pill */
-        font-size: 0.75rem;
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
+        .btn-icon-danger:hover {
+            background: #ef4444;
+            color: #fff;
+        }
 
-    /* Warna Aktif (Hijau Soft) */
-    .status-active {
-        background-color: #dcfce7;
-        color: #166534;
-        border: 1px solid #bbf7d0;
-    }
+        .btn-icon-dark {
+            color: #475569;
+            background: #f1f5f9;
+        }
 
-    /* Warna Warning (Kuning Soft) */
-    .status-warning {
-        background-color: #fef9c3;
-        color: #854d0e;
-        border: 1px solid #fde047;
-    }
-
-    /* Warna Expired (Merah Soft) */
-    .status-danger {
-        background-color: #fee2e2;
-        color: #991b1b;
-        border: 1px solid #fecaca;
-    }
-
-    /* Action Buttons */
-    .action-btn {
-        width: 34px;
-        height: 34px;
-        border-radius: 8px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        color: #94a3b8;
-        transition: 0.2s;
-        background: transparent;
-        border: 1px solid transparent;
-    }
-    .action-btn:hover { background: #dbeafe; color: var(--primary-blue); }
-    .action-btn.delete:hover { background: #fee2e2; color: #ef4444; }
-
-    /* Alert */
-    .alert-blue {
-        background-color: #eff6ff;
-        border: 1px solid #bfdbfe;
-        color: #1e40af;
-        border-radius: 8px;
-        padding: 12px 20px;
-        margin-bottom: 20px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    /* Badge Metode */
-    .badge-metode {
-        background: #f1f5f9;
-        color: #64748b;
-        padding: 4px 8px;
-        border-radius: 6px;
-        font-size: 0.7rem;
-        font-weight: 600;
-        border: 1px solid #e2e8f0;
-    }
-</style>
+        .btn-icon-dark:hover {
+            background: #1e293b;
+            color: #fff;
+        }
+    </style>
 @endpush
 
 @section('content')
-<div class="container py-5">
-    {{-- Header --}}
-    <div class="page-header">
+
+    {{-- Header & Tools --}}
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">
         <div>
-            <h1 class="page-title">Data Lisensi Perawat (Admin)</h1>
-            <p class="page-subtitle">Kelola data lisensi dan aturan perpanjangan.</p>
+            <h4 class="fw-bold mb-1">Data Lisensi Perawat</h4>
+            <p class="text-muted small mb-0">Monitor masa berlaku dan dokumen lisensi seluruh perawat.</p>
         </div>
+
         <div class="d-flex gap-2">
-            <a href="{{ route('dashboard') }}" class="btn-white"><i class="bi bi-arrow-left"></i> Kembali</a>
-            <a href="{{ route('admin.lisensi.create') }}" class="btn-blue"><i class="bi bi-plus-lg"></i> Tambah Lisensi</a>
+            <a href="{{ route('dashboard') }}" class="btn btn-light border shadow-sm px-3" style="border-radius: 8px;">
+                <i class="bi bi-arrow-left"></i> Kembali
+            </a>
+            <a href="{{ route('admin.lisensi.create') }}" class="btn btn-primary px-3 shadow-sm"
+                style="border-radius: 8px;">
+                <i class="bi bi-plus-lg me-1"></i> Tambah Lisensi
+            </a>
         </div>
     </div>
 
-    @if(session('success'))
-        <div class="alert-blue"><i class="bi bi-check-circle-fill"></i> {{ session('success') }}</div>
-    @endif
+    <div class="content-card">
 
-    <div class="table-card">
+        {{-- Toolbar: Search --}}
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <form action="" method="GET" class="d-flex gap-2">
+                <input type="text" name="search" value="{{ request('search') }}" class="form-control search-input"
+                    placeholder="Cari nama perawat atau nomor lisensi..." style="width: 300px;">
+                <button class="btn btn-light border" type="submit">
+                    <i class="bi bi-search"></i>
+                </button>
+            </form>
+
+            {{-- Filter Status (Opsional, UI Only) --}}
+            <div class="d-flex gap-2">
+                <select class="form-select form-select-sm" style="border-radius: 8px; width: 150px;">
+                    <option value="">Semua Status</option>
+                    <option value="aktif">Aktif</option>
+                    <option value="expired">Expired</option>
+                </select>
+            </div>
+        </div>
+
+        {{-- Table --}}
         <div class="table-responsive">
-            <table class="custom-table">
+            <table class="table table-custom table-hover mb-0">
                 <thead>
                     <tr>
-                        <th width="5%">No</th>
-                        <th width="20%">Pemilik & Lisensi</th>
-                        <th width="15%">Aturan Perpanjangan</th> {{-- Kolom Baru --}}
-                        <th width="15%">Nomor</th>
-                        <th width="20%">Masa Berlaku</th>
-                        <th width="10%">Status</th>
-                        <th width="5%">Dokumen</th>
-                        <th width="10%" class="text-end">Aksi</th>
+                        <th width="5%" class="text-center">No</th>
+                        <th>Pemilik Lisensi</th>
+                        <th>Detail Lisensi</th>
+                        <th>Metode Perpanjangan</th>
+                        <th>Masa Berlaku</th>
+                        <th class="text-center">File</th>
+                        <th class="text-center" width="100">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($data as $item)
                         <tr>
-                            <td>{{ $loop->iteration }}</td>
+                            <td class="text-center text-muted">{{ $loop->iteration }}</td>
 
-                            {{-- Pemilik & Nama Lisensi --}}
+                            {{-- Kolom 1: Identitas User --}}
                             <td>
-                                <span class="data-title">{{ $item->nama }}</span>
-                                <span class="text-muted" style="font-size: 0.8rem;">
-                                    <i class="bi bi-person"></i> {{ $item->user->name ?? 'User Terhapus' }}
-                                </span>
-                                <br>
-                                <span class="text-muted" style="font-size: 0.8rem;">
-                                    <i class="bi bi-building"></i> {{ $item->lembaga }}
-                                </span>
+                                <div class="d-flex align-items-center gap-3">
+                                    {{-- Avatar Inisial --}}
+                                    @php
+                                        $name = $item->user->name ?? 'Unknown';
+                                        $initials = collect(explode(' ', $name))
+                                            ->map(fn($w) => strtoupper(substr($w, 0, 1)))
+                                            ->take(2)
+                                            ->join('');
+                                    @endphp
+                                    <div class="avatar-initial">{{ $initials }}</div>
+                                    <div>
+                                        <div class="fw-bold text-dark">{{ $name }}</div>
+                                        <div class="text-muted small" style="font-size: 11px;">
+                                            {{ $item->user->email ?? '-' }}
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
 
-                            {{-- [BARU] Info Metode --}}
+                            {{-- Kolom 2: Info Lisensi --}}
                             <td>
-                                @if($item->metode_perpanjangan == 'pg_only')
-                                    <span class="badge-metode">Hanya PG</span>
+                                <div class="fw-bold text-dark mb-1">{{ $item->nama }}</div>
+                                <div class="text-muted small d-flex flex-column">
+                                    <span><i class="bi bi-building me-1"></i> {{ $item->lembaga }}</span>
+                                    <span class="text-primary mt-1" style="font-size: 11px;">No: {{ $item->nomor }}</span>
+                                </div>
+                            </td>
+
+                            {{-- Kolom 3: Metode --}}
+                            <td>
+                                @if ($item->metode_perpanjangan == 'pg_only')
+                                    <span class="badge-soft badge-info">
+                                        <i class="bi bi-check-square"></i> Hanya PG
+                                    </span>
                                 @else
-                                    <span class="badge-metode">PG + Wawancara</span>
+                                    <span class="badge-soft badge-info">
+                                        <i class="bi bi-mic"></i> PG + Wawancara
+                                    </span>
                                 @endif
                             </td>
 
-                            {{-- Nomor --}}
-                            <td><span class="data-title">{{ $item->nomor }}</span></td>
-
-                            {{-- Tanggal --}}
-                            <td>
-                                <span class="data-sub">
-                                    {{ \Carbon\Carbon::parse($item->tgl_terbit)->format('d-m-Y') }} <br> s/d <br> {{ \Carbon\Carbon::parse($item->tgl_expired)->format('d-m-Y') }}
-                                </span>
-                            </td>
-
-                            {{-- Status (Tanpa Tombol Perpanjang) --}}
+                            {{-- Kolom 4: Status & Tanggal --}}
                             <td>
                                 @php
                                     $expired = \Carbon\Carbon::parse($item->tgl_expired);
@@ -302,49 +260,122 @@
                                     $diff = $today->diffInDays($expired, false);
                                 @endphp
 
-                                @if($diff < 0)
-                                    <span class="status-badge status-danger"><i class="bi bi-x-circle-fill"></i> Expired</span>
-                                @elseif($diff < 90)
-                                    <span class="status-badge status-warning"><i class="bi bi-exclamation-triangle-fill"></i> Hampir Expired</span>
-                                @else
-                                    <span class="status-badge status-active"><i class="bi bi-check-circle-fill"></i> Aktif</span>
-                                @endif
+                                <div class="d-flex flex-column gap-1">
+                                    @if ($diff < 0)
+                                        <span class="badge-soft badge-danger w-fit"><i class="bi bi-x-circle"></i>
+                                            Expired</span>
+                                    @elseif($diff < 90)
+                                        <span class="badge-soft badge-warning w-fit"><i
+                                                class="bi bi-exclamation-triangle"></i> Segera Habis</span>
+                                    @else
+                                        <span class="badge-soft badge-active w-fit"><i class="bi bi-check-circle"></i>
+                                            Aktif</span>
+                                    @endif
+
+                                    <div class="text-muted small mt-1" style="font-size: 11px;">
+                                        Exp: {{ $expired->format('d M Y') }}
+                                    </div>
+                                </div>
                             </td>
 
-                            {{-- File --}}
-                            <td>
-                                @if($item->file_path)
-                                    <a href="{{ Storage::url($item->file_path) }}" target="_blank" class="action-btn" title="Lihat File" style="color: var(--primary-blue);">
-                                        <i class="bi bi-file-earmark-pdf-fill"></i>
+                            {{-- Kolom 5: File --}}
+                            <td class="text-center">
+                                @if ($item->file_path)
+                                    <a href="{{ Storage::url($item->file_path) }}" target="_blank"
+                                        class="btn-icon btn-icon-dark" data-bs-toggle="tooltip" title="Lihat Dokumen">
+                                        <i class="bi bi-file-earmark-pdf"></i>
                                     </a>
                                 @else
-                                    <span class="text-muted">-</span>
+                                    <span class="text-muted small">-</span>
                                 @endif
                             </td>
 
-                            {{-- Aksi --}}
-                            <td class="text-end">
-                                <div class="d-flex gap-1 justify-content-end">
-                                    <a href="{{ route('admin.lisensi.edit', $item->id) }}" class="action-btn" title="Edit"><i class="bi bi-pencil-fill"></i></a>
-                                    <form action="{{ route('admin.lisensi.destroy', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="action-btn delete" title="Hapus"><i class="bi bi-trash-fill"></i></button>
+                            {{-- Kolom 6: Aksi --}}
+                            <td class="text-center">
+                                <div class="d-flex justify-content-center gap-1">
+                                    <a href="{{ route('admin.lisensi.edit', $item->id) }}"
+                                        class="btn-icon btn-icon-primary" data-bs-toggle="tooltip" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+
+                                    <form action="{{ route('admin.lisensi.destroy', $item->id) }}" method="POST"
+                                        class="d-inline delete-form">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn-icon btn-icon-danger" data-bs-toggle="tooltip"
+                                            title="Hapus">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
                                     </form>
                                 </div>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="text-center py-5">
-                                <div class="text-muted" style="opacity: 0.6;">
-                                    <i class="bi bi-clipboard-x fs-1 d-block mb-2"></i> Belum ada data lisensi.
+                            <td colspan="7" class="text-center py-5">
+                                <div class="text-muted mb-2">
+                                    <i class="bi bi-card-checklist display-6 opacity-25"></i>
                                 </div>
+                                <span class="text-muted small">Belum ada data lisensi ditemukan.</span>
                             </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
+
+        {{-- Pagination --}}
+        <div class="mt-4">
+            {{ $data->withQueryString()->links('vendor.pagination.diksera') }}
+        </div>
     </div>
-</div>
+
 @endsection
+
+@push('scripts')
+    {{-- SweetAlert JS --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Init Tooltips Bootstrap 5
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+
+            // Handle Flash Message
+            @if (session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: "{{ session('success') }}",
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            @endif
+
+            // Handle Delete
+            const deleteForms = document.querySelectorAll('.delete-form');
+            deleteForms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: 'Hapus Lisensi?',
+                        text: "Data lisensi ini akan dihapus permanen.",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Ya, Hapus!',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            this.submit();
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+@endpush

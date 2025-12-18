@@ -60,32 +60,53 @@
 
     .pagination-list li a,
     .pagination-list li span {
-        display: block;
-        padding: 6px 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 36px;
+        height: 36px;
+        padding: 0 12px;
         font-size: 13px;
+        font-weight: 500;
         border-radius: 8px;
-        border: 1px solid var(--border-soft);
+        border: 1px solid #e2e8f0;
+        /* Menyesuaikan border-color UI sebelumnya */
         background: #fff;
-        color: var(--text-main);
+        color: #64748b;
+        /* Menyesuaikan text-muted UI sebelumnya */
         text-decoration: none;
         transition: all .2s;
     }
 
     .pagination-list li a:hover {
-        background: var(--blue-soft);
-        color: var(--blue-main);
-        border-color: var(--blue-main);
+        background: #eff6ff;
+        /* Soft blue */
+        color: #2563eb;
+        /* Primary blue */
+        border-color: #2563eb;
     }
 
     .pagination-list li.active span {
-        background: var(--blue-main);
-        border-color: var(--blue-main);
+        background: #2563eb;
+        /* Primary blue dari Bank Soal */
+        border-color: #2563eb;
         color: #fff;
         font-weight: 600;
+        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
     }
 
     .pagination-list li.disabled span {
-        opacity: 0.4;
+        background: #f8fafc;
+        color: #cbd5e1;
+        border-color: #f1f5f9;
         cursor: not-allowed;
+    }
+
+    /* Khusus untuk teks Prev/Next agar sedikit lebih lebar */
+    .pagination-list li:first-child a,
+    .pagination-list li:first-child span,
+    .pagination-list li:last-child a,
+    .pagination-list li:last-child span {
+        padding: 0 16px;
     }
 </style>

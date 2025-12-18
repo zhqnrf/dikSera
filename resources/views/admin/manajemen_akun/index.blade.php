@@ -3,376 +3,487 @@
 @section('title', 'Manajemen Akun Pengguna')
 
 @push('styles')
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-    :root {
-        --primary-blue: #2563eb;
-        --primary-hover: #1d4ed8;
-        --text-dark: #0f172a;
-        --text-gray: #64748b;
-        --bg-light: #f1f5f9;
+    {{-- SweetAlert CSS --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
-        /* Status Colors */
-        --success-bg: #dcfce7;
-        --success-text: #166534;
-        --danger-bg: #fee2e2;
-        --danger-text: #991b1b;
-        --warning-bg: #fef3c7;
-        --warning-text: #92400e;
-    }
+    <style>
+        :root {
+            --primary-blue: #2563eb;
+            --text-dark: #1e293b;
+            --text-gray: #64748b;
+            --bg-light: #f8fafc;
+            --border-color: #e2e8f0;
+        }
 
-    body {
-        background-color: #f8fafc;
-        font-family: 'Inter', sans-serif;
-        color: var(--text-dark);
-    }
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            font-size: 0.85rem;
+            /* ~13.6px Default lebih kecil */
+        }
 
-    /* --- Header Area --- */
-    .page-header {
-        margin-bottom: 25px;
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-end;
-        gap: 16px;
-        flex-wrap: wrap;
-    }
+        /* --- Page Header --- */
+        .page-header {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-    .page-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--text-dark);
-        margin: 0;
-        letter-spacing: -0.5px;
-    }
+        .page-title {
+            font-size: 1.25rem;
+            /* 20px */
+            font-weight: 700;
+            margin: 0;
+            color: var(--text-dark);
+        }
 
-    .page-subtitle {
-        color: var(--text-gray);
-        font-size: 0.9rem;
-        margin-top: 4px;
-    }
+        /* --- Cards --- */
+        .content-card {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
 
-    /* --- Table Card --- */
-    .table-card {
-        background: white;
-        border-radius: 12px;
-        border: 1px solid #e2e8f0;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        overflow: hidden;
-    }
+        .filter-card {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
 
-    .custom-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
+        /* --- Inputs (Compact) --- */
+        .form-label {
+            font-size: 0.75rem;
+            /* 12px */
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-gray);
+            margin-bottom: 4px;
+            letter-spacing: 0.3px;
+        }
 
-    .custom-table thead th {
-        background-color: #f1f5f9;
-        color: #475569;
-        font-size: 0.75rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        padding: 16px 24px;
-        border-bottom: 1px solid #e2e8f0;
-        text-align: left;
-    }
+        .form-control,
+        .form-select {
+            font-size: 0.85rem;
+            /* 13px */
+            border-radius: 6px;
+            border-color: #cbd5e1;
+            padding: 6px 10px;
+            /* Padding tipis */
+            min-height: 36px;
+        }
 
-    .custom-table tbody tr {
-        transition: background-color 0.2s;
-        border-bottom: 1px solid #f1f5f9;
-    }
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
 
-    .custom-table tbody tr:hover {
-        background-color: #eff6ff;
-    }
+        /* --- Table Styling (Compact) --- */
+        .table-custom th {
+            background-color: #f8fafc;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            /* 11px */
+            font-weight: 700;
+            color: var(--text-gray);
+            letter-spacing: 0.5px;
+            padding: 10px 16px;
+            /* Padding Header Tipis */
+            border-bottom: 1px solid var(--border-color);
+        }
 
-    .custom-table td {
-        padding: 20px 24px;
-        vertical-align: middle;
-        font-size: 0.95rem;
-        color: var(--text-gray);
-    }
+        .table-custom td {
+            padding: 10px 16px;
+            /* Padding Cell Tipis */
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.85rem;
+            /* 13.6px */
+        }
 
-    /* --- Typography & Elements --- */
-    .data-title {
-        font-weight: 600;
-        color: var(--text-dark);
-        display: block;
-        margin-bottom: 4px;
-        font-size: 1rem;
-    }
+        .table-custom tr:last-child td {
+            border-bottom: none;
+        }
 
-    .data-sub {
-        font-size: 0.85rem;
-        color: var(--text-gray);
-        display: flex;
-        align-items: center;
-        gap: 5px;
-    }
+        .table-custom tbody tr:hover {
+            background-color: #f1f5f9;
+        }
 
-    /* --- Custom Badges --- */
-    .status-badge {
-        padding: 6px 12px;
-        border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-    }
-    .status-badge.active { background-color: var(--success-bg); color: var(--success-text); }
-    .status-badge.rejected { background-color: var(--danger-bg); color: var(--danger-text); }
-    .status-badge.pending { background-color: var(--warning-bg); color: var(--warning-text); }
+        /* --- Avatar (Compact) --- */
+        .avatar-initial {
+            width: 32px;
+            /* Diperkecil dari 40px */
+            height: 32px;
+            background-color: #eff6ff;
+            color: var(--primary-blue);
+            font-weight: 700;
+            font-size: 13px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #dbeafe;
+            flex-shrink: 0;
+        }
 
-    /* --- Action Buttons --- */
-    .action-btn {
-        width: 34px;
-        height: 34px;
-        border-radius: 8px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        color: #94a3b8;
-        transition: 0.2s;
-        background: transparent;
-        border: 1px solid transparent;
-        cursor: pointer;
-    }
+        /* --- Badges (Compact) --- */
+        .badge-soft {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            /* 11px */
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
 
-    .action-btn.approve:hover { background: var(--success-bg); color: var(--success-text); }
-    .action-btn.reject:hover { background: var(--danger-bg); color: var(--danger-text); }
-    .action-btn.delete:hover { background: #fee2e2; color: #ef4444; }
+        .badge-success {
+            background: #dcfce7;
+            color: #166534;
+        }
 
-    /* Alert */
-    .alert-blue {
-        background-color: #eff6ff;
-        border: 1px solid #bfdbfe;
-        color: #1e40af;
-        border-radius: 8px;
-        padding: 12px 20px;
-        margin-bottom: 20px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
+        .badge-warning {
+            background: #fef9c3;
+            color: #854d0e;
+        }
 
-    /* Filter bar */
-    .filter-card {
-        background: #ffffff;
-        border-radius: 12px;
-        border: 1px solid #e2e8f0;
-        padding: 14px 16px;
-        margin-bottom: 18px;
-    }
-</style>
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-role {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* --- Action Buttons (Compact) --- */
+        .btn-icon {
+            width: 30px;
+            /* Diperkecil dari 34px */
+            height: 30px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+            color: var(--text-gray);
+            background: transparent;
+            font-size: 0.9rem;
+        }
+
+        .btn-icon:hover {
+            background: #e2e8f0;
+            transform: translateY(-1px);
+        }
+
+        .btn-icon-check:hover {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .btn-icon-x:hover {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .btn-icon-trash:hover {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+    </style>
 @endpush
 
 @section('content')
-<div class="container py-5">
+    <div class="container py-4">
 
-    {{-- 1. HEADER HALAMAN --}}
-    <div class="page-header">
-        <div>
-            <h1 class="page-title">Manajemen Akun</h1>
-            <p class="page-subtitle">Daftar registrasi dan persetujuan akun pengguna.</p>
-        </div>
-    </div>
-
-    {{-- 2. ALERT NOTIFIKASI --}}
-    @if(session('swal'))
-        <div class="alert-blue">
-            <i class="bi bi-info-circle-fill"></i> {{ session('swal')['text'] ?? 'Berhasil update data' }}
-        </div>
-    @endif
-
-    {{-- 3. FILTER & SEARCH --}}
-    <div class="filter-card">
-        <form method="GET" action="{{ route('admin.manajemen_akun.index') }}" class="row g-2 align-items-end">
-            <div class="col-md-4">
-                <label class="form-label mb-1 small text-muted">Cari</label>
-                <input type="text"
-                       name="search"
-                       class="form-control form-control-sm"
-                       placeholder="Cari nama / email / NIK..."
-                       value="{{ request('search') }}">
+        {{-- HEADER --}}
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Manajemen Akun</h1>
+                <p class="text-muted small mb-0">Verifikasi pendaftaran dan kelola akses pengguna.</p>
             </div>
 
-            <div class="col-md-3">
-                <label class="form-label mb-1 small text-muted">Status Akun</label>
-                <select name="status_akun" class="form-select form-select-sm">
-                    <option value="">Semua Status</option>
-                    <option value="pending"  {{ request('status_akun') == 'pending' ? 'selected' : '' }}>Menunggu</option>
-                    <option value="active"   {{ request('status_akun') == 'active' ? 'selected' : '' }}>Disetujui</option>
-                    <option value="rejected" {{ request('status_akun') == 'rejected' ? 'selected' : '' }}>Ditolak</option>
-                </select>
-            </div>
-
-            <div class="col-md-3">
-                <label class="form-label mb-1 small text-muted">Role</label>
-                <select name="role" class="form-select form-select-sm">
-                    <option value="">Semua Role</option>
-                    @if(isset($roles) && $roles->count())
-                        @foreach($roles as $r)
-                            <option value="{{ $r }}" {{ request('role') == $r ? 'selected' : '' }}>
-                                {{ ucfirst($r) }}
-                            </option>
-                        @endforeach
-                    @endif
-                </select>
-            </div>
-
-            <div class="col-md-2 d-flex gap-2">
-                <button type="submit" class="btn btn-sm btn-primary w-100">
-                    <i class="bi bi-search"></i> Filter
-                </button>
-                <a href="{{ route('admin.manajemen_akun.index') }}" class="btn btn-sm btn-outline-secondary">
-                    <i class="bi bi-arrow-counterclockwise"></i>
-                </a>
-            </div>
-        </form>
-    </div>
-
-    {{-- 4. KONTEN TABEL --}}
-    <div class="table-card">
-        <div class="table-responsive">
-            <table class="custom-table">
-                <thead>
-                    <tr>
-                        <th width="5%">No</th>
-                        <th width="25%">User Info</th>
-                        <th width="20%">Role & NIK</th>
-                        <th width="20%">Tanggal Daftar</th>
-                        <th width="15%">Status</th>
-                        <th width="15%" class="text-end">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($users as $user)
-                    <tr>
-                        {{-- Nomor mengikuti pagination --}}
-                        <td>
-                            {{ ($users->currentPage() - 1) * $users->perPage() + $loop->iteration }}
-                        </td>
-
-                        {{-- Kolom Nama & Email --}}
-                        <td>
-                            <span class="data-title">{{ $user->name }}</span>
-                            <span class="data-sub">
-                                <i class="bi bi-envelope"></i> {{ $user->email }}
-                            </span>
-                        </td>
-
-                        {{-- Kolom Role & NIK --}}
-                        <td>
-                            <span class="d-block text-dark fw-medium mb-1">{{ ucfirst($user->role) }}</span>
-                            @if($user->profile)
-                                <span class="text-muted small">
-                                    <i class="bi bi-person-vcard"></i> {{ $user->profile->nik ?? '-' }}
-                                </span>
-                            @else
-                                <span class="text-muted small">-</span>
-                            @endif
-                        </td>
-
-                        {{-- Kolom Tanggal --}}
-                        <td>
-                            <div class="text-muted small">
-                                <i class="bi bi-calendar3 me-1"></i>
-                                {{ $user->created_at->format('d M Y, H:i') }}
-                            </div>
-                        </td>
-
-                        {{-- Kolom Status --}}
-                        <td>
-                            @if($user->status_akun == 'active')
-                                <span class="status-badge active">
-                                    <i class="bi bi-check-circle-fill"></i> Disetujui
-                                </span>
-                            @elseif($user->status_akun == 'rejected')
-                                <span class="status-badge rejected">
-                                    <i class="bi bi-x-circle-fill"></i> Ditolak
-                                </span>
-                            @else
-                                <span class="status-badge pending">
-                                    <i class="bi bi-clock-fill"></i> Menunggu
-                                </span>
-                            @endif
-                        </td>
-
-                        {{-- Kolom Aksi --}}
-                        <td class="text-end">
-                            <div class="d-flex gap-1 justify-content-end">
-
-                                {{-- Tombol Approve --}}
-                                @if($user->status_akun != 'active')
-                                <form action="{{ route('admin.manajemen_akun.update', $user->id) }}" method="POST">
-                                    @csrf
-                                    @method('PUT')
-                                    <input type="hidden" name="status_akun" value="active">
-                                    <button type="submit" class="action-btn approve" title="Setujui (Approve)">
-                                        <i class="bi bi-check-lg fs-5"></i>
-                                    </button>
-                                </form>
-                                @endif
-
-                                {{-- Tombol Reject --}}
-                                @if($user->status_akun != 'rejected')
-                                <form action="{{ route('admin.manajemen_akun.update', $user->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menolak akun ini?')">
-                                    @csrf
-                                    @method('PUT')
-                                    <input type="hidden" name="status_akun" value="rejected">
-                                    <button type="submit" class="action-btn reject" title="Tolak (Reject)">
-                                        <i class="bi bi-x-lg fs-6"></i>
-                                    </button>
-                                </form>
-                                @endif
-
-                                {{-- Tombol Hapus --}}
-                                <form action="{{ route('admin.manajemen_akun.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Hapus permanen data user ini?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="action-btn delete" title="Hapus Permanen">
-                                        <i class="bi bi-trash-fill"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="6" class="text-center py-5">
-                            <div class="text-muted" style="opacity: 0.6;">
-                                <i class="bi bi-people fs-1 d-block mb-2"></i>
-                                Belum ada data pendaftaran akun baru.
-                            </div>
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-
-        {{-- 5. PAGINATION --}}
-        @if($users->hasPages())
-            <div class="px-3 py-2">
-                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                    <div class="small text-muted">
-                        Menampilkan
-                        <strong>{{ $users->firstItem() }}</strong>
-                        -
-                        <strong>{{ $users->lastItem() }}</strong>
-                        dari
-                        <strong>{{ $users->total() }}</strong>
-                        data
-                    </div>
-                    <div>
-                        {{ $users->links('pagination::bootstrap-5') }}
-                        {{-- kalau nggak pakai bootstrap, bisa pakai: {{ $users->links() }} --}}
-                    </div>
+            {{-- Total Stats (Lebih Compact) --}}
+            <div class="d-flex gap-3">
+                <div class="px-3 py-1 bg-white rounded-3 border d-flex align-items-center gap-2 shadow-sm">
+                    <i class="bi bi-people-fill text-primary"></i>
+                    <span class="fw-bold text-dark">{{ $users->total() }}</span> <span class="text-muted"
+                        style="font-size: 11px;">USERS</span>
                 </div>
             </div>
-        @endif
-    </div>
+        </div>
 
-</div>
+        {{-- FILTER CARD --}}
+        <div class="filter-card shadow-sm">
+            <form method="GET" action="{{ route('admin.manajemen_akun.index') }}" class="row g-2">
+                <div class="col-md-5">
+                    <label class="form-label">Pencarian</label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                        <input type="text" name="search" class="form-control border-start-0 ps-0"
+                            placeholder="Cari Nama / Email / NIK..." value="{{ request('search') }}">
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Status</label>
+                    <select name="status_akun" class="form-select form-select-sm">
+                        <option value="">Semua Status</option>
+                        <option value="pending" {{ request('status_akun') == 'pending' ? 'selected' : '' }}>Menunggu
+                        </option>
+                        <option value="active" {{ request('status_akun') == 'active' ? 'selected' : '' }}>Disetujui</option>
+                        <option value="rejected" {{ request('status_akun') == 'rejected' ? 'selected' : '' }}>Ditolak
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Role</label>
+                    <select name="role" class="form-select form-select-sm">
+                        <option value="">Semua Role</option>
+                        @foreach (['admin', 'perawat', 'pewawancara'] as $r)
+                            <option value="{{ $r }}" {{ request('role') == $r ? 'selected' : '' }}>
+                                {{ ucfirst($r) }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-md-2 d-flex align-items-end">
+                    <div class="d-flex gap-1 w-100">
+                        <button type="submit" class="btn btn-sm btn-primary w-100 fw-bold">Filter</button>
+                        <a href="{{ route('admin.manajemen_akun.index') }}" class="btn btn-sm btn-light border px-2"
+                            title="Reset">
+                            <i class="bi bi-arrow-counterclockwise"></i>
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        {{-- TABLE CARD --}}
+        <div class="content-card">
+            <div class="table-responsive">
+                <table class="table table-custom mb-0">
+                    <thead>
+                        <tr>
+                            <th width="5%" class="text-center">No</th>
+                            <th width="30%">Identitas Pengguna</th>
+                            <th width="15%">Role</th>
+                            <th width="18%">Tanggal Daftar</th>
+                            <th width="15%">Status</th>
+                            <th width="17%" class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($users as $user)
+                            <tr>
+                                <td class="text-center text-muted" style="font-size: 11px;">
+                                    {{ ($users->currentPage() - 1) * $users->perPage() + $loop->iteration }}</td>
+
+                                {{-- Identitas --}}
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        @php
+                                            $initials = collect(explode(' ', $user->name))
+                                                ->map(fn($w) => strtoupper(substr($w, 0, 1)))
+                                                ->take(2)
+                                                ->join('');
+                                        @endphp
+                                        <div class="avatar-initial">{{ $initials }}</div>
+                                        <div style="line-height: 1.3;">
+                                            <div class="fw-bold text-dark">{{ $user->name }}</div>
+                                            <div class="text-muted" style="font-size: 11px;">
+                                                {{ $user->email }}
+                                            </div>
+                                            @if ($user->profile && $user->profile->nik)
+                                                <div class="text-secondary" style="font-size: 10px;">NIK:
+                                                    {{ $user->profile->nik }}</div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </td>
+
+                                {{-- Role --}}
+                                <td>
+                                    <span class="badge-soft badge-role">{{ $user->role }}</span>
+                                </td>
+
+                                {{-- Tanggal --}}
+                                <td>
+                                    <div style="line-height: 1.2;">
+                                        <div class="text-dark" style="font-size: 12px;">
+                                            {{ $user->created_at->format('d M Y') }}</div>
+                                        <div class="text-muted" style="font-size: 10px;">
+                                            {{ $user->created_at->format('H:i') }} WIB</div>
+                                    </div>
+                                </td>
+
+                                {{-- Status --}}
+                                <td>
+                                    @if ($user->status_akun == 'active')
+                                        <span class="badge-soft badge-success"><i class="bi bi-check"></i> Disetujui</span>
+                                    @elseif($user->status_akun == 'rejected')
+                                        <span class="badge-soft badge-danger"><i class="bi bi-x"></i> Ditolak</span>
+                                    @else
+                                        <span class="badge-soft badge-warning"><i class="bi bi-clock"></i> Menunggu</span>
+                                    @endif
+                                </td>
+
+                                {{-- Aksi --}}
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-1">
+
+                                        {{-- Tombol Approve --}}
+                                        @if ($user->status_akun != 'active')
+                                            <form action="{{ route('admin.manajemen_akun.update', $user->id) }}"
+                                                method="POST" class="action-form">
+                                                @csrf @method('PUT')
+                                                <input type="hidden" name="status_akun" value="active">
+                                                <button type="button" class="btn-icon btn-icon-check btn-approve"
+                                                    data-bs-toggle="tooltip" title="Setujui">
+                                                    <i class="bi bi-check-lg"></i>
+                                                </button>
+                                            </form>
+                                        @endif
+
+                                        {{-- Tombol Reject --}}
+                                        @if ($user->status_akun != 'rejected')
+                                            <form action="{{ route('admin.manajemen_akun.update', $user->id) }}"
+                                                method="POST" class="action-form">
+                                                @csrf @method('PUT')
+                                                <input type="hidden" name="status_akun" value="rejected">
+                                                <button type="button" class="btn-icon btn-icon-x btn-reject"
+                                                    data-bs-toggle="tooltip" title="Tolak">
+                                                    <i class="bi bi-x-lg"></i>
+                                                </button>
+                                            </form>
+                                        @endif
+
+                                        {{-- Tombol Delete --}}
+                                        <form action="{{ route('admin.manajemen_akun.destroy', $user->id) }}"
+                                            method="POST" class="action-form">
+                                            @csrf @method('DELETE')
+                                            <button type="button" class="btn-icon btn-icon-trash btn-delete"
+                                                data-bs-toggle="tooltip" title="Hapus">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="text-center py-5">
+                                    <div class="d-flex flex-column align-items-center opacity-50">
+                                        <i class="bi bi-inbox display-4 mb-2"></i>
+                                        <h6 class="text-muted small">Data tidak ditemukan</h6>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            {{-- Pagination --}}
+            <div class="mt-4">
+                {{ $users->withQueryString()->links('vendor.pagination.diksera') }}
+            </div>
+        </div>
+
+    </div>
 @endsection
+
+@push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Init Tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+
+            // Handle Flash Message
+            @if (session('swal'))
+                Swal.fire({
+                    icon: "{{ session('swal')['type'] ?? 'success' }}",
+                    title: "{{ session('swal')['title'] ?? 'Berhasil' }}",
+                    text: "{{ session('swal')['text'] }}",
+                    timer: 2000,
+                    showConfirmButton: false,
+                    position: 'top-end', // Toast style agar tidak ganggu
+                    toast: true
+                });
+            @endif
+
+            // Logic SweetAlert Approve
+            document.querySelectorAll('.btn-approve').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const form = this.closest('form');
+                    Swal.fire({
+                        title: 'Setujui Akun?',
+                        text: "User akan mendapatkan akses.",
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#10b981',
+                        confirmButtonText: 'Ya',
+                        cancelButtonText: 'Batal',
+                        width: '300px' // Alert lebih kecil
+                    }).then((result) => {
+                        if (result.isConfirmed) form.submit();
+                    });
+                });
+            });
+
+            // Logic SweetAlert Reject
+            document.querySelectorAll('.btn-reject').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const form = this.closest('form');
+                    Swal.fire({
+                        title: 'Tolak Akun?',
+                        text: "User tidak akan bisa login.",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#ef4444',
+                        confirmButtonText: 'Tolak',
+                        cancelButtonText: 'Batal',
+                        width: '300px'
+                    }).then((result) => {
+                        if (result.isConfirmed) form.submit();
+                    });
+                });
+            });
+
+            // Logic SweetAlert Delete
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const form = this.closest('form');
+                    Swal.fire({
+                        title: 'Hapus Permanen?',
+                        text: "Data tidak bisa dikembalikan.",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        confirmButtonText: 'Hapus',
+                        cancelButtonText: 'Batal',
+                        width: '300px'
+                    }).then((result) => {
+                        if (result.isConfirmed) form.submit();
+                    });
+                });
+            });
+        });
+    </script>
+@endpush

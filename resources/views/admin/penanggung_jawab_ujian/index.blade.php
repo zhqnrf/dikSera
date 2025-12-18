@@ -1,124 +1,303 @@
 @extends('layouts.app')
 
-@section('title', 'Penanggung Jawab Ujian – Admin DIKSERA')
+@php
+    $pageTitle = 'Penanggung Jawab';
+    $pageSubtitle = 'Kelola data pengawas ujian dan pewawancara.';
+@endphp
+
+@section('title', 'Penanggung Jawab – Admin DIKSERA')
 
 @push('styles')
+    {{-- CSS SweetAlert --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
     <style>
+        /* Card Container */
         .content-card {
             background: #ffffff;
             border-radius: 16px;
-            border: 1px solid var(--border-soft, #e2e8f0);
+            border: 1px solid var(--border-soft);
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
-            padding: 32px;
+            padding: 24px;
         }
 
-        .btn-custom-primary {
-            background-color: var(--blue-main, #0d6efd);
-            color: white;
+        /* Search Input */
+        .search-input {
             border-radius: 8px;
-            padding: 8px 16px;
-            border: none;
+            border: 1px solid var(--border-soft);
+            font-size: 13px;
+            padding-left: 12px;
+            height: 38px;
         }
 
+        .search-input:focus {
+            border-color: var(--blue-main);
+            box-shadow: 0 0 0 3px var(--blue-soft);
+        }
+
+        /* Custom Table */
         .table-custom th {
-            font-size: 12px;
-            text-transform: uppercase;
+            background-color: var(--blue-soft-2);
+            color: var(--text-main);
             font-weight: 600;
-            color: #64748b;
-            background-color: #f8fafc;
-            border-bottom: 2px solid #e2e8f0;
+            font-size: 12px;
+            border-bottom: 2px solid #dbeafe;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             padding: 12px 16px;
+            vertical-align: middle;
         }
 
         .table-custom td {
-            padding: 12px 16px;
             vertical-align: middle;
-            border-bottom: 1px solid #f1f5f9;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--blue-soft-2);
+            font-size: 13px;
+            color: var(--text-main);
+        }
+
+        /* Avatar Inisial */
+        .avatar-initial {
+            width: 36px;
+            height: 36px;
+            background: #eff6ff;
+            color: #3b82f6;
+            font-weight: 700;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 14px;
+            margin-right: 12px;
+            border: 1px solid #dbeafe;
+        }
+
+        /* Badges */
+        .badge-soft {
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .badge-soft-primary {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        /* Pewawancara */
+        .badge-soft-warning {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+
+        /* Pengawas */
+        .badge-soft-secondary {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        /* Action Buttons */
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .btn-icon:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
     </style>
 @endpush
 
 @section('content')
-    <div class="row justify-content-center">
-        <div class="col-lg-12">
 
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h4 class="fw-bold m-0">Penanggung Jawab Ujian</h4>
-                <a href="{{ route('admin.penanggung-jawab.create') }}" class="btn btn-custom-primary shadow-sm">
-                    <i class="bi bi-plus-lg me-1"></i> Tambah Baru
-                </a>
-            </div>
+    <div class="content-card">
+        {{-- Header Tools --}}
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">
 
-            <div class="content-card">
-                @if (session('success'))
-                    <div class="alert alert-success border-0 bg-success bg-opacity-10 text-success mb-4 rounded-3">
-                        <i class="bi bi-check-circle me-1"></i> {{ session('success') }}
-                    </div>
-                @endif
+            {{-- Search Bar --}}
+            <form action="" method="GET" class="d-flex gap-2">
+                <input type="text" name="search" value="{{ request('search') }}"
+                    class="form-control form-control-sm search-input" placeholder="Cari nama atau jabatan..."
+                    style="width: 260px;">
+                <button class="btn btn-sm btn-light border" type="submit">
+                    <i class="bi bi-search"></i>
+                </button>
+            </form>
 
-                <div class="table-responsive">
-                    <table class="table table-hover table-custom mb-0">
-                        <thead>
-                            <tr>
-                                <th width="5%">No</th>
-                                <th>Nama Lengkap</th>
-                                <th>Tipe</th> <th>Jabatan</th>
-                                <th>No. HP</th>
-                                <th class="text-end">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($data as $key => $item)
-                                <tr>
-                                    <td>{{ $key + 1 }}</td>
-                                    <td class="fw-bold text-dark">{{ $item->nama }}</td>
+            {{-- Create Button --}}
+            <a href="{{ route('admin.penanggung-jawab.create') }}" class="btn btn-sm btn-primary px-3 shadow-sm"
+                style="border-radius: 8px; height: 38px; display: flex; align-items: center;">
+                <i class="bi bi-plus-lg me-2"></i> Tambah Data
+            </a>
+        </div>
 
-                                    <td>
-                                        @if($item->type == 'pewawancara')
-                                            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-10">
-                                                Pewawancara
-                                            </span>
-                                        @elseif($item->type == 'ujian')
-                                            <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-10">
-                                                Pengawas Ujian
-                                            </span>
-                                        @else
-                                            <span class="badge bg-secondary">-</span>
-                                        @endif
-                                    </td>
+        <div class="table-responsive">
+            <table class="table table-custom table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th width="5%" class="text-center">No</th>
+                        <th>Nama & Identitas</th>
+                        <th>Tipe Petugas</th>
+                        <th>Jabatan</th>
+                        <th>Kontak</th>
+                        <th class="text-center" width="120">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($data as $key => $item)
+                        <tr>
+                            <td class="text-center text-muted">{{ $loop->iteration }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    {{-- Logic Avatar Inisial --}}
+                                    @php
+                                        $initials = collect(explode(' ', $item->nama))
+                                            ->map(function ($word) {
+                                                return strtoupper(substr($word, 0, 1));
+                                            })
+                                            ->take(2)
+                                            ->join('');
+                                    @endphp
+                                    <div class="avatar-initial">
+                                        {{ $initials }}
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-dark">{{ $item->nama }}</div>
+                                        <div class="text-muted small" style="font-size: 11px;">NIP/ID:
+                                            {{ $item->nip ?? '-' }}</div>
+                                    </div>
+                                </div>
+                            </td>
 
-                                    <td><span class="badge bg-light text-dark border">{{ $item->jabatan }}</span></td>
-                                    <td>{{ $item->no_hp }}</td>
-                                    <td class="text-end">
-                                        <a href="{{ route('admin.penanggung-jawab.edit', $item->id) }}"
-                                            class="btn btn-sm btn-outline-primary me-1" style="border-radius: 6px;">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <form action="{{ route('admin.penanggung-jawab.destroy', $item->id) }}"
-                                            method="POST" class="d-inline"
-                                            onsubmit="return confirm('Yakin ingin menghapus data ini?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-outline-danger"
-                                                style="border-radius: 6px;">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="text-center py-5 text-muted">
-                                        <i class="bi bi-person-x display-6 d-block mb-2 opacity-25"></i>
-                                        Belum ada data penanggung jawab.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                            <td>
+                                @if ($item->type == 'pewawancara')
+                                    <span class="badge-soft badge-soft-primary">
+                                        <i class="bi bi-mic"></i> Pewawancara
+                                    </span>
+                                @elseif($item->type == 'ujian')
+                                    <span class="badge-soft badge-soft-warning">
+                                        <i class="bi bi-eye"></i> Pengawas Ujian
+                                    </span>
+                                @else
+                                    <span class="badge-soft badge-soft-secondary">-</span>
+                                @endif
+                            </td>
+
+                            <td>
+                                <span class="text-dark">{{ $item->jabatan }}</span>
+                            </td>
+
+                            <td>
+                                @if ($item->no_hp)
+                                    <a href="https://wa.me/{{ preg_replace('/^0/', '62', preg_replace('/[^0-9]/', '', $item->no_hp)) }}"
+                                        target="_blank"
+                                        class="text-decoration-none text-muted small d-flex align-items-center gap-1 hover-text-primary">
+                                        <i class="bi bi-whatsapp text-success"></i> {{ $item->no_hp }}
+                                    </a>
+                                @else
+                                    <span class="text-muted small">-</span>
+                                @endif
+                            </td>
+
+                            <td class="text-center">
+                                <div class="d-flex justify-content-center gap-1">
+                                    {{-- Edit --}}
+                                    <a href="{{ route('admin.penanggung-jawab.edit', $item->id) }}"
+                                        class="btn btn-icon btn-outline-primary" data-bs-toggle="tooltip" title="Edit Data">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+
+                                    {{-- Delete --}}
+                                    <form action="{{ route('admin.penanggung-jawab.destroy', $item->id) }}" method="POST"
+                                        class="d-inline delete-form">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-icon btn-outline-danger"
+                                            data-bs-toggle="tooltip" title="Hapus Data">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="text-center py-5">
+                                <div class="text-muted mb-2">
+                                    <i class="bi bi-person-badge display-6 opacity-25"></i>
+                                </div>
+                                <span class="text-muted small">Belum ada data penanggung jawab.</span>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        {{-- Pagination (Optional, jika pakai paginate) --}}
+        <div class="mt-4">
+            {{ $data->withQueryString()->links('vendor.pagination.diksera') }}
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    {{-- SweetAlert JS --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Init Tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+
+            // Handle Flash Message Success
+            @if (session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: "{{ session('success') }}",
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            @endif
+
+            // Handle Delete Confirmation
+            const deleteForms = document.querySelectorAll('.delete-form');
+            deleteForms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    Swal.fire({
+                        title: 'Hapus Data?',
+                        text: "Data penanggung jawab ini akan dihapus permanen!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Ya, Hapus!',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            this.submit();
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+@endpush
