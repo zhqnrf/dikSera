@@ -155,27 +155,25 @@ class FormController extends Controller
             'kategori'    => 'nullable|string',
         ]);
 
-        $existingIds = DB::table('form_questions')
-            ->where('form_id', $form->id)
-            ->pluck('bank_soal_id')
-            ->toArray();
+        $form->questions()->detach();
 
-        $query = DB::table('bank_soals');
+        $query = BankSoal::query();
 
-        if ($request->kategori && $request->kategori != 'Semua') {
+        if ($request->filled('kategori') && $request->kategori != 'Semua') {
             $query->where('kategori', $request->kategori);
         }
 
-        $randomSoalIds = $query->whereNotIn('id', $existingIds)
-            ->inRandomOrder()
-            ->limit($request->jumlah_soal)
+        // Ambil ID secara acak
+        $randomSoalIds = $query->inRandomOrder()
+            ->take((int) $request->jumlah_soal)
             ->pluck('id')
             ->toArray();
 
         if (empty($randomSoalIds)) {
-            return back()->with('error', 'Maaf, stok soal tidak cukup atau tidak ditemukan untuk kategori ini.');
+            return back()->with('error', 'Stok soal tidak cukup untuk kategori ini.');
         }
 
+        // Siapkan Data Insert
         $dataInsert = [];
         $now = Carbon::now();
 
@@ -183,16 +181,16 @@ class FormController extends Controller
             $dataInsert[] = [
                 'form_id'      => $form->id,
                 'bank_soal_id' => $soalId,
-                'bobot'        => 1, 
+                'bobot'        => 1,
                 'created_at'   => $now,
                 'updated_at'   => $now,
             ];
         }
 
-        // Eksekusi Insert
+        // Insert ke database
         DB::table('form_questions')->insert($dataInsert);
 
-        return back()->with('success', 'Berhasil menambahkan ' . count($randomSoalIds) . ' soal acak.');
+        return back()->with('success', 'Berhasil mereset dan mengambil ' . count($dataInsert) . ' soal acak.');
     }
 
     public function hasil(Form $form)
