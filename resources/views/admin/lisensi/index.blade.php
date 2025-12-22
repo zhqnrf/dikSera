@@ -151,6 +151,11 @@
             background: #1e293b;
             color: #fff;
         }
+
+        /* Utility */
+        .w-fit {
+            width: fit-content;
+        }
     </style>
 @endpush
 
@@ -176,25 +181,30 @@
 
     <div class="content-card">
 
-        {{-- Toolbar: Search --}}
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <form action="" method="GET" class="d-flex gap-2">
+        {{-- Toolbar: Search & Filter dalam SATU Form --}}
+        <form action="{{ route('admin.lisensi.index') }}" method="GET"
+            class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">
+
+            {{-- Bagian Search --}}
+            <div class="d-flex gap-2 w-100 w-md-auto">
                 <input type="text" name="search" value="{{ request('search') }}" class="form-control search-input"
-                    placeholder="Cari nama, nomor, atau bidang..." style="width: 300px;">
+                    placeholder="Cari nama, nomor, atau bidang..." style="min-width: 300px;">
                 <button class="btn btn-light border" type="submit">
                     <i class="bi bi-search"></i>
                 </button>
-            </form>
+            </div>
 
-            {{-- Filter Status --}}
-            <div class="d-flex gap-2">
-                <select class="form-select form-select-sm" style="border-radius: 8px; width: 150px;">
+            {{-- Bagian Filter Status --}}
+            <div class="d-flex gap-2 w-100 w-md-auto">
+                {{-- onchange="this.form.submit()" agar otomatis reload saat dipilih --}}
+                <select name="status" class="form-select form-select-sm" style="border-radius: 8px; width: 150px;"
+                    onchange="this.form.submit()">
                     <option value="">Semua Status</option>
-                    <option value="aktif">Aktif</option>
-                    <option value="expired">Expired</option>
+                    <option value="aktif" {{ request('status') == 'aktif' ? 'selected' : '' }}>Aktif</option>
+                    <option value="expired" {{ request('status') == 'expired' ? 'selected' : '' }}>Expired</option>
                 </select>
             </div>
-        </div>
+        </form>
 
         {{-- Table --}}
         <div class="table-responsive">
@@ -213,7 +223,8 @@
                 <tbody>
                     @forelse($data as $item)
                         <tr>
-                            <td class="text-center text-muted">{{ $loop->iteration }}</td>
+                            {{-- Penomoran Pagination --}}
+                            <td class="text-center text-muted">{{ $loop->iteration + $data->firstItem() - 1 }}</td>
 
                             {{-- Kolom 1: Identitas User --}}
                             <td>
@@ -236,7 +247,7 @@
                                 </div>
                             </td>
 
-                            {{-- Kolom 2: Info Lisensi, Bidang & KFK --}}
+                            {{-- Kolom 2: Info Lisensi, Bidang & KFK (MULTI SELECT DISPLAY) --}}
                             <td>
                                 <div class="fw-bold text-dark mb-1">{{ $item->nama }}</div>
                                 <div class="d-flex flex-column gap-1">
@@ -247,14 +258,37 @@
                                         No: {{ $item->nomor }}
                                     </span>
 
-                                    {{-- NEW: Bidang & KFK --}}
-                                    <div class="d-flex align-items-center gap-2 mt-1">
-                                        <span class="badge-soft badge-purple" data-bs-toggle="tooltip" title="Jenjang KFK">
-                                            {{ $item->kfk }}
-                                        </span>
-                                        <span class="text-dark small fw-semibold" style="font-size: 11px;">
-                                            {{ $item->bidang }}
-                                        </span>
+                                    {{-- NEW: Bidang & KFK (Looping Array) --}}
+                                    <div class="mt-1">
+                                        <div class="text-dark small fw-semibold mb-1" style="font-size: 11px;">
+                                            <i class="bi bi-briefcase me-1"></i> {{ $item->bidang }}
+                                        </div>
+
+                                        {{-- LOGIKA DECODE JSON KFK --}}
+                                        <div class="d-flex flex-wrap gap-1">
+                                            @php
+                                                $kfks = $item->kfk;
+                                                // Cek jika string JSON, maka decode. Jika tidak (sudah array), biarkan.
+                                                if (is_string($kfks)) {
+                                                    $kfks = json_decode($kfks, true);
+                                                    // Jika gagal decode atau bukan array, jadikan array manual (fallback)
+                                                    if (!is_array($kfks)) {
+                                                        $kfks = [$item->kfk];
+                                                    }
+                                                }
+                                                // Handle null/kosong
+                                                if (empty($kfks)) {
+                                                    $kfks = [];
+                                                }
+                                            @endphp
+
+                                            @foreach ($kfks as $pk)
+                                                <span class="badge-soft badge-purple"
+                                                    style="padding: 2px 6px; font-size: 10px;">
+                                                    {{ $pk }}
+                                                </span>
+                                            @endforeach
+                                        </div>
                                     </div>
                                 </div>
                             </td>
@@ -270,7 +304,6 @@
                                         <span class="badge-soft badge-info">
                                             <i class="bi bi-mic"></i> PG + Wawancara
                                         </span>
-                                        {{-- TAMBAHAN BARU --}}
                                     @elseif($item->metode_perpanjangan == 'interview_only')
                                         <span class="badge-soft badge-purple">
                                             <i class="bi bi-person-video2"></i> Hanya Wawancara
@@ -285,7 +318,7 @@
                                         <span>
                                             {{ \Carbon\Carbon::parse($item->tgl_mulai)->format('d M') }}
                                             s/d
-                                            {{ \Carbon\Carbon::parse($item->tgl_selesai)->format('d M Y') }}
+                                            {{ \Carbon\Carbon::parse($item->tgl_diselenggarakan)->format('d M Y') }}
                                         </span>
                                     </div>
                                 </div>
@@ -365,7 +398,8 @@
 
         {{-- Pagination --}}
         <div class="mt-4">
-            {{ $data->withQueryString()->links('vendor.pagination.diksera') }}
+            {{-- Menggunakan withQueryString() agar parameter search & filter tetap ada saat pindah halaman --}}
+            {{ $data->withQueryString()->links() }}
         </div>
     </div>
 
@@ -383,7 +417,19 @@
                 return new bootstrap.Tooltip(tooltipTriggerEl)
             });
 
-            // Handle Flash Message
+            // --- Handle Flash Message dari Controller (session('swal')) ---
+            @if (session('swal'))
+                var swalData = {!! json_encode(session('swal')) !!};
+                Swal.fire({
+                    icon: swalData.icon,
+                    title: swalData.title,
+                    text: swalData.text,
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            @endif
+
+            // Fallback untuk session success biasa
             @if (session('success'))
                 Swal.fire({
                     icon: 'success',
@@ -394,7 +440,7 @@
                 });
             @endif
 
-            // Handle Delete
+            // Handle Delete Confirmation
             const deleteForms = document.querySelectorAll('.delete-form');
             deleteForms.forEach(form => {
                 form.addEventListener('submit', function(e) {

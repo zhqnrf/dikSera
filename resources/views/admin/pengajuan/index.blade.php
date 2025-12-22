@@ -359,21 +359,9 @@
                             <option value="belum" {{ request('ujian') == 'belum' ? 'selected' : '' }}>Belum Ujian</option>
                         </select>
                     </div>
-                    <div class="col-lg-2 col-md-6 d-flex gap-2">
-                        <button type="submit" class="btn btn-primary w-100 fw-bold btn-sm"
-                            style="height: 38px;">Filter</button>
-                        @if (request()->anyFilled(['search', 'status', 'sertifikat', 'ujian']))
-                            <a href="{{ route('admin.pengajuan.index') }}"
-                                class="btn btn-light border btn-sm d-flex align-items-center justify-content-center"
-                                style="height: 38px; width: 38px;" title="Reset">
-                                <i class="bi bi-x-lg"></i>
-                            </a>
-                        @endif
-                    </div>
                 </div>
             </form>
         </div>
-
         {{-- TABLE SECTION --}}
         <div class="table-card">
             <div class="table-responsive">
@@ -628,34 +616,45 @@
 
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> {{-- Tambahkan SweetAlert untuk Notif Copy --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Init Choices
+            // 1. Ambil Elemen Form
+            const filterForm = document.querySelector('form[action="{{ route('admin.pengajuan.index') }}"]');
+
+            // 2. Config Choices.js
             const config = {
                 searchEnabled: true,
                 itemSelectText: '',
                 shouldSort: false,
-                placeholder: true
+                placeholder: true,
+                allowHTML: true // Penting untuk Choices v10+
             };
-            new Choices('#choice-status', {
-                ...config,
-                searchEnabled: false
-            });
-            new Choices('#choice-sertifikat', config);
-            new Choices('#choice-ujian', {
-                ...config,
-                searchEnabled: false
+
+            // 3. Init Choices & Tambah Event Listener untuk Auto-Submit
+            const selects = [
+                '#choice-status',
+                '#choice-sertifikat',
+                '#choice-ujian'
+            ];
+
+            selects.forEach(selector => {
+                const element = document.querySelector(selector);
+                if (element) {
+                    const choices = new Choices(selector, {
+                        ...config,
+                        searchEnabled: selector === '#choice-sertifikat' // Hanya search di sertifikat
+                    });
+
+                    // Event listener: Saat dropdown berubah, submit form
+                    element.addEventListener('change', function() {
+                        filterForm.submit();
+                    });
+                }
             });
 
-            // Tooltips
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-            var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl)
-            })
-
-            // Bulk Logic
+            // 4. Bulk Logic (Kode Lama Anda)
             const checkAll = document.getElementById('checkAll');
             const checkItems = document.querySelectorAll('.check-item');
             const bulkActionBar = document.getElementById('bulkActionBar');
@@ -669,17 +668,19 @@
                 else bulkActionBar.classList.remove('active');
             }
 
-            checkAll.addEventListener('change', function() {
-                checkItems.forEach(item => {
-                    if (!item.disabled) item.checked = this.checked;
+            if(checkAll){
+                checkAll.addEventListener('change', function() {
+                    checkItems.forEach(item => {
+                        if (!item.disabled) item.checked = this.checked;
+                    });
+                    updateBulkBar();
                 });
-                updateBulkBar();
-            });
+            }
 
             checkItems.forEach(item => item.addEventListener('change', updateBulkBar));
         });
 
-        // FUNGSI COPY LINK BARU
+        // 5. Fungsi Copy Link (Kode Lama Anda)
         function copyLink(url) {
             navigator.clipboard.writeText(url).then(() => {
                 Swal.fire({
@@ -696,12 +697,15 @@
             });
         }
 
+        // 6. Fungsi Submit Bulk
         function submitBulk(formId, msg) {
             if (!confirm(msg)) return;
             const form = document.getElementById(formId);
-            let containerId = 'bulkApproveInputs';
-            if (formId === 'formBulkScore') containerId = 'bulkScoreInputs';
-            if (formId === 'formBulkInterview') containerId = 'bulkInterviewInputs';
+            let containerId = '';
+
+            if (formId === 'formBulkApprove') containerId = 'bulkApproveInputs';
+            else if (formId === 'formBulkScore') containerId = 'bulkScoreInputs';
+            else if (formId === 'formBulkInterview') containerId = 'bulkInterviewInputs';
 
             const container = document.getElementById(containerId);
             container.innerHTML = '';
