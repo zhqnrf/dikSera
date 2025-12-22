@@ -303,8 +303,10 @@
                                         <option value="">Pilih Jenjang KFK...</option>
                                         @php
                                             $kfks = [
-                                                'PK 1', 'PK 1.5', 'PK 2', 'PK 2.5', 'PK 3',
-                                                'PK 3.5', 'PK 4', 'PK 4.5', 'PK 5'
+                                                    'Pra PK',
+                                                    'Pra BK',
+                                                    'PK 1', 'PK 1.5', 'PK 2', 'PK 2.5', 'PK 3', 'PK 3.5', 'PK 4', 'PK 4.5', 'PK 5',
+                                                    'BK 1', 'BK 1.5', 'BK 2', 'BK 2.5', 'BK 3', 'BK 3.5', 'BK 4', 'BK 4.5', 'BK 5'
                                             ];
                                         @endphp
                                         @foreach ($kfks as $kfk)

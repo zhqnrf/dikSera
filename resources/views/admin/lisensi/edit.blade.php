@@ -190,7 +190,8 @@
 
                 <div class="form-card">
                     @if ($errors->any())
-                        <div class="alert alert-danger border-0 bg-danger bg-opacity-10 text-danger mb-4 rounded-2 py-2 px-3 small">
+                        <div
+                            class="alert alert-danger border-0 bg-danger bg-opacity-10 text-danger mb-4 rounded-2 py-2 px-3 small">
                             <ul class="mb-0 ps-3">
                                 @foreach ($errors->all() as $e)
                                     <li>{{ $e }}</li>
@@ -279,10 +280,32 @@
                                     <select name="kfk[]" id="choice-kfk-edit" class="form-select" multiple required>
                                         <option value="">Pilih Jenjang KFK...</option>
                                         @php
-                                            $kfks = ['PK 1', 'PK 1.5', 'PK 2', 'PK 2.5', 'PK 3', 'PK 3.5', 'PK 4', 'PK 4.5', 'PK 5'];
+                                            // 1. UPDATE DISINI: Tambahkan pilihan Pra dan BK
+                                            $kfks = [
+                                                'Pra PK',
+                                                'Pra BK',
+                                                'PK 1',
+                                                'PK 1.5',
+                                                'PK 2',
+                                                'PK 2.5',
+                                                'PK 3',
+                                                'PK 3.5',
+                                                'PK 4',
+                                                'PK 4.5',
+                                                'PK 5',
+                                                'BK 1',
+                                                'BK 1.5',
+                                                'BK 2',
+                                                'BK 2.5',
+                                                'BK 3',
+                                                'BK 3.5',
+                                                'BK 4',
+                                                'BK 4.5',
+                                                'BK 5',
+                                            ];
 
-                                            // LOGIKA EDIT:
-                                            // Ambil data lama (old) atau data dari database ($data->kfk)
+                                            // 2. LOGIKA EDIT (Sudah Benar):
+                                            // Ambil data lama (old) saat validasi gagal, atau data dari database ($data->kfk)
                                             $currentKfk = old('kfk', $data->kfk);
 
                                             // Jika data dari database berupa JSON String (misal: "[\"PK 1\",\"PK 2\"]"), decode dulu
@@ -297,7 +320,7 @@
                                         @endphp
 
                                         @foreach ($kfks as $kfk)
-                                            <option value="{{ $kfk }}"
+                                            <option value="{{ $kfk }}" {{-- Cek apakah item ini ada di dalam koleksi data tersimpan --}}
                                                 {{ $kfkCollection->contains($kfk) ? 'selected' : '' }}>
                                                 {{ $kfk }}
                                             </option>
