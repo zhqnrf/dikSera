@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @php
-    $pageTitle = 'Dokumen Lisensi & Sertifikasi';
+    $pageTitle = 'Kredensialing & Sertifikasi';
     $pageSubtitle = 'Kelola data STR, SIP, dan sertifikat kompetensi milik ' . $user->name;
 @endphp
 
@@ -262,7 +262,7 @@
             <div class="content-card">
                 <div class="section-title">
                     <i class="bi bi-award text-warning"></i>
-                    Dokumen Lisensi Lainnya
+                    Kredensialing Lainnya
                 </div>
 
                 <div class="table-responsive">

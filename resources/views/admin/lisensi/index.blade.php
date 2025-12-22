@@ -160,7 +160,7 @@
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">
         <div>
             <h4 class="fw-bold mb-1">Data Lisensi Perawat</h4>
-            <p class="text-muted small mb-0">Monitor kompetensi, masa berlaku, dan dokumen lisensi.</p>
+            <p class="text-muted small mb-0">Monitor kompetensi, masa berlaku, dan Kredensialing.</p>
         </div>
 
         <div class="d-flex gap-2">

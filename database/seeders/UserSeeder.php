@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
                 'password'         => Hash::make('password'),
                 'role'             => 'admin',
                 'telegram_chat_id' => null,
-                'status_akun'      => 'active', // <--- Tambahkan ini
+                'status_akun'      => 'active',
             ]
         );
 
@@ -30,7 +30,7 @@ class UserSeeder extends Seeder
                 'password'         => Hash::make('password'),
                 'role'             => 'perawat',
                 'telegram_chat_id' => null,
-                'status_akun'      => 'active', // <--- Tambahkan ini agar bisa langsung login
+                'status_akun'      => 'active',
             ]
         );
 
@@ -42,7 +42,43 @@ class UserSeeder extends Seeder
                 'password'         => Hash::make('password'),
                 'role'             => 'pewawancara',
                 'telegram_chat_id' => null,
-                'status_akun'      => 'active', // <--- Tambahkan ini
+                'status_akun'      => 'active',
+            ]
+        );
+
+        // 4. Perawat Satu
+        User::updateOrCreate(
+            ['email' => 'perawat1@gmail'],
+            [
+                'name'             => 'Perawat Satu',
+                'password'         => Hash::make('password'),
+                'role'             => 'perawat',
+                'telegram_chat_id' => null,
+                'status_akun'      => 'active',
+            ]
+        );
+
+        // 5. Perawat Dua
+        User::updateOrCreate(
+            ['email' => 'perawat2@gmail'],
+            [
+                'name'             => 'Perawat Dua',
+                'password'         => Hash::make('password'),
+                'role'             => 'perawat',
+                'telegram_chat_id' => null,
+                'status_akun'      => 'active',
+            ]
+        );
+
+        // 6. Perawat Tiga
+        User::updateOrCreate(
+            ['email' => 'perawat3@gmail'],
+            [
+                'name'             => 'Perawat Tiga',
+                'password'         => Hash::make('password'),
+                'role'             => 'perawat',
+                'telegram_chat_id' => null,
+                'status_akun'      => 'active',
             ]
         );
     }

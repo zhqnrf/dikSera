@@ -99,31 +99,42 @@
 
                     <div class="row g-3">
                         @foreach($sections as $sec)
-                        <div class="col-md-6">
-                            <div class="d-flex align-items-center p-3 rounded-3 border h-100 section-item {{ $sec['status'] ? 'border-success-subtle bg-success-subtle bg-opacity-10' : 'bg-white' }}">
-                                <div class="me-3">
-                                    @if($sec['status'])
-                                        <i class="bi bi-check-circle-fill text-success fs-4"></i>
-                                    @else
-                                        <div class="rounded-circle border border-2 border-secondary d-flex align-items-center justify-content-center text-secondary" style="width: 24px; height: 24px; font-size: 10px;">
-                                            <i class="bi bi-circle-fill text-white"></i>
-                                        </div>
-                                    @endif
-                                </div>
-                                <div class="flex-grow-1">
-                                    <h6 class="mb-0 fw-bold small text-dark">{{ $sec['nama'] }}</h6>
-                                    <small class="{{ $sec['status'] ? 'text-success' : 'text-muted' }}" style="font-size: 11px;">
-                                        {{ $sec['status'] ? 'Lengkap' : ($sec['wajib'] ? 'Wajib Diisi' : 'Opsional') }}
-                                    </small>
-                                </div>
-                                @if(!$sec['status'])
-                                    <a href="{{ route('register.perawat') }}" class="btn btn-sm btn-light border text-primary rounded-circle shadow-sm" style="width: 32px; height: 32px; padding: 0; line-height: 30px;">
-                                        <i class="bi bi-arrow-right"></i>
-                                    </a>
-                                @endif
-                            </div>
-                        </div>
-                        @endforeach
+<div class="col-md-6">
+    <div class="d-flex align-items-center p-3 rounded-3 border h-100 section-item {{ $sec['status'] ? 'border-success-subtle bg-success-subtle bg-opacity-10' : 'bg-white' }}">
+        <div class="me-3">
+            @if($sec['status'])
+                <i class="bi bi-check-circle-fill text-success fs-4"></i>
+            @else
+                <div class="rounded-circle border border-2 border-secondary d-flex align-items-center justify-content-center text-secondary" style="width: 24px; height: 24px; font-size: 10px;">
+                    <i class="bi bi-circle-fill text-white"></i>
+                </div>
+            @endif
+        </div>
+        <div class="flex-grow-1">
+            <h6 class="mb-0 fw-bold small text-dark">{{ $sec['nama'] }}</h6>
+            <small class="{{ $sec['status'] ? 'text-success' : 'text-muted' }}" style="font-size: 11px;">
+                {{ $sec['status'] ? 'Lengkap' : ($sec['wajib'] ? 'Wajib Diisi' : 'Opsional') }}
+            </small>
+        </div>
+        @if(!$sec['status'])
+            @php
+                $routes = [
+                    'bio'   => route('perawat.identitas.edit'),
+                    'edu'   => route('perawat.pendidikan.index'),
+                    'job'   => route('perawat.pekerjaan.index'),
+                    'train' => route('perawat.pelatihan.index'),
+                    'fam'   => route('perawat.keluarga.index'),
+                    'doc'   => route('perawat.str.index'),
+                ];
+            @endphp
+            <a href="{{ $routes[$sec['id']] ?? '#' }}" class="btn btn-sm btn-light border text-primary rounded-circle shadow-sm" style="width: 32px; height: 32px; padding: 0; line-height: 30px;">
+                <i class="bi bi-arrow-right"></i>
+            </a>
+        @endif
+    </div>
+</div>
+@endforeach
+
                     </div>
                 </div>
             </div>

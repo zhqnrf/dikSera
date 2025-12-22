@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sertifikat Modern Blue No Circle</title>
+    <style>
+        /* Import Font Modern */
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Poppins:wght@300;500;700&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #e3f2fd; /* Biru muda background luar */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .certificate-container {
+            width: 297mm;
+            height: 210mm;
+            background: #fff;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0, 82, 204, 0.15); /* Bayangan biru halus */
+            display: flex;
+            overflow: hidden;
+            color: #0d47a1; /* Text default biru tua */
+        }
+
+        /* --- SIDEBAR KIRI (Dominan Biru) --- */
+        .sidebar {
+            width: 30%;
+            /* Gradient Biru Mewah */
+            background: linear-gradient(160deg, #0d47a1 0%, #1976d2 50%, #42a5f5 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Pola Lingkaran Dekoratif Sidebar */
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: -60px; left: -60px;
+            width: 250px; height: 250px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+        .sidebar::after {
+            content: '';
+            position: absolute;
+            bottom: 40px; right: -40px;
+            width: 180px; height: 180px;
+            border: 4px solid rgba(255,255,255,0.15);
+            border-radius: 50%;
+        }
+
+        /* PERUBAHAN DISINI: Logo Side tanpa bingkai bundar */
+        .side-logo {
+            width: 120px; /* Ukuran disesuaikan */
+            height: auto;
+            margin-bottom: 30px;
+            /* Memberi bayangan agar logo tidak tenggelam di background biru */
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3)); 
+        }
+
+        .side-title {
+            text-align: center;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 10pt;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #e3f2fd; /* Biru sangat muda */
+            margin-bottom: 50px;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+            padding-bottom: 10px;
+            width: 85%;
+        }
+
+        /* Bingkai Foto Biru */
+        .photo-frame {
+            width: 140px;
+            height: 190px;
+            background: rgba(255,255,255,0.15);
+            border: 2px solid rgba(255,255,255,0.5);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin-bottom: auto;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .photo-frame img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+        .photo-placeholder-text {
+            font-size: 9pt; color: #e3f2fd; font-weight: bold;
+        }
+
+        /* Badge PK-2 */
+        .badge-modern {
+            width: 100px; height: 100px;
+            border: 3px solid #fff; /* Border putih */
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: rotate(45deg);
+            margin-bottom: 50px;
+            position: relative;
+            background: rgba(13, 71, 161, 0.4); /* Biru tua transparan */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .badge-inner {
+            transform: rotate(-45deg);
+            text-align: center;
+        }
+        .badge-inner span {
+            display: block;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 26pt;
+            color: #fff; /* Teks putih */
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            line-height: 1;
+        }
+        .badge-inner small {
+            font-size: 7pt;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #bbdefb;
+        }
+
+        /* --- CONTENT KANAN --- */
+        .main-content {
+            width: 70%;
+            padding: 50px 60px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Watermark */
+        .bg-watermark {
+            position: absolute;
+            right: -50px;
+            bottom: -50px;
+            width: 500px;
+            opacity: 0.05;
+            z-index: 0;
+            pointer-events: none;
+            /* Membuat watermark agak kebiruan */
+            filter: sepia(100%) hue-rotate(190deg) saturate(500%); 
+        }
+
+        /* Header */
+        .header-modern {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 10;
+        }
+        .instansi-info h2 {
+            margin: 0;
+            font-size: 14pt;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: #1565c0; /* Biru Instansi */
+        }
+        .instansi-info p {
+            margin: 5px 0 0 0;
+            font-size: 9pt;
+            color: #546e7a; /* Biru keabuan (bukan abu mati) */
+            max-width: 400px;
+        }
+        
+        .cert-number {
+            font-family: 'Courier New', monospace;
+            font-size: 10pt;
+            color: #1e88e5; /* Biru terang */
+            text-align: right;
+            border: 1px solid #bbdefb; /* Border biru muda */
+            padding: 5px 12px;
+            background: #e3f2fd; /* Bg biru muda */
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        /* Judul Besar */
+        .big-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 32pt;
+            font-weight: 800;
+            color: #0d47a1; /* Biru paling gelap */
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            margin: 0;
+            position: relative;
+            z-index: 10;
+        }
+        .big-title span {
+            color: #2196f3; /* Biru cerah (Material Blue) */
+        }
+
+        .subtitle {
+            font-size: 12pt;
+            color: #1976d2; /* Biru sedang */
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Nama Peserta */
+        .candidate-name {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 26pt;
+            font-weight: 700;
+            color: #01579b; /* Biru laut dalam */
+            border-left: 6px solid #2979ff; /* Garis aksen biru elektrik */
+            padding-left: 20px;
+            margin: 20px 0 5px 0;
+            position: relative;
+            z-index: 10;
+            background: linear-gradient(90deg, #e3f2fd 0%, rgba(255,255,255,0) 80%); /* Gradasi latar tipis */
+        }
+        .candidate-id {
+            padding-left: 26px;
+            color: #0277bd;
+            font-weight: 600;
+            font-size: 11pt;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Deskripsi Kompetensi - Kotak Biru Muda */
+        .description-box {
+            background: #f1f8ff; /* Sangat muda biru */
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #bbdefb;
+            position: relative;
+            z-index: 10;
+        }
+        .description-text {
+            font-size: 11pt;
+            line-height: 1.6;
+            color: #37474f; /* Biru gelap hampir hitam (biar baca enak) */
+        }
+        .highlight {
+            color: #01579b; /* Biru tebal */
+            font-weight: 800;
+            text-decoration: underline;
+            text-decoration-color: #81d4fa;
+        }
+
+        .event-info {
+            font-size: 10pt;
+            color: #455a64; /* Biru grey */
+            margin-top: 15px;
+            border-top: 1px dashed #90caf9;
+            padding-top: 10px;
+        }
+
+        /* Footer Signature */
+        .footer-sig {
+            margin-top: auto;
+            display: flex;
+            justify-content: flex-end;
+            position: relative;
+            z-index: 10;
+        }
+        .sig-block {
+            text-align: center;
+            width: 260px;
+        }
+        .sig-place-date {
+            font-size: 10pt;
+            color: #1565c0;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        .sig-title {
+            font-weight: 700;
+            font-size: 10pt;
+            color: #0d47a1;
+            margin-bottom: 10px;
+        }
+        .sig-image-area {
+            height: 80px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        /* Garis TTD Biru */
+        .sig-line {
+            width: 100%;
+            height: 2px;
+            background: #1565c0;
+            margin-top: 5px;
+        }
+        .sig-name {
+            font-weight: 700;
+            font-size: 11pt;
+            margin-top: 5px;
+            color: #0d47a1;
+        }
+        .sig-nip {
+            font-size: 9pt;
+            color: #1976d2;
+            font-weight: 600;
+        }
+
+        @media print {
+            body { background: none; -webkit-print-color-adjust: exact; }
+            .certificate-container { box-shadow: none; width: 100%; height: 100%; page-break-after: always; }
+            @page { size: A4 landscape; margin: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="certificate-container">
+        
+        <div class="sidebar">
+            <img src="https://rsudslg.kedirikab.go.id/asset_compro/img/logo/Logo.png" class="side-logo" alt="Logo RSUD">
+            
+            <div class="side-title">
+                PEMERINTAH KABUPATEN KEDIRI<br>
+                DINAS KESEHATAN<br>
+                UOBK RSUD SLG
+            </div>
+
+            <div class="photo-frame">
+                <span class="photo-placeholder-text">FOTO 3x4</span>
+            </div>
+
+            <div class="badge-modern">
+                <div class="badge-inner">
+                    <small>LEVEL</small>
+                    <span>PK-2</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <img src="https://rsudslg.kedirikab.go.id/asset_compro/img/logo/Logo.png" class="bg-watermark" alt="Watermark">
+
+            <div class="header-modern">
+                <div class="instansi-info">
+                    <h2>SERTIFIKASI PROFESI</h2>
+                    <p>Jl. Galuh Candra Kirana Ds. Tugurejo Kec. Ngasem<br>website: rsudslg.kedirikab.go.id</p>
+                </div>
+                <div class="cert-number">
+                    NO: 188/4150/418.25.5/2022
+                </div>
+            </div>
+
+            <h1 class="big-title">SERTIFIKAT <span>KOMPETENSI</span></h1>
+            <div class="subtitle">Diberikan sebagai pengakuan kompetensi kepada:</div>
+
+            <div class="candidate-name">WIDHI BAYU AJI, S.Kep.,Ns</div>
+            <div class="candidate-id">NIRP. 19900603 202002 3 001</div>
+
+            <div class="description-box">
+                <div class="description-text">
+                    Telah dinyatakan <strong>LULUS</strong> Uji Kompetensi Perawat Klinik 2.<br>
+                    Kelompok Fungsional Keperawatan <span class="highlight">KRITIS (ICVCU)</span> dengan predikat hasil <span class="highlight">"KOMPETEN"</span>.
+                </div>
+                <div class="event-info">
+                    Diselenggarakan: 01 – 02 SEPTEMBER 2022 oleh UOBK RSUD SLG Kediri<br>
+                    Berlaku hingga: <strong>06 SEPTEMBER 2025</strong>
+                </div>
+            </div>
+
+            <div class="footer-sig">
+                <div class="sig-block">
+                    <div class="sig-place-date">Kediri, 06 September 2022</div>
+                    <div class="sig-title">DIREKTUR UOBK RSUD SLG</div>
+                    
+                    <div class="sig-image-area">
+                        </div>
+                    
+                    <div class="sig-line"></div>
+                    <div class="sig-name">dr. TONY WIDYANTO, Sp.OG (K)</div>
+                    <div class="sig-nip">NIP. 19750714 200212 1 006</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

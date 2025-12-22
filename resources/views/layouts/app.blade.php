@@ -414,7 +414,7 @@
                         <div id="submenu-dokumen" class="nav-submenu {{ $isDokumenActive ? 'show' : '' }}">
 
                             <a href="{{ route('perawat.lisensi.index') }}" class="nav-linkx {{ request()->routeIs('perawat.lisensi.*') ? 'active' : '' }}">
-                                <i class="bi bi-file-earmark-text-fill"></i> Dokumen Lisensi
+                                <i class="bi bi-file-earmark-text-fill"></i> Kredensialing
                             </a>
                             <a href="{{ route('perawat.str.index') }}" class="nav-linkx {{ request()->routeIs('perawat.str.*') ? 'active' : '' }}">
                                 <i class="bi bi-file-earmark-text-fill"></i> Dokumen STR
@@ -511,10 +511,9 @@
                             <span class="link-text">Data Perawat</span>
                         </a>
 
-                        {{-- Dokumen Lisensi (Added from second code) --}}
                         <a href="{{ route('admin.lisensi.index') }}" class="nav-linkx {{ request()->routeIs('perawat.lisensi.*') ? 'active' : '' }}">
                             <i class="bi bi-file-earmark-fill"></i>
-                            <span class="link-text">Dokumen Lisensi</span>
+                            <span class="link-text">Kredensialing</span>
                         </a>
 
                          {{-- APPROVAL PENGAJUAN & WAWANCARA (MODUL 8) --}}
