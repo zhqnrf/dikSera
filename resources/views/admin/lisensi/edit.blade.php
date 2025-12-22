@@ -190,8 +190,7 @@
 
                 <div class="form-card">
                     @if ($errors->any())
-                        <div
-                            class="alert alert-danger border-0 bg-danger bg-opacity-10 text-danger mb-4 rounded-2 py-2 px-3 small">
+                        <div class="alert alert-danger border-0 bg-danger bg-opacity-10 text-danger mb-4 rounded-2 py-2 px-3 small">
                             <ul class="mb-0 ps-3">
                                 @foreach ($errors->all() as $e)
                                     <li>{{ $e }}</li>
@@ -206,11 +205,10 @@
 
                         <div class="row g-3">
 
-                            {{-- 1. Aturan Perpanjangan (PINDAH KE ATAS) --}}
+                            {{-- 1. Aturan Perpanjangan --}}
                             <div class="col-12">
                                 <div class="metode-wrapper">
                                     <div class="d-flex gap-3 align-items-center">
-                                        {{-- Ikon warna warning (orange) --}}
                                         <i class="bi bi-sliders text-warning fs-5"></i>
                                         <div class="flex-grow-1">
                                             <div class="row align-items-center">
@@ -221,7 +219,6 @@
                                                         untuk lisensi ini.</div>
                                                 </div>
                                                 <div class="col-md-5">
-                                                    {{-- Border warning agar sesuai tema --}}
                                                     <select name="metode_perpanjangan"
                                                         class="form-select border-warning fw-bold text-dark form-select-sm"
                                                         required>
@@ -263,7 +260,7 @@
                                 <hr class="border-light m-0">
                             </div>
 
-                            {{-- 3. Detail Bidang & KFK (BARU) --}}
+                            {{-- 3. Detail Bidang & KFK (MULTI SELECT EDIT) --}}
                             <div class="col-md-6">
                                 <label class="form-label">Bidang Keahlian <span class="required-star">*</span></label>
                                 <div class="input-group">
@@ -277,14 +274,31 @@
                                 <label class="form-label">Jenjang KFK (PK) <span class="required-star">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-bar-chart-steps"></i></span>
-                                    <select name="kfk" class="form-select" required>
+
+                                    {{-- MODIFIKASI: KFK jadi array dan multiple --}}
+                                    <select name="kfk[]" id="choice-kfk-edit" class="form-select" multiple required>
                                         <option value="">Pilih Jenjang KFK...</option>
                                         @php
                                             $kfks = ['PK 1', 'PK 1.5', 'PK 2', 'PK 2.5', 'PK 3', 'PK 3.5', 'PK 4', 'PK 4.5', 'PK 5'];
+
+                                            // LOGIKA EDIT:
+                                            // Ambil data lama (old) atau data dari database ($data->kfk)
+                                            $currentKfk = old('kfk', $data->kfk);
+
+                                            // Jika data dari database berupa JSON String (misal: "[\"PK 1\",\"PK 2\"]"), decode dulu
+                                            if (is_string($currentKfk)) {
+                                                $decoded = json_decode($currentKfk, true);
+                                                // Jika berhasil decode jadi array, gunakan array tsb. Jika gagal (null), buat array kosong.
+                                                $currentKfk = is_array($decoded) ? $decoded : [];
+                                            }
+
+                                            // Bungkus dalam collect agar aman saat pengecekan contains
+                                            $kfkCollection = collect($currentKfk);
                                         @endphp
+
                                         @foreach ($kfks as $kfk)
                                             <option value="{{ $kfk }}"
-                                                {{ old('kfk', $data->kfk) == $kfk ? 'selected' : '' }}>
+                                                {{ $kfkCollection->contains($kfk) ? 'selected' : '' }}>
                                                 {{ $kfk }}
                                             </option>
                                         @endforeach
@@ -292,7 +306,7 @@
                                 </div>
                             </div>
 
-                            {{-- 4. Tanggal Pelaksanaan (BARU) --}}
+                            {{-- 4. Tanggal Pelaksanaan --}}
                             <div class="col-md-6">
                                 <label class="form-label">Tanggal Mulai <span class="required-star">*</span></label>
                                 <div class="input-group">
@@ -385,11 +399,26 @@
     <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const element = document.getElementById('choice-user-single');
-            const choices = new Choices(element, {
+            // 1. Inisialisasi Choice untuk Pemilik Lisensi (Single Select)
+            const elementUser = document.getElementById('choice-user-single');
+            new Choices(elementUser, {
                 searchEnabled: true,
                 placeholderValue: 'Cari perawat...',
                 noResultsText: 'Tidak ditemukan',
+                itemSelectText: '',
+                shouldSort: false,
+                classNames: {
+                    containerInner: 'choices__inner',
+                    input: 'choices__input',
+                }
+            });
+
+            // 2. Inisialisasi Choice untuk KFK (Multi Select - EDIT)
+            const elementKfk = document.getElementById('choice-kfk-edit');
+            new Choices(elementKfk, {
+                removeItemButton: true, // Tombol silang untuk hapus
+                searchEnabled: false,
+                placeholderValue: 'Pilih Jenjang KFK...',
                 itemSelectText: '',
                 shouldSort: false,
                 classNames: {

@@ -206,7 +206,7 @@
 
                         <div class="row g-3">
 
-                            {{-- 1. Aturan Perpanjangan (PINDAH KE ATAS) --}}
+                            {{-- 1. Aturan Perpanjangan --}}
                             <div class="col-12">
                                 <div class="metode-wrapper">
                                     <div class="d-flex gap-3 align-items-center">
@@ -243,7 +243,7 @@
                                 </div>
                             </div>
 
-                            {{-- 2. Pilih Perawat (Multi Select) (PINDAH KE BAWAH METODE) --}}
+                            {{-- 2. Pilih Perawat (Multi Select) --}}
                             <div class="col-12">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <label class="form-label mb-0">Pilih Perawat (Bisa Banyak) <span
@@ -290,28 +290,27 @@
                                 </div>
                             </div>
 
+                            {{-- PERUBAHAN DI SINI: Jenjang KFK Multi Select --}}
                             <div class="col-md-6">
                                 <label class="form-label">Jenjang KFK (PK) <span class="required-star">*</span></label>
                                 <div class="input-group">
+                                    {{-- Catatan: Icon input-group-text mungkin perlu dihilangkan jika mengganggu tampilan Choices,
+                                         atau dipindahkan ke luar jika menggunakan multi-select --}}
                                     <span class="input-group-text"><i class="bi bi-bar-chart-steps"></i></span>
-                                    <select name="kfk" class="form-select" required>
+
+                                    {{-- name="kfk[]" (array) dan multiple="multiple" --}}
+                                    <select name="kfk[]" id="choice-kfk" class="form-select" multiple required>
                                         <option value="">Pilih Jenjang KFK...</option>
                                         @php
                                             $kfks = [
-                                                'PK 1',
-                                                'PK 1.5',
-                                                'PK 2',
-                                                'PK 2.5',
-                                                'PK 3',
-                                                'PK 3.5',
-                                                'PK 4',
-                                                'PK 4.5',
-                                                'PK 5',
+                                                'PK 1', 'PK 1.5', 'PK 2', 'PK 2.5', 'PK 3',
+                                                'PK 3.5', 'PK 4', 'PK 4.5', 'PK 5'
                                             ];
                                         @endphp
                                         @foreach ($kfks as $kfk)
+                                            {{-- Gunakan collect() atau in_array() karena old('kfk') sekarang adalah array --}}
                                             <option value="{{ $kfk }}"
-                                                {{ old('kfk') == $kfk ? 'selected' : '' }}>
+                                                {{ collect(old('kfk'))->contains($kfk) ? 'selected' : '' }}>
                                                 {{ $kfk }}
                                             </option>
                                         @endforeach
@@ -319,7 +318,7 @@
                                 </div>
                             </div>
 
-                            {{-- BAGIAN BARU: Tanggal Pelaksanaan --}}
+                            {{-- Tanggal Pelaksanaan --}}
                             <div class="col-md-6">
                                 <label class="form-label">Tanggal Mulai <span class="required-star">*</span></label>
                                 <div class="input-group">
@@ -403,17 +402,15 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // 1. Ambil Element
-            const element = document.getElementById('choice-users');
+            // --- 1. SETUP CHOICES UNTUK USER (PERAWAT) ---
+            const elementUser = document.getElementById('choice-users');
             const btnSelectAll = document.getElementById('btn-select-all');
             const btnResetAll = document.getElementById('btn-reset-all');
 
-            // 2. AMBIL ID DARI PHP & KONVERSI KE STRING (PENTING!)
-            // Kita pakai map(strval) agar ID '1' dibaca sebagai string "1", bukan angka 1.
+            // ID dari PHP (untuk Select All User)
             const allUserIds = {!! json_encode($users->pluck('id')->map(fn($id) => (string) $id)) !!};
 
-            // 3. Inisialisasi Choices.js
-            const choices = new Choices(element, {
+            const choicesUser = new Choices(elementUser, {
                 removeItemButton: true,
                 searchEnabled: true,
                 placeholderValue: 'Cari dan pilih perawat...',
@@ -422,23 +419,35 @@
                 shouldSort: false,
             });
 
-            // 4. LOGIKA TOMBOL PILIH SEMUA
+            // Logika Select All User
             btnSelectAll.addEventListener('click', function(e) {
-                e.preventDefault(); // Mencegah form submit tidak sengaja
-
-                // Trik: Hapus dulu semua (biar bersih), baru masukkan semua
-                choices.removeActiveItems();
-                choices.setChoiceByValue(allUserIds);
-
-                // Debugging (Cek di Console browser jika masih gagal)
-                console.log('Mencoba memilih ID:', allUserIds);
+                e.preventDefault();
+                choicesUser.removeActiveItems();
+                choicesUser.setChoiceByValue(allUserIds);
             });
 
-            // 5. LOGIKA TOMBOL RESET
+            // Logika Reset All User
             btnResetAll.addEventListener('click', function(e) {
                 e.preventDefault();
-                choices.removeActiveItems();
+                choicesUser.removeActiveItems();
             });
+
+            // --- 2. SETUP CHOICES UNTUK KFK (JENJANG PK) ---
+            const elementKfk = document.getElementById('choice-kfk');
+
+            const choicesKfk = new Choices(elementKfk, {
+                removeItemButton: true,
+                searchEnabled: false, // Biasanya KFK sedikit opsinya, search tidak wajib
+                placeholderValue: 'Pilih Jenjang KFK...',
+                itemSelectText: 'Tekan untuk memilih',
+                shouldSort: false,
+                // Tambahan styling agar konsisten
+                classNames: {
+                    containerInner: 'choices__inner',
+                    input: 'choices__input',
+                }
+            });
+
         });
     </script>
 @endpush
