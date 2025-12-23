@@ -15,6 +15,8 @@ use App\Models\PerawatTandaJasa;
 use App\Models\PerawatLisensi;
 use App\Models\PerawatStr;
 use App\Models\PerawatSip;
+use PhpOffice\PhpWord\TemplateProcessor;
+use Carbon\Carbon;
 use App\Models\PerawatDataTambahan;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Str;
@@ -761,33 +763,142 @@ class PerawatDrhController extends Controller
         return view('perawat.dokumen.lisensi.index', compact('user', 'data'));
     }
 
-    public function generateLisensi($id)
+  public function generateLisensi($id)
     {
         $user = $this->currentPerawat();
         if (!$user) return redirect('/');
 
         $lisensi = PerawatLisensi::where('user_id', $user->id)->findOrFail($id);
+        $profile = PerawatProfile::where('user_id', $user->id)->first();
+        $pendidikan = PerawatPendidikan::where('user_id', $user->id)->orderBy('tahun_lulus', 'desc')->first();
 
-        $data = [
-            'lisensi' => $lisensi,
-            'user'    => $user,
-            'date'    => date('d F Y')
-        ];
+        // --------------------------------------------------------
+        // 1. BERSIHKAN NOMOR SURAT (Mencegah Duplikat Prefix)
+        // --------------------------------------------------------
+        Carbon::setLocale('id');
+        $dateTerbit = !empty($lisensi->tgl_terbit) ? Carbon::parse($lisensi->tgl_terbit) : Carbon::now();
+        $tahunSurat = $dateTerbit->format('Y');
 
-        $pdf = Pdf::loadView('perawat.dokumen.lisensi.print', $data);
-        $pdf->setPaper('A4', 'portrait');
+        $rawNomor   = $lisensi->nomor;
+        $prefix     = "188/4150/418.25";
 
-        $fileName = 'generated_lisensi_' . time() . '.pdf';
-        $path = 'perawat/dokumen/lisensi/' . $fileName;
+        // Cek: Apakah sudah ada prefix lengkap?
+        if (str_contains($rawNomor, '188/4150') || str_contains($rawNomor, '418.25')) {
+             // Jika sudah format lengkap, kita ambil saja dan update tahunnya
+             $parts = explode('/', $rawNomor);
+             array_pop($parts); // Buang tahun lama
+             $nomorSuratFull = implode('/', $parts) . '/' . $tahunSurat;
+        } else {
+             // Jika belum (hanya nomor urut), baru kita rakit
+             $cleanNomor = preg_replace('/[^0-9\-\.]/', '', $rawNomor);
+             $nomorUrut  = !empty($cleanNomor) ? $cleanNomor : '0';
+             $nomorUrut  = ltrim($nomorUrut, '.'); // Hapus titik di depan jika ada
 
-        Storage::disk('public')->put($path, $pdf->output());
+             // Tambahkan titik di akhir prefix jika belum ada
+             $prefixFull = str_ends_with($prefix, '.') ? $prefix : $prefix . '.';
+             $nomorSuratFull = "{$prefixFull}{$nomorUrut}/{$tahunSurat}";
+        }
 
-        $lisensi->update([
-            'file_path' => $path
-        ]);
+        $lisensi->nomor = $nomorSuratFull;
 
-        return $pdf->stream('Lisensi_' . $user->name . '.pdf');
+        // --------------------------------------------------------
+        // 2. CEK METODE (PERBAIKAN LOGIKA DISINI)
+        // --------------------------------------------------------
+        $rawMetode = $lisensi->metode_perpanjangan ?? $lisensi->metode ?? '';
+        $cekMetode = strtolower($rawMetode);
+
+        // Deteksi Unsur
+        $hasInterview = str_contains($cekMetode, 'interview') || str_contains($cekMetode, 'wawancara');
+        $hasPG        = str_contains($cekMetode, 'pg') || str_contains($cekMetode, 'pilihan') || str_contains($cekMetode, 'ganda') || str_contains($cekMetode, 'choice');
+
+        // LOGIKA BARU:
+        // Masuk ke Word (Template) HANYA JIKA: Ada Wawancara DAN Tidak Ada PG.
+        // Jika "PG + Wawancara", $hasPG bernilai true, maka kondisi ini FALSE (masuk ke else/PDF).
+        if ($hasInterview && !$hasPG) {
+
+            // ==========================================
+            // LOGIKA WORD (HANYA WAWANCARA MURNI)
+            // ==========================================
+
+            $pathTemplate = storage_path('app/templates/template_serkom.docx');
+
+            if (!file_exists($pathTemplate)) {
+                return back()->with('swal', [
+                    'icon' => 'error', 'title' => 'Template Tidak Ditemukan',
+                    'text' => 'File template_serkom.docx tidak ada.'
+                ]);
+            }
+
+            $templateProcessor = new TemplateProcessor($pathTemplate);
+            $namaLengkap = $profile->nama_lengkap ?? $user->name;
+
+            // --- PENGISIAN VARIABLE WORD ---
+            $templateProcessor->setValue('nama', strtoupper($namaLengkap));
+            $templateProcessor->setValue('nirp', $profile->nirp ?? ($profile->nip ?? '-'));
+            $templateProcessor->setValue('unit_kerja', strtoupper($profile->unit_kerja ?? 'RSUD SLG'));
+            $templateProcessor->setValue('nomor', $lisensi->nomor);
+            $templateProcessor->setValue('jenis_lisensi', strtoupper($lisensi->nama));
+            $templateProcessor->setValue('bidang', strtoupper($lisensi->bidang));
+
+            // KFK
+            $pkRaw = $lisensi->kfk;
+            $finalPk = $pkRaw;
+            if (is_array($pkRaw)) {
+                $finalPk = implode(', ', $pkRaw);
+            } elseif (is_string($pkRaw) && str_contains($pkRaw, '[')) {
+                 $decoded = json_decode($pkRaw, true);
+                 $finalPk = (is_array($decoded)) ? implode(', ', $decoded) : $pkRaw;
+            }
+            $templateProcessor->setValue('kfk', strtoupper($finalPk));
+
+            // Tanggal
+            $templateProcessor->setValue('tgl_terbit', $dateTerbit->translatedFormat('d F Y'));
+            $tglSelesai = !empty($lisensi->tgl_expired) ? Carbon::parse($lisensi->tgl_expired)->translatedFormat('d F Y') : '-';
+            $templateProcessor->setValue('tgl_selesai', $tglSelesai);
+            $tglMulai = !empty($lisensi->tgl_mulai) ? Carbon::parse($lisensi->tgl_mulai)->translatedFormat('d F Y') : $dateTerbit->translatedFormat('d F Y');
+            $templateProcessor->setValue('tgl_mulai', $tglMulai);
+
+            // Pendidikan
+            $txtPendidikan = $pendidikan ? trim($pendidikan->jenjang . ' ' . $pendidikan->jurusan) : '-';
+            $templateProcessor->setValue('pendidikan', strtoupper($txtPendidikan));
+
+            // Download Word
+            $cleanName = preg_replace('/[^A-Za-z0-9\-]/', '_', $namaLengkap);
+            $tempPath  = storage_path('app/public/Sertifikat_Wawancara_' . $cleanName . '.docx');
+
+            try {
+                $templateProcessor->saveAs($tempPath);
+                return response()->download($tempPath)->deleteFileAfterSend(true);
+            } catch (\Exception $e) {
+                return back()->with('swal', ['icon'=>'error', 'title'=>'Gagal', 'text'=>'Gagal memproses Word: '.$e->getMessage()]);
+            }
+
+        } else {
+
+            // ==========================================
+            // LOGIKA PDF (PG MURNI ATAU CAMPURAN PG+WAWANCARA)
+            // ==========================================
+
+            $data = [
+                'lisensi' => $lisensi,
+                'user'    => $user,
+                'profile' => $profile,
+                'date'    => date('d F Y')
+            ];
+
+            $pdf = Pdf::loadView('perawat.dokumen.lisensi.print', $data);
+            $pdf->setPaper('A4', 'landscape');
+
+            $fileName = 'generated_lisensi_' . time() . '.pdf';
+            $path = 'perawat/dokumen/lisensi/' . $fileName;
+            Storage::disk('public')->put($path, $pdf->output());
+
+            $lisensi->update(['file_path' => $path]);
+
+            return $pdf->stream('Lisensi_' . ($profile->nama_lengkap ?? $user->name) . '.pdf');
+        }
     }
+
 
     /* ------------ 2. STR (Surat Tanda Registrasi) ------------ */
     public function strIndex()

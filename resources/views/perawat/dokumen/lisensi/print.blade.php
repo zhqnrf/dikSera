@@ -4,330 +4,235 @@
     <meta charset="UTF-8">
     <title>Surat Lisensi - {{ $lisensi->nomor }}</title>
     <style>
-        /* --- SETUP HALAMAN --- */
-        @page {
-            margin: 0;
-            size: A4 portrait;
-        }
+        /* --- COPY STYLE DARI NOMOR 2 --- */
+        @page { margin: 0; size: 297mm 210mm; } /* Landscape A4 */
 
         body {
-            font-family: 'Times New Roman', Times, serif; /* Font resmi surat */
-            font-size: 11pt;
-            line-height: 1.4;
-            color: #000;
+            margin: 0; padding: 0;
+            font-family: 'Helvetica', 'Arial', sans-serif;
             background: #fff;
-            margin: 0;
-            padding: 0;
+            -webkit-print-color-adjust: exact;
         }
 
-        /* --- BINGKAI HALAMAN (Border Dekoratif) --- */
-        .page-border {
-            position: fixed;
-            top: 10mm; left: 10mm; right: 10mm; bottom: 10mm;
-            border: 3px double #1565c0; /* Garis ganda biru tua */
-            z-index: -1;
-        }
-
-        /* --- CONTAINER UTAMA --- */
-        .container {
-            padding: 25mm 25mm; /* Margin dalam dari bingkai */
-        }
-
-        /* --- WATERMARK --- */
-        .watermark {
+        /* SIDEBAR (KIRI) */
+        .container-sidebar {
             position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 350px;
-            opacity: 0.08; /* Sangat transparan */
-            z-index: -2;
-        }
-
-        /* --- KOP SURAT --- */
-        .kop-table {
-            width: 100%;
-            border-bottom: 4px double #000; /* Garis Kop */
-            padding-bottom: 10px;
-            margin-bottom: 25px;
-        }
-        .logo {
-            width: 80px; height: auto;
-        }
-        .kop-text {
+            top: 0; left: 0; bottom: 0;
+            width: 28%;
+            height: 100%;
+            background-color: #1565c0;
+            color: white;
             text-align: center;
-        }
-        .kop-instansi {
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 14pt;
-            font-weight: bold;
-            text-transform: uppercase;
-            color: #000;
-        }
-        .kop-sub {
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 10pt;
-            font-weight: normal;
-        }
-        .kop-alamat {
-            font-size: 9pt;
-            font-style: italic;
+            z-index: 1;
         }
 
-        /* --- JUDUL DOKUMEN --- */
-        .judul-surat {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .judul-main {
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 14pt;
-            font-weight: bold;
-            text-decoration: underline;
-            text-transform: uppercase;
-        }
-        .nomor-surat {
-            font-size: 11pt;
-            margin-top: 2px;
+        /* KONTEN UTAMA (KANAN) */
+        .container-content {
+            position: absolute;
+            top: 0; left: 28%; bottom: 0; right: 0;
+            width: 72%;
+            height: 100%;
+            background-color: #fff;
+            padding: 40px 70px 40px 40px;
+            box-sizing: border-box;
+            z-index: 2;
         }
 
-        /* --- ISI KONTEN --- */
-        .paragraf {
-            text-align: justify;
-            margin-bottom: 15px;
+        /* ELEMEN DEKORASI */
+        .circle-decor {
+            position: absolute; top: -50px; left: -50px;
+            width: 150px; height: 150px;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 50%;
         }
 
-        /* --- TABEL DATA --- */
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 10px 0 20px 20px; /* Indent sedikit */
-            font-family: Arial, Helvetica, sans-serif; /* Pindah ke sans-serif biar jelas */
-            font-size: 10pt;
+        .side-logo { width: 90px; height: auto; margin-top: 40px; margin-bottom: 20px; }
+
+        .side-title {
+            font-size: 8pt; text-transform: uppercase; letter-spacing: 1px;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+            padding-bottom: 10px; margin: 0 auto 30px auto;
+            width: 80%; line-height: 1.4;
         }
-        .data-table td {
-            padding: 5px 5px;
-            vertical-align: top;
+
+        /* FOTO PROFILE */
+        .photo-frame {
+            width: 120px; height: 160px;
+            border: 3px solid rgba(255,255,255,0.8);
+            border-radius: 8px;
+            margin: 0 auto 30px auto;
+            background: #fff;
+            overflow: hidden; position: relative;
         }
-        .label {
-            width: 160px;
-            font-weight: bold;
-            color: #333;
+        .photo-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .no-photo {
+            width: 100%; height: 100%; display: block;
+            padding-top: 70px; box-sizing: border-box;
+            background: rgba(255,255,255,0.2); color: #1565c0; font-size: 8pt; font-weight: bold;
         }
-        .separator {
-            width: 10px;
+
+        /* BADGE PK */
+        .badge-box {
+            width: 85%; min-height: 90px;
+            border: 2px solid #fff; border-radius: 10px; margin: 0 auto;
+            background-color: rgba(13, 71, 161, 0.5);
+            text-align: center; padding: 10px 5px; box-sizing: border-box;
+            display: table;
         }
-        .value {
-            color: #000;
-        }
-        .nomor-lisensi {
+        .badge-inner { display: table-cell; vertical-align: middle; }
+        .badge-label { font-size: 8pt; display: block; margin-bottom: 5px; color: #bbdefb; letter-spacing: 1px; }
+        .badge-value { font-weight: bold; line-height: 1.1; display: block; word-wrap: break-word; }
+
+        /* UKURAN FONT DINAMIS */
+        .font-xl { font-size: 36pt; }
+        .font-lg { font-size: 26pt; }
+        .font-md { font-size: 18pt; }
+        .font-sm { font-size: 14pt; }
+
+        .watermark { position: absolute; right: -20px; bottom: -20px; width: 350px; opacity: 0.05; z-index: -1; }
+
+        /* HEADER & KONTEN */
+        .header-table { width: 100%; margin-bottom: 10px; border-collapse: collapse; }
+        .header-left-cell { text-align: left; vertical-align: top; width: 50%; }
+        .header-right-cell { text-align: right; vertical-align: top; width: 50%; padding-left: 10px; }
+        .header-title { margin: 0; font-size: 14pt; color: #1565c0; text-transform: uppercase; font-weight: bold; }
+        .header-address { margin: 4px 0 0 0; font-size: 8pt; color: #546e7a; line-height: 1.3; }
+
+        /* NOMOR SERTIFIKAT BOX */
+        .cert-number-box {
+            display: inline-block;
             font-family: 'Courier New', monospace;
-            font-weight: bold;
             font-size: 11pt;
-            letter-spacing: 1px;
-            background: #eef2ff;
-            padding: 2px 5px;
-            border-radius: 3px;
-            display: inline-block;
-        }
-
-        /* --- STATUS BADGE --- */
-        .status-box {
-            border: 1px solid #16a34a;
-            background-color: #f0fdf4;
-            color: #166534;
-            padding: 5px 10px;
             font-weight: bold;
-            display: inline-block;
+            color: #0d47a1;
+            background: #e3f2fd;
+            padding: 8px 10px;
             border-radius: 4px;
-            font-size: 9pt;
-        }
-
-        /* --- TANDA TANGAN --- */
-        .ttd-table {
+            border: 1px solid #bbdefb;
+            text-align: center;
             width: 100%;
-            margin-top: 40px;
-        }
-        .ttd-col-kiri {
-            width: 40%;
-            text-align: center;
-            vertical-align: bottom;
-        }
-        .ttd-col-kanan {
-            width: 60%;
-            text-align: right; /* Nama di kanan */
-            padding-right: 20px;
-        }
-        .ttd-container {
-            display: inline-block;
-            text-align: center;
-            width: 250px; /* Lebar area TTD */
-        }
-        .ttd-space {
-            height: 70px;
-        }
-        .pejabat-nama {
-            font-weight: bold;
-            text-decoration: underline;
-            font-size: 11pt;
+            box-sizing: border-box;
+            word-wrap: break-word;
+            white-space: normal;
         }
 
-        /* QR Code Simulasi */
-        .qr-placeholder {
-            border: 2px solid #000;
-            width: 70px; height: 70px;
-            margin: 0 auto;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 7pt; font-family: sans-serif; text-align: center;
-        }
+        .main-title { font-size: 28pt; font-weight: 800; color: #0d47a1; margin: 10px 0 5px 0; text-transform: uppercase; }
+        .main-title span { color: #2196f3; }
+        .subtitle { font-size: 10pt; color: #1976d2; margin-bottom: 20px; }
 
-        .footer-note {
-            position: fixed;
-            bottom: 15mm; left: 25mm; right: 25mm;
-            font-size: 8pt;
-            color: #666;
-            font-family: Arial, Helvetica, sans-serif;
-            border-top: 1px solid #ccc;
-            padding-top: 5px;
-            text-align: center;
-        }
+        .candidate-box { border-left: 4px solid #2979ff; padding-left: 15px; margin-bottom: 20px; }
+        .candidate-name { font-size: 20pt; font-weight: bold; color: #01579b; margin: 0; text-transform: uppercase; }
+        .candidate-id { font-size: 10pt; color: #0277bd; margin-top: 3px; }
+
+        .desc-box { background-color: #f1f8ff; border: 1px solid #bbdefb; border-radius: 6px; padding: 15px; margin-bottom: 15px; color: #37474f; font-size: 9pt; line-height: 1.4; }
+        .highlight { color: #01579b; font-weight: bold; text-decoration: underline; }
+
+        .event-info { margin-top: 10px; padding-top: 8px; border-top: 1px dashed #90caf9; font-size: 8.5pt; color: #455a64; }
+
+        .footer-section { width: 100%; margin-top: 20px; }
+        .footer-col-spacer { width: 50%; display: inline-block; }
+        .footer-col-sig { width: 48%; display: inline-block; text-align: center; vertical-align: top; }
+        .sig-place-date { font-size: 9pt; color: #1565c0; margin-bottom: 5px; }
+        .sig-title { font-weight: bold; font-size: 9pt; color: #0d47a1; margin-bottom: 60px; }
+        .sig-name { font-weight: bold; color: #0d47a1; border-top: 2px solid #1565c0; padding-top: 5px; display: inline-block; min-width: 180px; font-size: 10pt; }
+        .sig-nip { font-size: 9pt; color: #1976d2; margin-top: 2px; }
     </style>
 </head>
 <body>
 
-    <div class="page-border"></div>
+    <div class="container-sidebar">
+        <div class="circle-decor"></div>
+        <img src="https://rsudslg.kedirikab.go.id/asset_compro/img/logo/Logo.png" class="side-logo" alt="Logo">
+        <div class="side-title">PEMERINTAH KABUPATEN KEDIRI<br>DINAS KESEHATAN<br>UOBK RSUD SLG</div>
 
-    <div class="container">
+        <div class="photo-frame">
+            @if(isset($profile) && !empty($profile->foto_3x4) && file_exists(storage_path('app/public/' . $profile->foto_3x4)))
+                <img src="{{ storage_path('app/public/' . $profile->foto_3x4) }}" alt="Foto">
+            @else
+                <div class="no-photo">FOTO 3x4</div>
+            @endif
+        </div>
+
+        @php
+            $pkRaw = $lisensi->kfk;
+            $finalPkString = 'PK -';
+            if (!empty($pkRaw)) {
+                if (is_string($pkRaw) && (str_contains($pkRaw, '[') || str_contains($pkRaw, '"'))) {
+                     $decoded = json_decode($pkRaw, true);
+                     $finalPkString = (json_last_error() === JSON_ERROR_NONE && is_array($decoded))
+                        ? implode(', ', $decoded)
+                        : str_replace(['[', ']', '"'], '', $pkRaw);
+                } elseif (is_array($pkRaw)) {
+                    $finalPkString = implode(', ', $pkRaw);
+                } else {
+                    $finalPkString = $pkRaw;
+                }
+            }
+            $charLength = strlen($finalPkString);
+
+            // Logika Font Size
+            $fontClass = 'font-xl';
+            if ($charLength > 20) { $fontClass = 'font-sm'; }
+            elseif ($charLength > 10) { $fontClass = 'font-md'; }
+            elseif ($charLength > 5) { $fontClass = 'font-lg'; }
+        @endphp
+
+        <div class="badge-box">
+            <div class="badge-inner">
+                <span class="badge-label">LEVEL KOMPETENSI</span>
+                <span class="badge-value {{ $fontClass }}">{{ $finalPkString }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-content">
         <img src="https://rsudslg.kedirikab.go.id/asset_compro/img/logo/Logo.png" class="watermark" alt="Watermark">
 
-        <table class="kop-table">
+        <table class="header-table">
             <tr>
-                <td width="15%" style="text-align: center; vertical-align: middle;">
-                    <img src="https://rsudslg.kedirikab.go.id/asset_compro/img/logo/Logo.png" class="logo" alt="Logo">
+                <td class="header-left-cell">
+                    <h2 class="header-title">SURAT KETERANGAN LISENSI</h2>
+                    <p class="header-address">Jl. Galuh Candra Kirana Ds. Tugurejo Kec. Ngasem<br>website: rsudslg.kedirikab.go.id</p>
                 </td>
-                <td width="85%" class="kop-text">
-                    <div class="kop-instansi">PEMERINTAH KABUPATEN KEDIRI</div>
-                    <div class="kop-instansi" style="font-size: 12pt;">DINAS KESEHATAN</div>
-                    <div class="kop-instansi" style="font-size: 16pt; color: #1565c0;">UOBK RSUD SLG</div>
-                    <div class="kop-sub">SISTEM INFORMASI KOMPETENSI PERAWAT (DIKSERA)</div>
-                    <div class="kop-alamat">Jl. Galuh Candra Kirana Ds. Tugurejo Kec. Ngasem, Kediri - Jawa Timur</div>
-                </td>
-            </tr>
-        </table>
-
-        <div class="judul-surat">
-            <div class="judul-main">SURAT KETERANGAN LISENSI</div>
-            <div class="nomor-surat">Nomor Dokumen: {{ $lisensi->nomor }}</div>
-        </div>
-
-        <div class="paragraf">
-            Yang bertanda tangan di bawah ini, Direktur UOBK RSUD Simpang Lima Gumul Kediri menerangkan dengan sesungguhnya bahwa:
-        </div>
-
-        <table class="data-table">
-            <tr>
-                <td class="label">Nama Lengkap</td>
-                <td class="separator">:</td>
-                <td class="value">
-                    <strong>
-                        {{ strtoupper($profile->nama_lengkap ?? $user->name) }}
-                    </strong>
-                </td>
-            </tr>
-            <tr>
-                <td class="label">NIP / NIRP</td>
-                <td class="separator">:</td>
-                <td class="value">
-                    @if(!empty($profile->nirp))
-                        {{ $profile->nirp }} (NIRP)
-                    @elseif(!empty($profile->nip))
-                        {{ $profile->nip }} (NIP)
-                    @else
-                        {{ $user->nomor_induk ?? '-' }}
-                    @endif
-                </td>
-            </tr>
-            <tr>
-                <td class="label">Unit Kerja</td>
-                <td class="separator">:</td>
-                <td class="value">{{ $profile->unit_kerja ?? 'Keperawatan Umum' }}</td>
-            </tr>
-            <tr>
-                <td colspan="3" style="height: 10px;"></td> </tr>
-            <tr>
-                <td class="label">Jenis Lisensi</td>
-                <td class="separator">:</td>
-                <td class="value"><strong>{{ strtoupper($lisensi->nama) }}</strong></td>
-            </tr>
-            <tr>
-                <td class="label">Bidang Keahlian</td>
-                <td class="separator">:</td>
-                <td class="value">{{ $lisensi->bidang }}</td>
-            </tr>
-            <tr>
-                <td class="label">Jenjang KFK</td>
-                <td class="separator">:</td>
-                <td class="value">{{ $lisensi->kfk }}</td>
-            </tr>
-            <tr>
-                <td class="label">Nomor Lisensi</td>
-                <td class="separator">:</td>
-                <td class="value"><span class="nomor-lisensi">{{ $lisensi->nomor }}</span></td>
-            </tr>
-            <tr>
-                <td class="label">Masa Berlaku</td>
-                <td class="separator">:</td>
-                <td class="value">
-                    {{ \Carbon\Carbon::parse($lisensi->tgl_terbit)->isoFormat('D MMMM Y') }}
-                    s/d
-                    <strong>{{ \Carbon\Carbon::parse($lisensi->tgl_expired)->isoFormat('D MMMM Y') }}</strong>
-                </td>
-            </tr>
-            <tr>
-                <td class="label">Status Verifikasi</td>
-                <td class="separator">:</td>
-                <td class="value">
-                    <span class="status-box">✓ TERVERIFIKASI AKTIF</span>
-                </td>
-            </tr>
-        </table>
-
-        <div class="paragraf">
-            Dokumen ini diterbitkan sebagai bukti sah kompetensi perawat yang bersangkutan sesuai dengan data yang tercatat pada database Kepegawaian dan Sistem DIKSERA RSUD SLG.
-        </div>
-
-        <div class="paragraf">
-            Demikian surat keterangan ini dibuat untuk dapat dipergunakan sebagaimana mestinya.
-        </div>
-
-        <table class="ttd-table">
-            <tr>
-                <td class="ttd-col-kiri">
-                    <div class="qr-placeholder">
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=70x70&data={{ $lisensi->nomor }}" alt="QR" style="width: 70px;">
-                    </div>
-                    <div style="font-size: 8pt; margin-top: 5px;">Scan untuk validasi</div>
-                </td>
-                <td class="ttd-col-kanan">
-                    <div class="ttd-container">
-                        <div style="margin-bottom: 5px;">Kediri, {{ \Carbon\Carbon::now()->isoFormat('D MMMM Y') }}</div>
-                        <div style="font-weight: bold; margin-bottom: 5px;">DIREKTUR UOBK RSUD SLG</div>
-
-                        <div class="ttd-space">
-                            </div>
-
-                        <div class="pejabat-nama">dr. TONY WIDYANTO, Sp.OG (K)</div>
-                        <div>NIP. 19750714 200212 1 006</div>
+                <td class="header-right-cell">
+                    <div class="cert-number-box">
+                        NO: {{ $lisensi->nomor }}
                     </div>
                 </td>
             </tr>
         </table>
 
-    </div>
+        <h1 class="main-title">LISENSI <span>KOMPETENSI</span></h1>
+        <div class="subtitle">Diberikan sebagai bukti kewenangan klinis kepada:</div>
 
-    <div class="footer-note">
-        Dokumen ini telah ditandatangani secara elektronik. Validitas dokumen dapat dicek melalui sistem DIKSERA.<br>
-        Dicetak pada: {{ now()->format('d/m/Y H:i:s') }}
-    </div>
+        <div class="candidate-box">
+            <div class="candidate-name">{{ strtoupper($profile->nama_lengkap ?? $user->name) }}</div>
+            <div class="candidate-id">
+                @if(!empty($profile->nirp)) NIRP. {{ $profile->nirp }}
+                @elseif(!empty($profile->nip)) NIP. {{ $profile->nip }}
+                @else - @endif
+            </div>
+        </div>
 
+        <div class="desc-box">
+            Telah memenuhi persyaratan kredensial dan diberikan kewenangan klinis.<br>
+            Jenis Lisensi: <span class="highlight">{{ strtoupper($lisensi->nama) }}</span><br>
+            Bidang Keahlian: <span class="highlight">{{ strtoupper($lisensi->bidang) }}</span>
+
+            <div class="event-info">
+                Diterbitkan: {{ \Carbon\Carbon::parse($lisensi->tgl_terbit)->isoFormat('D MMMM Y') }}<br>
+                Berlaku hingga: <strong>{{ \Carbon\Carbon::parse($lisensi->tgl_expired)->isoFormat('D MMMM Y') }}</strong>
+            </div>
+        </div>
+
+        <div class="footer-section">
+            <div class="footer-col-spacer"></div><div class="footer-col-sig">
+                <div class="sig-place-date">Kediri, {{ \Carbon\Carbon::now()->isoFormat('D MMMM Y') }}</div>
+                <div class="sig-title">DIREKTUR UOBK RSUD SLG</div>
+                <div class="sig-name">dr. TONY WIDYANTO, Sp.OG (K)</div>
+                <div class="sig-nip">NIP. 19750714 200212 1 006</div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
