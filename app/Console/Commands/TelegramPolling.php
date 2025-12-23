@@ -53,7 +53,7 @@ class TelegramPolling extends Command
                                     'text' => $welcomeMsg,
                                     'parse_mode' => 'HTML'
                                 ]);
-                                
+
                                 continue; // Lanjut ke pesan berikutnya, jangan cek DB
                             }
 
@@ -71,14 +71,27 @@ class TelegramPolling extends Command
                                 $user->telegram_verification_expires_at = null;
                                 $user->save();
 
-                                // Pesan Berbeda tergantung Role
-                                $msgRole = $user->role === 'admin' ? 'Administrator' : 'Staf Perawat';
-                                
+                                // 1. Tentukan Label Role (PHP 7.4 Compatible)
+                                if ($user->role === 'admin') {
+                                    $msgRole = 'Administrator';
+                                } elseif ($user->role === 'pewawancara') {
+                                    $msgRole = 'Pewawancara';
+                                } else {
+                                    $msgRole = 'Staf Perawat';
+                                }
+
+                                // 2. Susun Header Pesan
                                 $successMsg = "✅ <b>AKUN TERHUBUNG!</b>\n\n";
                                 $successMsg .= "Yth. <b>{$user->name}</b> ({$msgRole}),\n";
                                 $successMsg .= "Akun Telegram Anda telah berhasil ditautkan dengan sistem DIKSERA RSUD SLG.\n\n";
-                                $successMsg .= "Anda akan menerima notifikasi resmi terkait masa berlaku dokumen melalui chat ini.";
 
+                                // 3. Pesan Tambahan Sesuai Role
+                                if ($user->role === 'pewawancara') {
+                                    $successMsg .= "Anda akan menerima notifikasi saat ada jadwal wawancara baru.";
+                                } else {
+                                    $successMsg .= "Anda akan menerima notifikasi resmi terkait masa berlaku dokumen melalui chat ini.";
+                                }
+                                // Kirim Pesan Sukses ke User
                                 Http::post("https://api.telegram.org/bot{$botToken}/sendMessage", [
                                     'chat_id' => $chatId,
                                     'text' => $successMsg,
@@ -101,7 +114,7 @@ class TelegramPolling extends Command
                 sleep(5);
             }
 
-            usleep(500000); 
+            usleep(500000);
         }
     }
 }

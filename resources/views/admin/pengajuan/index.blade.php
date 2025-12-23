@@ -552,6 +552,26 @@
                                                 <i class="bi bi-file-earmark-bar-graph"></i>
                                             </a>
 
+                                            {{-- 6. JIKA DITOLAK (REJECTED) --}}
+                                        @elseif($item->status == 'rejected')
+                                            {{-- Tombol Detail --}}
+                                            <a href="{{ route('admin.pengajuan.show', $item->id) }}"
+                                                class="btn-icon btn-view" title="Detail Pengajuan">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+
+                                            {{-- Opsi Tambahan: Hapus Data (Jika diperlukan) --}}
+                                            <form action="{{ route('admin.pengajuan.destroy', $item->id) }}"
+                                                method="POST" class="d-inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn-icon btn-act-x"
+                                                    onclick="return confirm('Hapus riwayat pengajuan ini permanen?')"
+                                                    title="Hapus Data">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+
                                             {{-- Default: Tombol Detail --}}
                                         @else
                                             <a href="{{ route('admin.pengajuan.show', $item->id) }}"
@@ -644,7 +664,8 @@
                 if (element) {
                     const choices = new Choices(selector, {
                         ...config,
-                        searchEnabled: selector === '#choice-sertifikat' // Hanya search di sertifikat
+                        searchEnabled: selector ===
+                            '#choice-sertifikat' // Hanya search di sertifikat
                     });
 
                     // Event listener: Saat dropdown berubah, submit form
@@ -668,7 +689,7 @@
                 else bulkActionBar.classList.remove('active');
             }
 
-            if(checkAll){
+            if (checkAll) {
                 checkAll.addEventListener('change', function() {
                     checkItems.forEach(item => {
                         if (!item.disabled) item.checked = this.checked;

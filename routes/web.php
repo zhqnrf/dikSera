@@ -260,6 +260,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/penilaian/{id}', [PewawancaraController::class, 'showPenilaian'])->name('penilaian');
         Route::post('/penilaian/{id}', [PewawancaraController::class, 'storePenilaian'])->name('penilaian.store');
         Route::get('/riwayat', [PewawancaraController::class, 'riwayat'])->name('riwayat');
+        Route::get('/settings', [PewawancaraController::class, 'settings'])->name('settings');
+        Route::post('/telegram/generate', [AdminProfileController::class, 'generateCode'])->name('telegram.generate-code');
+        Route::post('/telegram/unlink', [AdminProfileController::class, 'unlink'])->name('telegram.unlink');
+        Route::post('/telegram/test', [AdminProfileController::class, 'testMessage'])->name('telegram.test');
     });
 
     Route::post('/webhook', [TelegramController::class, 'webhook'])->name('webhook');

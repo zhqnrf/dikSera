@@ -477,7 +477,7 @@
 
                         <div class="nav-section-title">Lainnya</div>
                         {{-- Bisa ditambahkan pengaturan akun jika perlu --}}
-                        <a href="#" class="nav-linkx {{ request()->routeIs('#') ? 'active' : '' }}">
+                        <a href="{{ route('pewawancara.settings') }}" class="nav-linkx {{ request()->routeIs('#') ? 'active' : '' }}">
                             <i class="bi bi-gear-fill"></i>
                             <span class="link-text">Pengaturan</span>
                         </a>

@@ -235,4 +235,10 @@ class PewawancaraController extends Controller
             return back()->with('error', 'Gagal menghapus: ' . $e->getMessage());
         }
     }
+
+    public function settings()
+    {
+        $user = Auth::user();
+        return view('pewawancara.settings', compact('user'));
+    }
 }

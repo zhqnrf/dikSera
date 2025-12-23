@@ -25,7 +25,7 @@ class TelegramService
             $response = Http::post("https://api.telegram.org/bot{$this->botToken}/sendMessage", [
                 'chat_id' => $chatId,
                 'text' => $message,
-                'parse_mode' => 'HTML' 
+                'parse_mode' => 'HTML'
             ]);
 
             return $response->successful();
@@ -137,5 +137,32 @@ class TelegramService
         $message .= "Kode berlaku 15 menit.";
 
         return $this->executeSendMessage($chatId, $message);
+    }
+
+    /**
+     * Notifikasi untuk PEWAWANCARA saat ada jadwal baru
+     */
+    public function notifyNewScheduleForInterviewer($pewawancaraUser, $jadwal)
+    {
+        if (!$pewawancaraUser->telegram_chat_id) return false;
+
+        $tglWawancara = date('d F Y', strtotime($jadwal->waktu_wawancara));
+        $jamWawancara = date('H:i', strtotime($jadwal->waktu_wawancara));
+        $namaPeserta = $jadwal->pengajuan->user->name;
+
+        $message = "<b>📅 JADWAL WAWANCARA BARU</b>\n";
+        $message .= "---------------------------------------\n\n";
+        $message .= "Halo {$pewawancaraUser->name},\n";
+        $message .= "Anda telah dijadwalkan untuk melakukan wawancara dengan detail berikut:\n\n";
+
+        $message .= "👤 <b>Peserta:</b> {$namaPeserta}\n";
+        $message .= "📆 <b>Tanggal:</b> {$tglWawancara}\n";
+        $message .= "⏰ <b>Jam:</b> {$jamWawancara} WIB\n";
+        $message .= "📍 <b>Tempat:</b> " . ($jadwal->lokasi) . "\n\n";
+
+        $message .= "Silakan login ke dashboard untuk melakukan penilaian.\n";
+        $message .= "<i>Selamat bertugas!</i>";
+
+        return $this->executeSendMessage($pewawancaraUser->telegram_chat_id, $message);
     }
 }
