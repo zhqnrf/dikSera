@@ -84,23 +84,13 @@
                             value="{{ old('email') }}" required>
                     </div>
 
-                    {{-- TYPE (YANG TADINYA KURANG) --}}
-                    <div class="form-group mb-3">
-                        <label class="form-label">Tipe Penanggung Jawab</label>
-                        <select name="type" class="form-control form-control-custom" required>
-                            <option value="">Pilih Tipe</option>
-                            <option value="pewawancara" {{ old('type') == 'pewawancara' ? 'selected' : '' }}>Pewawancara
-                            </option>
-                            <option value="ujian" {{ old('type') == 'ujian' ? 'selected' : '' }}>Ujian</option>
-                        </select>
-                        <small class="text-muted" style="font-size: 11px;">*Wajib dipilih sesuai sistem</small>
-                    </div>
+                    {{-- KOLOM TIPE PETUGAS SUDAH DIHAPUS --}}
 
                     {{-- JABATAN --}}
                     <div class="form-group mb-3">
                         <label class="form-label">Jabatan</label>
                         <input type="text" name="jabatan" class="form-control form-control-custom"
-                            value="{{ old('jabatan') }}">
+                            value="{{ old('jabatan') }}" placeholder="Contoh: Staff HRD / Kepala Ruangan">
                     </div>
 
                     {{-- PASSWORD --}}

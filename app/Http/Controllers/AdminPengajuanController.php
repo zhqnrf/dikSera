@@ -61,8 +61,7 @@ class AdminPengajuanController extends Controller
         $pengajuan->update([
             'status' => 'method_selected',
         ]);
-        $jenis = $pengajuan->metode == 'pg_only' ? 'Pilihan Ganda' : 'Pilihan Ganda + Wawancara';
-        $msg = "Pengajuan disetujui. Metode otomatis: $jenis. Perawat dapat segera ujian.";
+        $msg = "Pengajuan disetujui. Perawat dapat segera ujian.";
     }
 
     return back()->with('success', $msg);
@@ -79,40 +78,50 @@ class AdminPengajuanController extends Controller
     // --- PERBAIKAN 1: Single Approve Score ---
     public function approveExamScore($id)
     {
-         $pengajuan = PengajuanSertifikat::findOrFail($id);
-         $examResult = $pengajuan->user->examResult;
+        $pengajuan = PengajuanSertifikat::findOrFail($id);
+        $examResult = $pengajuan->user->examResult;
 
-         if (!$examResult) {
-             return back()->with('error', 'Peserta belum mengerjakan ujian! Tidak ada nilai untuk disetujui.');
-         }
+        // [LOGIKA BARU] Cek Exam Result hanya jika BUKAN interview_only
+        if ($pengajuan->metode != 'interview_only') {
+            if (!$examResult) {
+                return back()->with('error', 'Peserta belum mengerjakan ujian! Tidak ada nilai untuk disetujui.');
+            }
+            // Update status lulus hanya jika ada exam result
+            $examResult->update(['lulus' => 1]);
+        }
 
-         // [TAMBAHAN] Paksa update status ujian menjadi LULUS (1)
-         $examResult->update(['lulus' => 1]);
+        if ($pengajuan->metode == 'pg_only') {
+            // ... (Kode pg_only tetap sama) ...
+            $pengajuan->update(['status' => 'completed']);
+            if ($pengajuan->lisensiLama) {
+                $pengajuan->lisensiLama->update([
+                    'tgl_terbit'  => now(),
+                    'tgl_expired' => now()->addYears(3)
+                ]);
+            }
+            return back()->with('success', "Nilai (Skor: {$examResult->total_nilai}) disetujui & Status Ujian diubah LULUS. Proses selesai.");
 
-         if($pengajuan->metode == 'pg_only') {
-             $pengajuan->update(['status' => 'completed']);
-             if ($pengajuan->lisensiLama) {
-                 $pengajuan->lisensiLama->update([
-                     'tgl_terbit'  => now(),
-                     'tgl_expired' => now()->addYears(3)
-                 ]);
-             }
-             return back()->with('success', "Nilai (Skor: {$examResult->total_nilai}) disetujui & Status Ujian diubah LULUS. Proses selesai.");
-         } else if ($pengajuan->metode == 'interview_only') {
-             $pengajuan->update(['status' => 'completed']);
-             $user = $pengajuan->user;
-             $lisensi = $pengajuan->lisensiLama;
-             $newTerbit = $lisensi && $lisensi->tgl_terbit ? $lisensi->tgl_terbit : now();
-             $newExpired = \Carbon\Carbon::parse($newTerbit)->addYears(3);
-             $user->lisensis()->update([
-                 'tgl_terbit' => $newTerbit,
-                 'tgl_expired' => $newExpired
-             ]);
-             return back()->with('success', "Nilai wawancara disetujui. Semua lisensi diperpanjang hingga " . $newExpired->format('d-m-Y'));
-         } else {
-             $pengajuan->update(['status' => 'exam_passed']);
-             return back()->with('success', "Nilai (Skor: {$examResult->total_nilai}) disetujui & Status Ujian diubah LULUS. Menunggu jadwal wawancara.");
-         }
+        } else if ($pengajuan->metode == 'interview_only') {
+            // [KHUSUS INTERVIEW ONLY] Langsung finalize tanpa butuh ExamResult
+            $pengajuan->update(['status' => 'completed']);
+            $user = $pengajuan->user;
+            $lisensi = $pengajuan->lisensiLama;
+            $newTerbit = $lisensi && $lisensi->tgl_terbit ? $lisensi->tgl_terbit : now();
+            $newExpired = \Carbon\Carbon::parse($newTerbit)->addYears(3);
+
+            // Update lisensi user
+            $user->lisensis()->update([
+                'tgl_terbit' => $newTerbit,
+                'tgl_expired' => $newExpired
+            ]);
+
+            return back()->with('success', "Pengajuan wawancara disetujui & selesai. Lisensi diperpanjang.");
+
+        } else {
+            // [PG + Interview]
+            $pengajuan->update(['status' => 'exam_passed']);
+            return back()->with('success', "Nilai (Skor: {$examResult->total_nilai}) disetujui & Status Ujian diubah LULUS. Menunggu jadwal wawancara.");
+        }
     }
 
     public function show($id)
@@ -194,12 +203,21 @@ class AdminPengajuanController extends Controller
         $skipped = 0;
 
         foreach ($pengajuans as $pengajuan) {
-            if ($pengajuan->user && $pengajuan->user->examResult) {
+            // [LOGIKA BARU]
+            // Kondisi A: Punya Exam Result (Untuk PG Only atau PG+Interview)
+            // Kondisi B: Metode Interview Only (Tidak butuh Exam Result)
+            $hasExam = ($pengajuan->user && $pengajuan->user->examResult);
+            $isInterviewOnly = ($pengajuan->metode == 'interview_only');
 
-                // [TAMBAHAN] Paksa update status ujian menjadi LULUS (1) untuk setiap user di bulk
-                $pengajuan->user->examResult->update(['lulus' => 1]);
+            if ($hasExam || $isInterviewOnly) {
+
+                // Jika punya exam result, update lulus
+                if ($hasExam) {
+                    $pengajuan->user->examResult->update(['lulus' => 1]);
+                }
 
                 if ($pengajuan->metode == 'pg_only') {
+                     // ... (Kode pg_only tetap sama) ...
                     $pengajuan->update(['status' => 'completed']);
                     if ($pengajuan->lisensiLama) {
                         $pengajuan->lisensiLama->update([
@@ -208,15 +226,21 @@ class AdminPengajuanController extends Controller
                         ]);
                     }
                 } else if ($pengajuan->metode == 'interview_only') {
+                    // ... (Kode interview_only tetap sama) ...
                     $pengajuan->update(['status' => 'completed']);
                     $user = $pengajuan->user;
                     $lisensi = $pengajuan->lisensiLama;
                     $newTerbit = $lisensi && $lisensi->tgl_terbit ? $lisensi->tgl_terbit : now();
                     $newExpired = \Carbon\Carbon::parse($newTerbit)->addYears(3);
-                    $user->lisensis()->update([
-                        'tgl_terbit' => $newTerbit,
-                        'tgl_expired' => $newExpired
-                    ]);
+
+                    // Gunakan whereId atau relasi yang spesifik agar tidak mengupdate semua lisensi jika user punya banyak
+                    // Asumsi: lisensis() me-refer ke relasi yang benar atau gunakan query update spesifik
+                    if($lisensi) {
+                         $lisensi->update([
+                            'tgl_terbit' => $newTerbit,
+                            'tgl_expired' => $newExpired
+                        ]);
+                    }
                 } else {
                     $pengajuan->update(['status' => 'exam_passed']);
                 }
@@ -226,7 +250,7 @@ class AdminPengajuanController extends Controller
             }
         }
 
-        $msg = "Berhasil memverifikasi nilai & meluluskan $count peserta.";
+        $msg = "Berhasil memproses $count peserta.";
         if ($skipped > 0) {
             $msg .= " ($skipped peserta dilewati karena belum mengerjakan ujian).";
         }

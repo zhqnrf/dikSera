@@ -1,0 +1,460 @@
+@extends('layouts.app')
+
+{{-- Judul Halaman Spesifik --}}
+@section('title', 'Data Lisensi PG + Wawancara')
+
+@push('styles')
+    {{-- CSS SweetAlert --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <style>
+        /* --- Card Container --- */
+        .content-card {
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid var(--border-soft, #e2e8f0);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+            padding: 24px;
+        }
+
+        /* --- Search Bar --- */
+        .search-input {
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            font-size: 13px;
+            padding-left: 12px;
+            height: 40px;
+            transition: all 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* --- Custom Table --- */
+        .table-custom th {
+            background-color: #f8fafc;
+            color: #475569;
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #e2e8f0;
+            padding: 14px 16px;
+            vertical-align: middle;
+        }
+
+        .table-custom td {
+            vertical-align: middle;
+            padding: 14px 16px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 13px;
+            color: #334155;
+        }
+
+        /* --- Avatar Inisial --- */
+        .avatar-initial {
+            width: 38px;
+            height: 38px;
+            background: #eff6ff;
+            color: #3b82f6;
+            font-weight: 700;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+            border: 1px solid #dbeafe;
+        }
+
+        /* --- Badges --- */
+        .badge-soft {
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .badge-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-warning {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-info {
+            background: #e0f2fe;
+            color: #075985;
+        }
+
+        .badge-purple {
+            background: #f3e8ff;
+            color: #6b21a8;
+            border: 1px solid #e9d5ff;
+        }
+
+        /* --- Action Buttons --- */
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .btn-icon:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-icon-primary {
+            color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .btn-icon-primary:hover {
+            background: #3b82f6;
+            color: #fff;
+        }
+
+        .btn-icon-danger {
+            color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .btn-icon-danger:hover {
+            background: #ef4444;
+            color: #fff;
+        }
+
+        .btn-icon-dark {
+            color: #475569;
+            background: #f1f5f9;
+        }
+
+        .btn-icon-dark:hover {
+            background: #1e293b;
+            color: #fff;
+        }
+
+        /* Utility */
+        .w-fit {
+            width: fit-content;
+        }
+    </style>
+@endpush
+
+@section('content')
+
+    {{-- Header & Tools --}}
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">
+        <div>
+            {{-- Judul Spesifik --}}
+            <h4 class="fw-bold mb-1">Data Lisensi (PG + Wawancara)</h4>
+            <p class="text-muted small mb-0">Monitor kompetensi dan masa berlaku untuk perpanjangan PG + Wawancara.</p>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a href="{{ route('dashboard') }}" class="btn btn-light border shadow-sm px-3" style="border-radius: 8px;">
+                <i class="bi bi-arrow-left"></i> Kembali
+            </a>
+
+            {{-- Tombol Create Spesifik ke PG Interview --}}
+            <a href="{{ route('admin.lisensi_pg_interview.create') }}" class="btn btn-primary px-3 shadow-sm"
+                style="border-radius: 8px;">
+                <i class="bi bi-plus-lg me-1"></i> Tambah Lisensi
+            </a>
+        </div>
+    </div>
+
+    <div class="content-card">
+
+        {{-- Toolbar: Search & Filter dalam SATU Form --}}
+        {{-- Route Search diarahkan spesifik --}}
+        <form action="{{ route('admin.lisensi_pg_interview.index') }}" method="GET"
+            class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">
+
+            {{-- Bagian Search --}}
+            <div class="d-flex gap-2 w-100 w-md-auto">
+                <input type="text" name="search" value="{{ request('search') }}" class="form-control search-input"
+                    placeholder="Cari nama, nomor, atau bidang..." style="min-width: 300px;">
+                <button class="btn btn-light border" type="submit">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+
+            {{-- Bagian Filter Status --}}
+            <div class="d-flex gap-2 w-100 w-md-auto">
+                {{-- onchange="this.form.submit()" agar otomatis reload saat dipilih --}}
+                <select name="status" class="form-select form-select-sm" style="border-radius: 8px; width: 150px;"
+                    onchange="this.form.submit()">
+                    <option value="">Semua Status</option>
+                    <option value="aktif" {{ request('status') == 'aktif' ? 'selected' : '' }}>Aktif</option>
+                    <option value="expired" {{ request('status') == 'expired' ? 'selected' : '' }}>Expired</option>
+                </select>
+            </div>
+        </form>
+
+        {{-- Table --}}
+        <div class="table-responsive">
+            <table class="table table-custom table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th width="5%" class="text-center">No</th>
+                        <th>Pemilik Lisensi</th>
+                        <th width="25%">Detail & Kompetensi</th>
+                        <th width="20%">Pelaksanaan</th>
+                        <th>Masa Berlaku</th>
+                        <th class="text-center">File</th>
+                        <th class="text-center" width="100">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($data as $item)
+                        <tr>
+                            {{-- Penomoran Pagination --}}
+                            <td class="text-center text-muted">{{ $loop->iteration + $data->firstItem() - 1 }}</td>
+
+                            {{-- Kolom 1: Identitas User --}}
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    {{-- Avatar Inisial --}}
+                                    @php
+                                        $name = $item->user->name ?? 'Unknown';
+                                        $initials = collect(explode(' ', $name))
+                                            ->map(fn($w) => strtoupper(substr($w, 0, 1)))
+                                            ->take(2)
+                                            ->join('');
+                                    @endphp
+                                    <div class="avatar-initial">{{ $initials }}</div>
+                                    <div>
+                                        <div class="fw-bold text-dark">{{ $name }}</div>
+                                        <div class="text-muted small" style="font-size: 11px;">
+                                            {{ $item->user->email ?? '-' }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+
+                            {{-- Kolom 2: Info Lisensi, Bidang & KFK --}}
+                            <td>
+                                <div class="fw-bold text-dark mb-1">{{ $item->nama }}</div>
+                                <div class="d-flex flex-column gap-1">
+                                    <span class="text-muted small">
+                                        <i class="bi bi-building me-1"></i> {{ $item->lembaga }}
+                                    </span>
+                                    <span class="text-primary small" style="font-size: 11px;">
+                                        No: {{ $item->nomor }}
+                                    </span>
+
+                                    {{-- Bidang & KFK --}}
+                                    <div class="mt-1">
+                                        <div class="text-dark small fw-semibold mb-1" style="font-size: 11px;">
+                                            <i class="bi bi-briefcase me-1"></i> {{ $item->bidang }}
+                                        </div>
+
+                                        {{-- LOGIKA DECODE JSON KFK --}}
+                                        <div class="d-flex flex-wrap gap-1">
+                                            @php
+                                                $kfks = $item->kfk;
+                                                if (is_string($kfks)) {
+                                                    $kfks = json_decode($kfks, true);
+                                                    if (!is_array($kfks)) {
+                                                        $kfks = [$item->kfk];
+                                                    }
+                                                }
+                                                if (empty($kfks)) {
+                                                    $kfks = [];
+                                                }
+                                            @endphp
+
+                                            @foreach ($kfks as $pk)
+                                                <span class="badge-soft badge-purple"
+                                                    style="padding: 2px 6px; font-size: 10px;">
+                                                    {{ $pk }}
+                                                </span>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+
+                            {{-- Kolom 3: Metode & Tanggal Pelaksanaan --}}
+                            <td>
+                                <div class="mb-2">
+                                    {{-- Badge Hardcoded untuk PG + Interview --}}
+                                    <span class="badge-soft badge-info">
+                                        <i class="bi bi-mic"></i> PG + Wawancara
+                                    </span>
+                                </div>
+
+                                {{-- Tanggal Mulai - Selesai --}}
+                                <div class="text-muted small d-flex flex-column" style="font-size: 11px;">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-calendar3 text-secondary"></i>
+                                        <span>
+                                            {{ \Carbon\Carbon::parse($item->tgl_mulai)->format('d M') }}
+                                            s/d
+                                            {{ \Carbon\Carbon::parse($item->tgl_diselenggarakan)->format('d M Y') }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </td>
+
+                            {{-- Kolom 4: Status & Tanggal Expired --}}
+                            <td>
+                                @php
+                                    $expired = \Carbon\Carbon::parse($item->tgl_expired);
+                                    $today = \Carbon\Carbon::now();
+                                    $diff = $today->diffInDays($expired, false);
+                                @endphp
+
+                                <div class="d-flex flex-column gap-1">
+                                    @if ($diff < 0)
+                                        <span class="badge-soft badge-danger w-fit"><i class="bi bi-x-circle"></i>
+                                            Expired</span>
+                                    @elseif($diff < 90)
+                                        <span class="badge-soft badge-warning w-fit"><i
+                                                class="bi bi-exclamation-triangle"></i> Segera Habis</span>
+                                    @else
+                                        <span class="badge-soft badge-active w-fit"><i class="bi bi-check-circle"></i>
+                                            Aktif</span>
+                                    @endif
+
+                                    <div class="text-muted small mt-1" style="font-size: 11px;">
+                                        Exp: {{ $expired->format('d M Y') }}
+                                    </div>
+                                </div>
+                            </td>
+
+                            {{-- Kolom 5: File --}}
+                            <td class="text-center">
+                                @if ($item->file_path)
+                                    <a href="{{ Storage::url($item->file_path) }}" target="_blank"
+                                        class="btn-icon btn-icon-dark" data-bs-toggle="tooltip" title="Lihat Dokumen">
+                                        <i class="bi bi-file-earmark-pdf"></i>
+                                    </a>
+                                @else
+                                    <span class="text-muted small">-</span>
+                                @endif
+                            </td>
+
+                            {{-- Kolom 6: Aksi --}}
+                            <td class="text-center">
+                                <div class="d-flex justify-content-center gap-1">
+                                    {{-- Route EDIT Spesifik PG Interview --}}
+                                    <a href="{{ route('admin.lisensi_pg_interview.edit', $item->id) }}"
+                                        class="btn-icon btn-icon-primary" data-bs-toggle="tooltip" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+
+                                    {{-- Route DESTROY Spesifik PG Interview --}}
+                                    <form action="{{ route('admin.lisensi_pg_interview.destroy', $item->id) }}" method="POST"
+                                        class="d-inline delete-form">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn-icon btn-icon-danger" data-bs-toggle="tooltip"
+                                            title="Hapus">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" class="text-center py-5">
+                                <div class="text-muted mb-2">
+                                    <i class="bi bi-card-checklist display-6 opacity-25"></i>
+                                </div>
+                                <span class="text-muted small">Belum ada data lisensi (PG + Wawancara) ditemukan.</span>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        {{-- Pagination --}}
+        <div class="mt-4">
+            {{-- Menggunakan withQueryString() agar parameter search & filter tetap ada saat pindah halaman --}}
+            {{ $data->withQueryString()->links() }}
+        </div>
+    </div>
+
+@endsection
+
+@push('scripts')
+    {{-- SweetAlert JS --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Init Tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+
+            // --- Handle Flash Message ---
+            @if (session('swal'))
+                var swalData = {!! json_encode(session('swal')) !!};
+                Swal.fire({
+                    icon: swalData.icon,
+                    title: swalData.title,
+                    text: swalData.text,
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            @endif
+
+            @if (session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: "{{ session('success') }}",
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            @endif
+
+            // Handle Delete Confirmation
+            const deleteForms = document.querySelectorAll('.delete-form');
+            deleteForms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: 'Hapus Lisensi?',
+                        text: "Data lisensi ini akan dihapus permanen.",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Ya, Hapus!',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            this.submit();
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+@endpush

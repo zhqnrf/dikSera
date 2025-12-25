@@ -1,9 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'Tambah Lisensi – DIKSERA')
+@section('title', 'Edit Lisensi (Wawancara)')
 
 @push('styles')
-    {{-- Load CSS Choices --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
 
     <style>
@@ -12,11 +11,11 @@
             --text-gray: #64748b;
             --bg-light: #f1f5f9;
             --input-border: #cbd5e1;
-            /* Warna Tema Create: Biru */
-            --accent-color: #2563eb;
-            --accent-hover: #1d4ed8;
-            --accent-light: #eff6ff;
-            --accent-border: #dbeafe;
+            /* Warna Tema: Ungu (Konsisten dengan Index/Create Wawancara) */
+            --accent-color: #7c3aed;
+            --accent-hover: #6d28d9;
+            --accent-light: #f5f3ff;
+            --accent-border: #ddd6fe;
         }
 
         body {
@@ -49,7 +48,7 @@
             padding: 30px;
         }
 
-        /* --- Inputs Styling (COMPACT) --- */
+        /* --- Inputs Styling --- */
         .form-label {
             font-size: 0.85rem;
             font-weight: 600;
@@ -76,11 +75,10 @@
         .form-control:focus,
         .form-select:focus {
             border-color: var(--accent-color);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15); /* Ungu Focus */
             outline: none;
         }
 
-        /* Input Group Icons */
         .input-group-text {
             background-color: #f8fafc;
             border: 1px solid var(--input-border);
@@ -92,7 +90,7 @@
             font-size: 0.9rem;
         }
 
-        /* --- Choices JS (Compact) --- */
+        /* --- Choices JS --- */
         .choices__inner {
             background-color: #fff;
             border: 1px solid var(--input-border);
@@ -106,19 +104,10 @@
 
         .choices.is-focused .choices__inner {
             border-color: var(--accent-color);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
         }
 
-        .choices__list--multiple .choices__item {
-            background-color: var(--accent-color);
-            border-color: var(--accent-color);
-            font-size: 0.85rem;
-        }
-
-        .choices__list--dropdown .choices__item {
-            font-size: 0.9rem;
-            padding: 8px 12px;
-        }
+        .choices__list--single { padding: 0; }
 
         /* --- Metode Wrapper --- */
         .metode-wrapper {
@@ -130,7 +119,7 @@
         }
 
         /* --- Buttons --- */
-        .btn-submit {
+        .btn-submit-edit {
             background-color: var(--accent-color);
             color: white;
             width: 100%;
@@ -139,14 +128,14 @@
             font-weight: 600;
             font-size: 0.95rem;
             border: none;
-            box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+            box-shadow: 0 2px 4px rgba(124, 58, 237, 0.2);
             transition: all 0.2s;
         }
 
-        .btn-submit:hover {
+        .btn-submit-edit:hover {
             background-color: var(--accent-hover);
             transform: translateY(-1px);
-            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
+            box-shadow: 0 4px 6px rgba(124, 58, 237, 0.3);
             color: white;
         }
 
@@ -181,18 +170,18 @@
                 {{-- Header --}}
                 <div class="page-header">
                     <div>
-                        <h1 class="page-title">Tambah Lisensi Baru</h1>
-                        <p class="text-muted small mb-0">Formulir administrasi data lisensi perawat.</p>
+                        <h1 class="page-title">Edit Lisensi (Wawancara)</h1>
+                        <p class="text-muted small mb-0">Update informasi lisensi khusus wawancara.</p>
                     </div>
-                    <a href="{{ route('admin.lisensi.index') }}" class="btn-back">
+                    {{-- ROUTE BACK SPESIFIK --}}
+                    <a href="{{ route('admin.lisensi_interview_only.index') }}" class="btn-back">
                         <i class="bi bi-arrow-left"></i> Kembali
                     </a>
                 </div>
 
                 <div class="form-card">
                     @if ($errors->any())
-                        <div
-                            class="alert alert-danger border-0 bg-danger bg-opacity-10 text-danger mb-4 rounded-2 py-2 px-3 small">
+                        <div class="alert alert-danger border-0 bg-danger bg-opacity-10 text-danger mb-4 rounded-2 py-2 px-3 small">
                             <ul class="mb-0 ps-3">
                                 @foreach ($errors->all() as $e)
                                     <li>{{ $e }}</li>
@@ -201,41 +190,33 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('admin.lisensi.store') }}" method="POST">
+                    {{-- ROUTE UPDATE SPESIFIK --}}
+                    <form action="{{ route('admin.lisensi_interview_only.update', $data->id) }}" method="POST">
                         @csrf
+                        @method('PUT')
 
                         <div class="row g-3">
 
-                            {{-- 1. Aturan Perpanjangan --}}
+                            {{-- 1. Aturan Perpanjangan (Readonly Badge) --}}
                             <div class="col-12">
                                 <div class="metode-wrapper">
                                     <div class="d-flex gap-3 align-items-center">
-                                        <i class="bi bi-sliders text-primary fs-5"></i>
+                                        <i class="bi bi-person-video2 fs-5" style="color: var(--accent-color);"></i>
                                         <div class="flex-grow-1">
                                             <div class="row align-items-center">
-                                                <div class="col-md-7">
-                                                    <label class="form-label text-dark mb-0">Metode Perpanjangan <span
-                                                            class="required-star">*</span></label>
-                                                    <div class="text-muted" style="font-size: 11px;">Pilih cara evaluasi
-                                                        untuk lisensi ini.</div>
+                                                <div class="col-md-8">
+                                                    <label class="form-label text-dark mb-0">Metode Perpanjangan</label>
+                                                    <div class="text-muted" style="font-size: 11px;">
+                                                        Mode edit dikunci sesuai tipe lisensi.
+                                                    </div>
                                                 </div>
-                                                <div class="col-md-5">
-                                                    <select name="metode_perpanjangan"
-                                                        class="form-select border-primary fw-bold text-dark form-select-sm"
-                                                        required>
-                                                        <option value="pg_only"
-                                                            {{ old('metode_perpanjangan') == 'pg_only' ? 'selected' : '' }}>
-                                                            Hanya Ujian Tulis
-                                                        </option>
-                                                        <option value="pg_interview"
-                                                            {{ old('metode_perpanjangan') == 'pg_interview' ? 'selected' : '' }}>
-                                                            Ujian Tulis + Wawancara
-                                                        </option>
-                                                        <option value="interview_only"
-                                                            {{ old('metode_perpanjangan') == 'interview_only' ? 'selected' : '' }}>
-                                                            Hanya Wawancara
-                                                        </option>
-                                                    </select>
+                                                <div class="col-md-4 text-end">
+                                                    {{-- INPUT HIDDEN --}}
+                                                    <input type="hidden" name="metode_perpanjangan" value="interview_only">
+                                                    <span class="badge"
+                                                          style="background-color: var(--accent-color); font-size: 12px; padding: 6px 12px;">
+                                                        Hanya Wawancara
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
@@ -243,76 +224,59 @@
                                 </div>
                             </div>
 
-                            {{-- 2. Pilih Perawat (Multi Select) --}}
+                            {{-- 2. Pemilik Lisensi --}}
                             <div class="col-12">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <label class="form-label mb-0">Pilih Perawat (Bisa Banyak) <span
-                                            class="required-star">*</span></label>
-
-                                    {{-- Tombol Aksi --}}
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-primary" id="btn-select-all">
-                                            <i class="bi bi-check-all"></i> Pilih Semua
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-outline-danger" id="btn-reset-all">
-                                            <i class="bi bi-x-circle"></i> Reset
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div class="mb-1">
-                                    <select name="user_ids[]" id="choice-users" class="form-select" multiple required>
-                                        {{-- Option kosong untuk placeholder --}}
-                                        <option value="">Cari Nama Perawat...</option>
-                                        @foreach ($users as $user)
-                                            <option value="{{ $user->id }}"
-                                                {{ collect(old('user_ids'))->contains($user->id) ? 'selected' : '' }}>
-                                                {{ $user->name }} ({{ $user->unit_kerja ?? 'Unit Tidak Ada' }})
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="form-text">Nomor lisensi akan digenerate otomatis berurutan untuk setiap perawat
-                                    yang dipilih.</div>
+                                <label class="form-label">Pemilik Lisensi <span class="required-star">*</span></label>
+                                <select name="user_id" id="choice-user-single" class="form-select" required>
+                                    <option value="">Pilih Perawat...</option>
+                                    @foreach ($users as $user)
+                                        <option value="{{ $user->id }}"
+                                            {{ old('user_id', $data->user_id) == $user->id ? 'selected' : '' }}>
+                                            {{ $user->name }} ({{ $user->unit_kerja ?? 'Unit Tidak Ada' }})
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
 
                             <div class="col-12">
                                 <hr class="border-light m-0">
                             </div>
 
-                            {{-- BAGIAN BARU: Detail Bidang & KFK --}}
+                            {{-- 3. Detail Bidang & KFK (MULTI SELECT EDIT) --}}
                             <div class="col-md-6">
-                                <label class="form-label">Bidang Keahlian <span class="required-star">*</span></label>
+                                <label class="form-label">KFK <span class="required-star">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-briefcase"></i></span>
-                                    <input type="text" name="bidang" class="form-control" value="{{ old('bidang') }}"
-                                        placeholder="Contoh: Keperawatan Anak" required>
+                                    <input type="text" name="bidang" class="form-control"
+                                        value="{{ old('bidang', $data->bidang) }}" required>
                                 </div>
                             </div>
 
-                            {{-- PERUBAHAN DI SINI: Jenjang KFK Multi Select --}}
                             <div class="col-md-6">
                                 <label class="form-label">Jenjang KFK (PK) <span class="required-star">*</span></label>
                                 <div class="input-group">
-                                    {{-- Catatan: Icon input-group-text mungkin perlu dihilangkan jika mengganggu tampilan Choices,
-                                         atau dipindahkan ke luar jika menggunakan multi-select --}}
                                     <span class="input-group-text"><i class="bi bi-bar-chart-steps"></i></span>
-
-                                    {{-- name="kfk[]" (array) dan multiple="multiple" --}}
-                                    <select name="kfk[]" id="choice-kfk" class="form-select" multiple required>
+                                    <select name="kfk[]" id="choice-kfk-edit" class="form-select" multiple required>
                                         <option value="">Pilih Jenjang KFK...</option>
                                         @php
                                             $kfks = [
-                                                    'Pra PK',
-                                                    'Pra BK',
-                                                    'PK 1', 'PK 1.5', 'PK 2', 'PK 2.5', 'PK 3', 'PK 3.5', 'PK 4', 'PK 4.5', 'PK 5',
-                                                    'BK 1', 'BK 1.5', 'BK 2', 'BK 2.5', 'BK 3', 'BK 3.5', 'BK 4', 'BK 4.5', 'BK 5'
+                                                'Pra PK', 'Pra BK',
+                                                'PK 1', 'PK 1.5', 'PK 2', 'PK 2.5', 'PK 3', 'PK 3.5', 'PK 4', 'PK 4.5', 'PK 5',
+                                                'BK 1', 'BK 1.5', 'BK 2', 'BK 2.5', 'BK 3', 'BK 3.5', 'BK 4', 'BK 4.5', 'BK 5'
                                             ];
+
+                                            // Logic Ambil Data Lama
+                                            $currentKfk = old('kfk', $data->kfk);
+                                            if (is_string($currentKfk)) {
+                                                $decoded = json_decode($currentKfk, true);
+                                                $currentKfk = is_array($decoded) ? $decoded : [];
+                                            }
+                                            $kfkCollection = collect($currentKfk);
                                         @endphp
+
                                         @foreach ($kfks as $kfk)
-                                            {{-- Gunakan collect() atau in_array() karena old('kfk') sekarang adalah array --}}
                                             <option value="{{ $kfk }}"
-                                                {{ collect(old('kfk'))->contains($kfk) ? 'selected' : '' }}>
+                                                {{ $kfkCollection->contains($kfk) ? 'selected' : '' }}>
                                                 {{ $kfk }}
                                             </option>
                                         @endforeach
@@ -320,23 +284,22 @@
                                 </div>
                             </div>
 
-                            {{-- Tanggal Pelaksanaan --}}
+                            {{-- 4. Tanggal Pelaksanaan --}}
                             <div class="col-md-6">
                                 <label class="form-label">Tanggal Mulai <span class="required-star">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
                                     <input type="date" name="tgl_mulai" class="form-control"
-                                        value="{{ old('tgl_mulai') }}" required>
+                                        value="{{ old('tgl_mulai', $data->tgl_mulai) }}" required>
                                 </div>
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label">Tanggal Selesai Diselenggarakan <span
-                                        class="required-star">*</span></label>
+                                <label class="form-label">Tanggal Selesai Diselenggarakan <span class="required-star">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-calendar-check"></i></span>
                                     <input type="date" name="tgl_diselenggarakan" class="form-control"
-                                        value="{{ old('tgl_diselenggarakan') }}" required>
+                                        value="{{ old('tgl_diselenggarakan', $data->tgl_diselenggarakan) }}" required>
                                 </div>
                             </div>
 
@@ -344,13 +307,13 @@
                                 <hr class="border-light m-0">
                             </div>
 
-                            {{-- 3. Identitas Lisensi --}}
+                            {{-- 5. Identitas Lisensi --}}
                             <div class="col-md-6">
                                 <label class="form-label">Nama Lisensi <span class="required-star">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-card-heading"></i></span>
                                     <input type="text" name="nama" class="form-control"
-                                        value="{{ old('nama') }}" placeholder="Contoh: STR, SIP" required>
+                                        value="{{ old('nama', $data->nama) }}" required>
                                 </div>
                             </div>
 
@@ -359,17 +322,27 @@
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-building"></i></span>
                                     <input type="text" name="lembaga" class="form-control"
-                                        value="{{ old('lembaga') }}" placeholder="Contoh: Kemenkes RI" required>
+                                        value="{{ old('lembaga', $data->lembaga) }}" required>
                                 </div>
                             </div>
 
-                            {{-- 4. Tanggal --}}
+                            <div class="col-12">
+                                <label class="form-label">Nomor Lisensi <span class="required-star">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-hash"></i></span>
+                                    <input type="text" name="nomor" class="form-control font-monospace"
+                                        value="{{ old('nomor', $data->nomor) }}" required>
+                                </div>
+                                <div class="text-end text-muted fst-italic mt-1" style="font-size: 11px;">Nomor otomatis, edit jika perlu.</div>
+                            </div>
+
+                            {{-- 6. Tanggal Masa Berlaku --}}
                             <div class="col-md-6">
                                 <label class="form-label">Tanggal Terbit <span class="required-star">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-calendar-check"></i></span>
                                     <input type="date" name="tgl_terbit" class="form-control"
-                                        value="{{ old('tgl_terbit') }}" required>
+                                        value="{{ old('tgl_terbit', $data->tgl_terbit) }}" required>
                                 </div>
                             </div>
 
@@ -378,7 +351,7 @@
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-calendar-x"></i></span>
                                     <input type="date" name="tgl_expired" class="form-control"
-                                        value="{{ old('tgl_expired') }}" required>
+                                        value="{{ old('tgl_expired', $data->tgl_expired) }}" required>
                                 </div>
                             </div>
 
@@ -386,8 +359,8 @@
 
                         {{-- Submit Button --}}
                         <div class="mt-4 pt-2">
-                            <button type="submit" class="btn-submit">
-                                <i class="bi bi-save2 me-1"></i> Simpan Data Lisensi
+                            <button type="submit" class="btn-submit-edit">
+                                <i class="bi bi-check2-circle me-1"></i> Simpan Perubahan
                             </button>
                         </div>
 
@@ -399,57 +372,36 @@
 @endsection
 
 @push('scripts')
-    {{-- Load JS Choices --}}
     <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // --- 1. SETUP CHOICES UNTUK USER (PERAWAT) ---
-            const elementUser = document.getElementById('choice-users');
-            const btnSelectAll = document.getElementById('btn-select-all');
-            const btnResetAll = document.getElementById('btn-reset-all');
-
-            // ID dari PHP (untuk Select All User)
-            const allUserIds = {!! json_encode($users->pluck('id')->map(fn($id) => (string) $id)) !!};
-
-            const choicesUser = new Choices(elementUser, {
-                removeItemButton: true,
+            // 1. Inisialisasi Choice untuk Pemilik Lisensi
+            const elementUser = document.getElementById('choice-user-single');
+            new Choices(elementUser, {
                 searchEnabled: true,
-                placeholderValue: 'Cari dan pilih perawat...',
-                noResultsText: 'Tidak ada perawat ditemukan',
-                itemSelectText: 'Tekan untuk memilih',
+                placeholderValue: 'Cari perawat...',
+                noResultsText: 'Tidak ditemukan',
+                itemSelectText: '',
                 shouldSort: false,
-            });
-
-            // Logika Select All User
-            btnSelectAll.addEventListener('click', function(e) {
-                e.preventDefault();
-                choicesUser.removeActiveItems();
-                choicesUser.setChoiceByValue(allUserIds);
-            });
-
-            // Logika Reset All User
-            btnResetAll.addEventListener('click', function(e) {
-                e.preventDefault();
-                choicesUser.removeActiveItems();
-            });
-
-            // --- 2. SETUP CHOICES UNTUK KFK (JENJANG PK) ---
-            const elementKfk = document.getElementById('choice-kfk');
-
-            const choicesKfk = new Choices(elementKfk, {
-                removeItemButton: true,
-                searchEnabled: false, // Biasanya KFK sedikit opsinya, search tidak wajib
-                placeholderValue: 'Pilih Jenjang KFK...',
-                itemSelectText: 'Tekan untuk memilih',
-                shouldSort: false,
-                // Tambahan styling agar konsisten
                 classNames: {
                     containerInner: 'choices__inner',
                     input: 'choices__input',
                 }
             });
 
+            // 2. Inisialisasi Choice untuk KFK
+            const elementKfk = document.getElementById('choice-kfk-edit');
+            new Choices(elementKfk, {
+                removeItemButton: true,
+                searchEnabled: false,
+                placeholderValue: 'Pilih Jenjang KFK...',
+                itemSelectText: '',
+                shouldSort: false,
+                classNames: {
+                    containerInner: 'choices__inner',
+                    input: 'choices__input',
+                }
+            });
         });
     </script>
 @endpush

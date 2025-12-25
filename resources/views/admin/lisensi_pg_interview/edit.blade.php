@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Lisensi – DIKSERA')
+@section('title', 'Edit Lisensi (PG + Wawancara)')
 
 @push('styles')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
@@ -11,18 +11,17 @@
             --text-gray: #64748b;
             --bg-light: #f1f5f9;
             --input-border: #cbd5e1;
-            --accent-color: #f59e0b;
-            /* Orange */
-            --accent-hover: #d97706;
-            --accent-light: #fffbeb;
-            --accent-border: #fcd34d;
+            /* Warna Tema: Biru Laut (Konsisten dengan Index/Create PG) */
+            --accent-color: #0ea5e9;
+            --accent-hover: #0284c7;
+            --accent-light: #e0f2fe;
+            --accent-border: #bae6fd;
         }
 
         body {
             background-color: var(--bg-light);
             color: var(--text-dark);
             font-size: 14px;
-            /* Base font size lebih kecil */
         }
 
         /* --- Header Area --- */
@@ -35,7 +34,6 @@
 
         .page-title {
             font-size: 1.5rem;
-            /* Lebih proporsional */
             font-weight: 700;
             color: var(--text-dark);
             margin: 0;
@@ -48,13 +46,11 @@
             border: 1px solid #e2e8f0;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             padding: 30px;
-            /* Padding dikurangi */
         }
 
-        /* --- Inputs Styling (COMPACT) --- */
+        /* --- Inputs Styling --- */
         .form-label {
             font-size: 0.85rem;
-            /* 13-14px */
             font-weight: 600;
             color: #334155;
             margin-bottom: 6px;
@@ -71,9 +67,7 @@
             border: 1px solid var(--input-border);
             border-radius: 8px;
             padding: 8px 12px;
-            /* Padding lebih kecil */
             font-size: 0.9rem;
-            /* Font input pas */
             line-height: 1.5;
             height: auto;
         }
@@ -81,11 +75,10 @@
         .form-control:focus,
         .form-select:focus {
             border-color: var(--accent-color);
-            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15); /* Biru Focus */
             outline: none;
         }
 
-        /* Input Group Icons */
         .input-group-text {
             background-color: #f8fafc;
             border: 1px solid var(--input-border);
@@ -97,13 +90,12 @@
             font-size: 0.9rem;
         }
 
-        /* --- Choices JS (Compact) --- */
+        /* --- Choices JS --- */
         .choices__inner {
             background-color: #fff;
             border: 1px solid var(--input-border);
             border-radius: 8px;
             min-height: 38px;
-            /* Tinggi disamakan dengan input biasa */
             padding: 4px 8px !important;
             display: flex;
             align-items: center;
@@ -112,12 +104,10 @@
 
         .choices.is-focused .choices__inner {
             border-color: var(--accent-color);
-            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
         }
 
-        .choices__list--single {
-            padding: 0;
-        }
+        .choices__list--single { padding: 0; }
 
         /* --- Metode Wrapper --- */
         .metode-wrapper {
@@ -138,14 +128,14 @@
             font-weight: 600;
             font-size: 0.95rem;
             border: none;
-            box-shadow: 0 2px 4px rgba(245, 158, 11, 0.2);
+            box-shadow: 0 2px 4px rgba(14, 165, 233, 0.2);
             transition: all 0.2s;
         }
 
         .btn-submit-edit:hover {
             background-color: var(--accent-hover);
             transform: translateY(-1px);
-            box-shadow: 0 4px 6px rgba(245, 158, 11, 0.3);
+            box-shadow: 0 4px 6px rgba(14, 165, 233, 0.3);
             color: white;
         }
 
@@ -180,18 +170,18 @@
                 {{-- Header --}}
                 <div class="page-header">
                     <div>
-                        <h1 class="page-title">Edit Data Lisensi</h1>
-                        <p class="text-muted small mb-0">Update informasi dan aturan perpanjangan.</p>
+                        <h1 class="page-title">Edit Lisensi (PG + Wawancara)</h1>
+                        <p class="text-muted small mb-0">Update informasi lisensi metode gabungan.</p>
                     </div>
-                    <a href="{{ route('admin.lisensi.index') }}" class="btn-back">
+                    {{-- ROUTE BACK SPESIFIK --}}
+                    <a href="{{ route('admin.lisensi_pg_interview.index') }}" class="btn-back">
                         <i class="bi bi-arrow-left"></i> Kembali
                     </a>
                 </div>
 
                 <div class="form-card">
                     @if ($errors->any())
-                        <div
-                            class="alert alert-danger border-0 bg-danger bg-opacity-10 text-danger mb-4 rounded-2 py-2 px-3 small">
+                        <div class="alert alert-danger border-0 bg-danger bg-opacity-10 text-danger mb-4 rounded-2 py-2 px-3 small">
                             <ul class="mb-0 ps-3">
                                 @foreach ($errors->all() as $e)
                                     <li>{{ $e }}</li>
@@ -200,42 +190,33 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('admin.lisensi.update', $data->id) }}" method="POST">
+                    {{-- ROUTE UPDATE SPESIFIK --}}
+                    <form action="{{ route('admin.lisensi_pg_interview.update', $data->id) }}" method="POST">
                         @csrf
                         @method('PUT')
 
                         <div class="row g-3">
 
-                            {{-- 1. Aturan Perpanjangan --}}
+                            {{-- 1. Aturan Perpanjangan (Readonly Badge) --}}
                             <div class="col-12">
                                 <div class="metode-wrapper">
                                     <div class="d-flex gap-3 align-items-center">
-                                        <i class="bi bi-sliders text-warning fs-5"></i>
+                                        <i class="bi bi-file-earmark-text fs-5" style="color: var(--accent-color);"></i>
                                         <div class="flex-grow-1">
                                             <div class="row align-items-center">
-                                                <div class="col-md-7">
-                                                    <label class="form-label text-dark mb-0">Metode Perpanjangan <span
-                                                            class="required-star">*</span></label>
-                                                    <div class="text-muted" style="font-size: 11px;">Pilih cara evaluasi
-                                                        untuk lisensi ini.</div>
+                                                <div class="col-md-8">
+                                                    <label class="form-label text-dark mb-0">Metode Perpanjangan</label>
+                                                    <div class="text-muted" style="font-size: 11px;">
+                                                        Mode edit dikunci sesuai tipe lisensi.
+                                                    </div>
                                                 </div>
-                                                <div class="col-md-5">
-                                                    <select name="metode_perpanjangan"
-                                                        class="form-select border-warning fw-bold text-dark form-select-sm"
-                                                        required>
-                                                        <option value="pg_only"
-                                                            {{ old('metode_perpanjangan', $data->metode_perpanjangan) == 'pg_only' ? 'selected' : '' }}>
-                                                            Hanya Ujian Tulis
-                                                        </option>
-                                                        <option value="pg_interview"
-                                                            {{ old('metode_perpanjangan', $data->metode_perpanjangan) == 'pg_interview' ? 'selected' : '' }}>
-                                                            Ujian Tulis + Wawancara
-                                                        </option>
-                                                        <option value="interview_only"
-                                                            {{ old('metode_perpanjangan', $data->metode_perpanjangan) == 'interview_only' ? 'selected' : '' }}>
-                                                            Hanya Wawancara
-                                                        </option>
-                                                    </select>
+                                                <div class="col-md-4 text-end">
+                                                    {{-- INPUT HIDDEN --}}
+                                                    <input type="hidden" name="metode_perpanjangan" value="pg_interview">
+                                                    <span class="badge"
+                                                          style="background-color: var(--accent-color); font-size: 12px; padding: 6px 12px;">
+                                                        PG + Wawancara
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
@@ -263,7 +244,7 @@
 
                             {{-- 3. Detail Bidang & KFK (MULTI SELECT EDIT) --}}
                             <div class="col-md-6">
-                                <label class="form-label">Bidang Keahlian <span class="required-star">*</span></label>
+                                <label class="form-label">KFK <span class="required-star">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-briefcase"></i></span>
                                     <input type="text" name="bidang" class="form-control"
@@ -275,52 +256,26 @@
                                 <label class="form-label">Jenjang KFK (PK) <span class="required-star">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-bar-chart-steps"></i></span>
-
-                                    {{-- MODIFIKASI: KFK jadi array dan multiple --}}
                                     <select name="kfk[]" id="choice-kfk-edit" class="form-select" multiple required>
                                         <option value="">Pilih Jenjang KFK...</option>
                                         @php
-                                            // 1. UPDATE DISINI: Tambahkan pilihan Pra dan BK
                                             $kfks = [
-                                                'Pra PK',
-                                                'Pra BK',
-                                                'PK 1',
-                                                'PK 1.5',
-                                                'PK 2',
-                                                'PK 2.5',
-                                                'PK 3',
-                                                'PK 3.5',
-                                                'PK 4',
-                                                'PK 4.5',
-                                                'PK 5',
-                                                'BK 1',
-                                                'BK 1.5',
-                                                'BK 2',
-                                                'BK 2.5',
-                                                'BK 3',
-                                                'BK 3.5',
-                                                'BK 4',
-                                                'BK 4.5',
-                                                'BK 5',
+                                                'Pra PK', 'Pra BK',
+                                                'PK 1', 'PK 1.5', 'PK 2', 'PK 2.5', 'PK 3', 'PK 3.5', 'PK 4', 'PK 4.5', 'PK 5',
+                                                'BK 1', 'BK 1.5', 'BK 2', 'BK 2.5', 'BK 3', 'BK 3.5', 'BK 4', 'BK 4.5', 'BK 5'
                                             ];
 
-                                            // 2. LOGIKA EDIT (Sudah Benar):
-                                            // Ambil data lama (old) saat validasi gagal, atau data dari database ($data->kfk)
+                                            // Logic Ambil Data Lama
                                             $currentKfk = old('kfk', $data->kfk);
-
-                                            // Jika data dari database berupa JSON String (misal: "[\"PK 1\",\"PK 2\"]"), decode dulu
                                             if (is_string($currentKfk)) {
                                                 $decoded = json_decode($currentKfk, true);
-                                                // Jika berhasil decode jadi array, gunakan array tsb. Jika gagal (null), buat array kosong.
                                                 $currentKfk = is_array($decoded) ? $decoded : [];
                                             }
-
-                                            // Bungkus dalam collect agar aman saat pengecekan contains
                                             $kfkCollection = collect($currentKfk);
                                         @endphp
 
                                         @foreach ($kfks as $kfk)
-                                            <option value="{{ $kfk }}" {{-- Cek apakah item ini ada di dalam koleksi data tersimpan --}}
+                                            <option value="{{ $kfk }}"
                                                 {{ $kfkCollection->contains($kfk) ? 'selected' : '' }}>
                                                 {{ $kfk }}
                                             </option>
@@ -340,8 +295,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label">Tanggal Selesai Diselenggarakan <span
-                                        class="required-star">*</span></label>
+                                <label class="form-label">Tanggal Selesai Diselenggarakan <span class="required-star">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-calendar-check"></i></span>
                                     <input type="date" name="tgl_diselenggarakan" class="form-control"
@@ -379,8 +333,7 @@
                                     <input type="text" name="nomor" class="form-control font-monospace"
                                         value="{{ old('nomor', $data->nomor) }}" required>
                                 </div>
-                                <div class="text-end text-muted fst-italic mt-1" style="font-size: 11px;">Nomor otomatis,
-                                    edit jika perlu.</div>
+                                <div class="text-end text-muted fst-italic mt-1" style="font-size: 11px;">Nomor otomatis, edit jika perlu.</div>
                             </div>
 
                             {{-- 6. Tanggal Masa Berlaku --}}
@@ -422,7 +375,7 @@
     <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // 1. Inisialisasi Choice untuk Pemilik Lisensi (Single Select)
+            // 1. Inisialisasi Choice untuk Pemilik Lisensi
             const elementUser = document.getElementById('choice-user-single');
             new Choices(elementUser, {
                 searchEnabled: true,
@@ -436,10 +389,10 @@
                 }
             });
 
-            // 2. Inisialisasi Choice untuk KFK (Multi Select - EDIT)
+            // 2. Inisialisasi Choice untuk KFK
             const elementKfk = document.getElementById('choice-kfk-edit');
             new Choices(elementKfk, {
-                removeItemButton: true, // Tombol silang untuk hapus
+                removeItemButton: true,
                 searchEnabled: false,
                 placeholderValue: 'Pilih Jenjang KFK...',
                 itemSelectText: '',

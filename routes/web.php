@@ -58,13 +58,26 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/perawat/{id}/sertifikat', [AdminPerawatController::class, 'sertifikat'])
             ->name('perawat.sertifikat');
 
-        // === DOKUMEN: LISENSI ===
-        Route::get('/admin/lisensi', [AdminLisensiController::class, 'lisensiIndex'])->name('lisensi.index');
-        Route::get('/admin/lisensi/create', [AdminLisensiController::class, 'lisensiCreate'])->name('lisensi.create');
-        Route::post('/admin/lisensi', [AdminLisensiController::class, 'lisensiStore'])->name('lisensi.store');
-        Route::get('/admin/lisensi/{id}/edit', [AdminLisensiController::class, 'lisensiEdit'])->name('lisensi.edit');
-        Route::put('/admin/lisensi/{id}', [AdminLisensiController::class, 'lisensiUpdate'])->name('lisensi.update');
-        Route::delete('/admin/lisensi/{id}', [AdminLisensiController::class, 'lisensiDestroy'])->name('lisensi.destroy');
+
+        // === DOKUMEN: LISENSI PG + WAWANCARA ===
+        Route::prefix('lisensi_pg_interview')->name('lisensi_pg_interview.')->group(function () {
+            Route::get('/', [AdminLisensiController::class, 'lisensiIndex'])->defaults('metode', 'pg_interview')->name('index');
+            Route::get('/create', [AdminLisensiController::class, 'lisensiCreate'])->defaults('metode', 'pg_interview')->name('create');
+            Route::post('/', [AdminLisensiController::class, 'lisensiStore'])->defaults('metode', 'pg_interview')->name('store');
+            Route::get('/{id}/edit', [AdminLisensiController::class, 'lisensiEdit'])->defaults('metode', 'pg_interview')->name('edit');
+            Route::put('/{id}', [AdminLisensiController::class, 'lisensiUpdate'])->defaults('metode', 'pg_interview')->name('update');
+            Route::delete('/{id}', [AdminLisensiController::class, 'lisensiDestroy'])->defaults('metode', 'pg_interview')->name('destroy');
+        });
+
+        // === DOKUMEN: LISENSI HANYA WAWANCARA ===
+        Route::prefix('lisensi_interview_only')->name('lisensi_interview_only.')->group(function () {
+            Route::get('/', [AdminLisensiController::class, 'lisensiIndex'])->defaults('metode', 'interview_only')->name('index');
+            Route::get('/create', [AdminLisensiController::class, 'lisensiCreate'])->defaults('metode', 'interview_only')->name('create');
+            Route::post('/', [AdminLisensiController::class, 'lisensiStore'])->defaults('metode', 'interview_only')->name('store');
+            Route::get('/{id}/edit', [AdminLisensiController::class, 'lisensiEdit'])->defaults('metode', 'interview_only')->name('edit');
+            Route::put('/{id}', [AdminLisensiController::class, 'lisensiUpdate'])->defaults('metode', 'interview_only')->name('update');
+            Route::delete('/{id}', [AdminLisensiController::class, 'lisensiDestroy'])->defaults('metode', 'interview_only')->name('destroy');
+        });
 
         // APPROVAL PENGAJUAN
         Route::get('/pengajuan', [AdminPengajuanController::class, 'index'])->name('pengajuan.index');

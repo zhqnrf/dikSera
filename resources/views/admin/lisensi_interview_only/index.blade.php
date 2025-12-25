@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Manajemen Lisensi Perawat')
+{{-- Judul Halaman Spesifik --}}
+@section('title', 'Data Lisensi Hanya Wawancara')
 
 @push('styles')
     {{-- CSS SweetAlert --}}
@@ -164,15 +165,18 @@
     {{-- Header & Tools --}}
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">
         <div>
-            <h4 class="fw-bold mb-1">Data Lisensi Perawat</h4>
-            <p class="text-muted small mb-0">Monitor kompetensi, masa berlaku, dan Kredensialing.</p>
+            {{-- Judul Spesifik --}}
+            <h4 class="fw-bold mb-1">Data Lisensi (Metode Wawancara)</h4>
+            <p class="text-muted small mb-0">Monitor kompetensi dan masa berlaku untuk perpanjangan wawancara.</p>
         </div>
 
         <div class="d-flex gap-2">
             <a href="{{ route('dashboard') }}" class="btn btn-light border shadow-sm px-3" style="border-radius: 8px;">
                 <i class="bi bi-arrow-left"></i> Kembali
             </a>
-            <a href="{{ route('admin.lisensi.create') }}" class="btn btn-primary px-3 shadow-sm"
+
+            {{-- Tombol Create Spesifik ke Interview Only --}}
+            <a href="{{ route('admin.lisensi_interview_only.create') }}" class="btn btn-primary px-3 shadow-sm"
                 style="border-radius: 8px;">
                 <i class="bi bi-plus-lg me-1"></i> Tambah Lisensi
             </a>
@@ -182,7 +186,8 @@
     <div class="content-card">
 
         {{-- Toolbar: Search & Filter dalam SATU Form --}}
-        <form action="{{ route('admin.lisensi.index') }}" method="GET"
+        {{-- Route Search diarahkan spesifik --}}
+        <form action="{{ route('admin.lisensi_interview_only.index') }}" method="GET"
             class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">
 
             {{-- Bagian Search --}}
@@ -296,19 +301,10 @@
                             {{-- Kolom 3: Metode & Tanggal Pelaksanaan --}}
                             <td>
                                 <div class="mb-2">
-                                    @if ($item->metode_perpanjangan == 'pg_only')
-                                        <span class="badge-soft badge-info">
-                                            <i class="bi bi-check-square"></i> Hanya PG
-                                        </span>
-                                    @elseif($item->metode_perpanjangan == 'pg_interview')
-                                        <span class="badge-soft badge-info">
-                                            <i class="bi bi-mic"></i> PG + Wawancara
-                                        </span>
-                                    @elseif($item->metode_perpanjangan == 'interview_only')
-                                        <span class="badge-soft badge-purple">
-                                            <i class="bi bi-person-video2"></i> Hanya Wawancara
-                                        </span>
-                                    @endif
+                                    {{-- Karena ini khusus wawancara, kita bisa hardcode badge atau tetap pakai check untuk validasi --}}
+                                    <span class="badge-soft badge-purple">
+                                        <i class="bi bi-person-video2"></i> Hanya Wawancara
+                                    </span>
                                 </div>
 
                                 {{-- Tanggal Mulai - Selesai --}}
@@ -365,12 +361,14 @@
                             {{-- Kolom 6: Aksi --}}
                             <td class="text-center">
                                 <div class="d-flex justify-content-center gap-1">
-                                    <a href="{{ route('admin.lisensi.edit', $item->id) }}"
+                                    {{-- Route EDIT Spesifik --}}
+                                    <a href="{{ route('admin.lisensi_interview_only.edit', $item->id) }}"
                                         class="btn-icon btn-icon-primary" data-bs-toggle="tooltip" title="Edit">
                                         <i class="bi bi-pencil"></i>
                                     </a>
 
-                                    <form action="{{ route('admin.lisensi.destroy', $item->id) }}" method="POST"
+                                    {{-- Route DESTROY Spesifik --}}
+                                    <form action="{{ route('admin.lisensi_interview_only.destroy', $item->id) }}" method="POST"
                                         class="d-inline delete-form">
                                         @csrf
                                         @method('DELETE')
@@ -388,7 +386,7 @@
                                 <div class="text-muted mb-2">
                                     <i class="bi bi-card-checklist display-6 opacity-25"></i>
                                 </div>
-                                <span class="text-muted small">Belum ada data lisensi ditemukan.</span>
+                                <span class="text-muted small">Belum ada data lisensi (wawancara) ditemukan.</span>
                             </td>
                         </tr>
                     @endforelse

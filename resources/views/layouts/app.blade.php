@@ -508,12 +508,18 @@
                         <a href="{{ route('admin.perawat.index') }}"
                             class="nav-linkx {{ request()->routeIs('admin.perawat.*') ? 'active' : '' }}">
                             <i class="bi bi-person-lines-fill"></i>
-                            <span class="link-text">Data Perawat</span>
+                            <span class="link-text">Bidan Dan Perawat</span>
                         </a>
 
-                        <a href="{{ route('admin.lisensi.index') }}" class="nav-linkx {{ request()->routeIs('perawat.lisensi.*') ? 'active' : '' }}">
-                            <i class="bi bi-file-earmark-fill"></i>
-                            <span class="link-text">Kredensialing</span>
+
+                        <div class="nav-section-title">Kredensialing</div>
+                        <a href="{{ route('admin.lisensi_pg_interview.index') }}" class="nav-linkx {{ request()->routeIs('admin.lisensi_pg_interview.*') ? 'active' : '' }}">
+                            <i class="bi bi-file-earmark-text"></i>
+                            <span class="link-text">PG + Wawancara</span>
+                        </a>
+                        <a href="{{ route('admin.lisensi_interview_only.index') }}" class="nav-linkx {{ request()->routeIs('admin.lisensi_interview_only.*') ? 'active' : '' }}">
+                            <i class="bi bi-person-video2"></i>
+                            <span class="link-text">Hanya Wawancara</span>
                         </a>
 
                          {{-- APPROVAL PENGAJUAN & WAWANCARA (MODUL 8) --}}

@@ -85,18 +85,7 @@
                             value="{{ old('email', $item->user->email ?? '') }}" required>
                     </div>
 
-                    {{-- TYPE --}}
-                    <div class="form-group mb-3">
-                        <label class="form-label">Tipe Penanggung Jawab</label>
-                        <select name="type" class="form-control form-control-custom" required>
-                            <option value="">Pilih Tipe</option>
-                            <option value="pewawancara" {{ old('type', $item->type) == 'pewawancara' ? 'selected' : '' }}>
-                                Pewawancara</option>
-                            <option value="ujian" {{ old('type', $item->type) == 'ujian' ? 'selected' : '' }}>Ujian
-                            </option>
-                        </select>
-                        <small class="text-muted" style="font-size: 11px;">*Wajib dipilih sesuai sistem</small>
-                    </div>
+                    {{-- KOLOM TIPE PETUGAS SUDAH DIHAPUS --}}
 
                     {{-- JABATAN --}}
                     <div class="form-group mb-3">

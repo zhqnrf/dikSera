@@ -3,16 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\PenanggungJawabUjian;
-use App\Models\User; // Import Model User
+use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB; // Import DB untuk Transaction
-use Illuminate\Support\Facades\Hash; // Import Hash untuk Password
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class PenanggungJawabUjianController extends Controller
 {
     public function index()
     {
-        // Load relasi user agar bisa menampilkan email jika perlu
         $data = PenanggungJawabUjian::with('user')->paginate(10);
         return view('admin.penanggung_jawab_ujian.index', compact('data'));
     }
@@ -24,18 +23,16 @@ class PenanggungJawabUjianController extends Controller
 
     public function store(Request $request)
     {
-        // 1. Validasi Input (Tambah validasi email & password)
+        // 1. Validasi Input (Hapus validasi type)
         $request->validate([
             'nama'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:users,email', // Email wajib unik di tabel users
-            'password' => 'required|string|min:6',           // Password untuk login
+            'email'    => 'required|email|unique:users,email',
+            'password' => 'required|string|min:6',
             'no_hp'    => 'required|string|max:20',
             'jabatan'  => 'required|string|max:255',
-            'type'     => 'required|in:pewawancara,ujian',
+            // 'type' dihapus
         ]);
 
-        // 2. Mulai Database Transaction
-        // Gunanya: Jika pembuatan profil gagal, akun user tidak akan terbuat (mencegah data sampah)
         DB::beginTransaction();
 
         try {
@@ -44,28 +41,25 @@ class PenanggungJawabUjianController extends Controller
                 'name'     => $request->nama,
                 'email'    => $request->email,
                 'password' => Hash::make($request->password),
-                'role'     => 'pewawancara', // Set role otomatis
+                'role'     => 'pewawancara',
             ]);
 
-            // B. Buat Data Profil Penanggung Jawab & Link ke User ID
+            // B. Buat Data Profil Penanggung Jawab
             PenanggungJawabUjian::create([
-                'user_id' => $user->id, // Sambungkan relasi
+                'user_id' => $user->id,
                 'nama'    => $request->nama,
                 'no_hp'   => $request->no_hp,
                 'jabatan' => $request->jabatan,
-                'type'    => $request->type,
+                // 'type' dihapus
             ]);
 
-            // Jika keduanya sukses, simpan permanen
-            DB::commit(); 
+            DB::commit();
 
             return redirect()->route('admin.penanggung-jawab.index')
                 ->with('success', 'Akun & Data Penanggung Jawab berhasil dibuat.');
 
         } catch (\Exception $e) {
-            // Jika ada error, batalkan semua perubahan
             DB::rollBack();
-            
             return back()->withInput()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
@@ -80,15 +74,14 @@ class PenanggungJawabUjianController extends Controller
     {
         $item = PenanggungJawabUjian::findOrFail($id);
 
-        // 1. Validasi Update
+        // 1. Validasi Update (Hapus validasi type)
         $request->validate([
             'nama'     => 'required|string|max:255',
-            // Validasi email unik, tapi kecualikan email milik user ini sendiri
-            'email'    => 'required|email|unique:users,email,' . ($item->user_id ?? 0), 
-            'password' => 'nullable|string|min:6', // Password opsional saat edit
+            'email'    => 'required|email|unique:users,email,' . ($item->user_id ?? 0),
+            'password' => 'nullable|string|min:6',
             'no_hp'    => 'required|string|max:20',
             'jabatan'  => 'required|string|max:255',
-            'type'     => 'required|in:pewawancara,ujian',
+            // 'type' dihapus
         ]);
 
         DB::beginTransaction();
@@ -99,17 +92,16 @@ class PenanggungJawabUjianController extends Controller
                 'nama'    => $request->nama,
                 'no_hp'   => $request->no_hp,
                 'jabatan' => $request->jabatan,
-                'type'    => $request->type,
+                // 'type' dihapus
             ]);
 
-            // B. Update Data Akun User (Jika ada relasinya)
+            // B. Update Data Akun User
             if ($item->user) {
                 $dataUser = [
-                    'name'  => $request->nama, // Sinkronkan nama
+                    'name'  => $request->nama,
                     'email' => $request->email
                 ];
 
-                // Jika admin mengisi password baru, update passwordnya
                 if ($request->filled('password')) {
                     $dataUser['password'] = Hash::make($request->password);
                 }
@@ -134,22 +126,15 @@ class PenanggungJawabUjianController extends Controller
 
         DB::beginTransaction();
         try {
-            // Hapus User (Profil PenanggungJawab akan ikut terhapus jika migration set onDelete cascade)
-            // Jika tidak diset cascade, hapus manual:
-            
             if ($item->user) {
-                $item->user->delete(); // Hapus akun loginnya
+                $item->user->delete();
             }
-            
-            // Hapus item profil (jika belum terhapus otomatis via cascade)
-            // $item->delete(); 
-            // Note: Jika kamu sudah set onDelete('cascade') di migration, baris $item->user->delete() sudah cukup.
-            // Tapi untuk keamanan, kita delete item-nya juga secara eksplisit jika user sudah null/hilang.
+
             $item->delete();
 
             DB::commit();
             return redirect()->route('admin.penanggung-jawab.index')
-                ->with('success', 'Data & Akun Pewawancara berhasil dihapus.');
+                ->with('success', 'Data & Akun berhasil dihapus.');
 
         } catch (\Exception $e) {
             DB::rollBack();

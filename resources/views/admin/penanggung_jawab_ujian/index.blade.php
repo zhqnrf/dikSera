@@ -72,41 +72,13 @@
             border: 1px solid #dbeafe;
         }
 
-        /* Badges */
-        .badge-soft {
-            padding: 6px 10px;
-            border-radius: 6px;
-            font-size: 11px;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .badge-soft-primary {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-
-        /* Pewawancara */
-        .badge-soft-warning {
-            background: #fef9c3;
-            color: #854d0e;
-        }
-
-        /* Pengawas */
-        .badge-soft-secondary {
-            background: #f1f5f9;
-            color: #475569;
-        }
-
         /* Action Buttons */
         .btn-icon {
             width: 32px;
             height: 32px;
             padding: 0;
             border-radius: 8px;
-            display: inline-flex;
+            display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.2s;
@@ -122,7 +94,7 @@
 
 @section('content')
 
-    <div class="content-card"> {{-- Pastikan class ini ada css nya atau ganti 'card card-body' --}}
+    <div class="content-card">
 
         {{-- Header Tools --}}
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">
@@ -148,8 +120,8 @@
                 <thead class="bg-light">
                     <tr>
                         <th width="5%" class="text-center">No</th>
-                        <th>Nama & Akun Login</th> {{-- Judul diubah --}}
-                        <th>Tipe Petugas</th>
+                        <th>Nama & Akun Login</th>
+                        {{-- Kolom Tipe Petugas Dihapus --}}
                         <th>Jabatan</th>
                         <th>Kontak</th>
                         <th class="text-center" width="120">Aksi</th>
@@ -176,7 +148,6 @@
                                     </div>
                                     <div>
                                         <div class="fw-bold text-dark">{{ $item->nama }}</div>
-                                        {{-- Menampilkan Email Login disini --}}
                                         <div class="text-muted small" style="font-size: 11px;">
                                             <i class="bi bi-envelope me-1"></i> {{ $item->user->email ?? 'Belum ada akun' }}
                                         </div>
@@ -184,21 +155,7 @@
                                 </div>
                             </td>
 
-                            <td class="align-middle">
-                                @if ($item->type == 'pewawancara')
-                                    <span
-                                        class="badge bg-soft-primary text-primary border border-primary-subtle rounded-pill px-3">
-                                        <i class="bi bi-mic me-1"></i> Pewawancara
-                                    </span>
-                                @elseif($item->type == 'ujian')
-                                    <span
-                                        class="badge bg-soft-warning text-warning border border-warning-subtle rounded-pill px-3">
-                                        <i class="bi bi-eye me-1"></i> Pengawas Ujian
-                                    </span>
-                                @else
-                                    <span class="badge bg-secondary">-</span>
-                                @endif
-                            </td>
+                            {{-- TD Tipe Petugas Dihapus --}}
 
                             <td class="align-middle">
                                 <span class="text-dark small fw-medium">{{ $item->jabatan }}</span>
@@ -241,7 +198,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center py-5">
+                            <td colspan="5" class="text-center py-5"> {{-- Colspan dikurangi jadi 5 --}}
                                 <div class="text-muted mb-2">
                                     <i class="bi bi-person-slash display-6 opacity-25"></i>
                                 </div>

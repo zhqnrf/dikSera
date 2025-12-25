@@ -179,26 +179,10 @@ class PengajuanSertifikatController extends Controller
 
     // AMBIL DATA MENTAH
     $rawNomor = $lisensi->nomor;
-
-    // PEMBERSIHAN DATA (SANITIZING)
-    // Regex ini akan menghapus Huruf (A-Z), Spasi, Tanda (+), dll.
-    // Hanya menyisakan Angka (0-9) dan tanda strip (-) atau titik (.)
     $cleanNomor = preg_replace('/[^0-9\-\.]/', '', $rawNomor);
-
-    // Jaga-jaga jika hasilnya kosong, beri default '0'
     $nomorUrut = !empty($cleanNomor) ? $cleanNomor : '0';
-
-    // RAKIT ULANG
-    // Hasilnya akan bersih: 188/4150/418.25.2025-0002/2025
     $nomorSuratFull = "188/4150/418.25{$nomorUrut}/{$tahunSurat}";
-
-    // Simpan ke object untuk ditampilkan
     $lisensi->nomor = $nomorSuratFull;
-
-    // ============================================================
-    // GENERATE FILE (WORD / PDF)
-    // ============================================================
-
     if ($pengajuan->metode == 'interview_only') {
 
         // --- WORD ---
