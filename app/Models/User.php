@@ -49,7 +49,7 @@ class User extends Authenticatable
     {
         return $this->hasOne(PerawatProfile::class, 'user_id');
     }
-     public function profile()
+    public function profile()
     {
         return $this->hasOne(PerawatProfile::class, 'user_id');
     }
@@ -65,6 +65,15 @@ class User extends Authenticatable
     public function strs()
     {
         return $this->hasMany(PerawatStr::class);
+    }
+    public function perawatPekerjaans()
+    {
+        return $this->hasMany(PerawatPekerjaan::class);
+    }
+
+    public function perawatLisensis()
+    {
+        return $this->hasMany(PerawatLisensi::class);
     }
 
     public function dataTambahans()
@@ -109,6 +118,6 @@ class User extends Authenticatable
     public function pendidikanTerakhir()
     {
         return $this->hasOne(PerawatPendidikan::class, 'user_id')
-                    ->orderBy('tahun_lulus', 'desc');
+            ->orderBy('tahun_lulus', 'desc');
     }
 }

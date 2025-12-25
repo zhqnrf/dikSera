@@ -211,6 +211,28 @@
 
         <div class="table-card">
             <div class="table-responsive">
+                {{-- resources/views/perawat/dokumen/lisensi/index.blade.php --}}
+                @php
+                    $latestJob = $user->perawatPekerjaans()->orderBy('tahun_mulai', 'desc')->first();
+                    $canCreate = false;
+
+                    if ($latestJob) {
+                        $canCreate = !$user
+                            ->perawatLisensis()
+                            ->where('unit_kerja_saat_buat', $latestJob->unit_kerja)
+                            ->exists();
+                    }
+                @endphp
+
+                @if ($canCreate)
+                    <a href="{{ route('perawat.lisensi.create') }}" class="btn btn-primary">
+                        Buat Lisensi
+                    </a>
+                @else
+                    <button class="btn btn-secondary" disabled>
+                        Sudah Membuat Lisensi untuk Unit Ini
+                    </button>
+                @endif
                 <table class="custom-table">
                     <thead>
                         <tr>
@@ -315,8 +337,7 @@
 
                                         {{-- Tombol Generate/Update PDF: Selalu tampil agar isi dokumen selalu up to date --}}
                                         <a href="{{ route('perawat.lisensi.generate', $item->id) }}"
-                                            class="btn btn-sm btn-outline-primary fw-bold"
-                                            title="Generate/Update PDF">
+                                            class="btn btn-sm btn-outline-primary fw-bold" title="Generate/Update PDF">
                                             <i class="bi bi-printer"></i> Generate
                                         </a>
 

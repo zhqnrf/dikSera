@@ -17,6 +17,7 @@ use App\Http\Controllers\AdminPengajuanController;
 use App\Http\Controllers\PengajuanSertifikatController;
 use App\Http\Controllers\AdminPengajuanWawancaraController;
 use App\Http\Controllers\AdminLisensiController;
+use App\Http\Controllers\PerawatLisensiController;
 // Controller Baru dari Kode 2
 use App\Http\Controllers\PewawancaraController;
 
@@ -95,8 +96,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/pengajuan/bulk-approve-interview', [AdminPengajuanController::class, 'bulkApproveInterview'])->name('pengajuan.bulk_approve_interview');
 
         // PENGAJUAN WAWANCARA (Admin Actions)
-        Route::prefix('pengajuan-wawancara')->name('pengajuan_wawancara.')->group(function() {
-            Route::get('/{id}/approve', [AdminPengajuanWawancaraController::class, 'approveJadwal']) ->name('approve');
+        Route::prefix('pengajuan-wawancara')->name('pengajuan_wawancara.')->group(function () {
+            Route::get('/{id}/approve', [AdminPengajuanWawancaraController::class, 'approveJadwal'])->name('approve');
             Route::post('/{id}/reject', [AdminPengajuanWawancaraController::class, 'rejectJadwal'])->name('reject');
             // Route penilaian ini tetap ada di admin jika admin juga butuh menilai,
             // tapi fitur utamanya sekarang ada di group 'pewawancara' di bawah.
@@ -216,6 +217,9 @@ Route::middleware(['auth'])->group(function () {
 
         // === DOKUMEN: LISENSI (READ ONLY) ===
         Route::get('/dokumen/lisensi', [PerawatDrhController::class, 'lisensiIndex'])->name('lisensi.index');
+        Route::get('/perawat/lisensi/create', [PerawatLisensiController::class, 'lisensiCreate'])->name('lisensi.create');
+        Route::post('/perawat/lisensi', [PerawatLisensiController::class, 'lisensiStore'])->name('lisensi.store');
+
 
         // === DOKUMEN: STR ===
         Route::get('/dokumen/str', [PerawatDrhController::class, 'strIndex'])->name('str.index');
