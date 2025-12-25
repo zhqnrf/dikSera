@@ -23,7 +23,6 @@ class CreatePerawatDataTambahansTable extends Migration
         $table->date('tgl_terbit');
         $table->date('tgl_expired');
         $table->string('file_path')->nullable();
-
         $table->timestamps();
     });
 }
