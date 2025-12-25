@@ -8,6 +8,9 @@
 @section('title', 'Tambah Soal – Admin DIKSERA')
 
 @push('styles')
+    {{-- 1. Include Choices.js CSS --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+
     <style>
         /* Global Card */
         .content-card {
@@ -18,7 +21,7 @@
             padding: 32px;
         }
 
-        /* Form Controls */
+        /* Form Controls Custom Style (Native inputs) */
         .form-control-custom,
         .form-select-custom {
             border-radius: 8px;
@@ -28,8 +31,7 @@
             transition: all 0.2s;
         }
 
-        .form-control-custom:focus,
-        .form-select-custom:focus {
+        .form-control-custom:focus {
             border-color: var(--blue-main);
             box-shadow: 0 0 0 3px var(--blue-soft);
         }
@@ -42,6 +44,40 @@
             letter-spacing: 0.5px;
             margin-bottom: 6px;
         }
+
+        /* --- Choices.js Custom Styling to match your design --- */
+        .choices__inner {
+            background-color: #fff;
+            border-radius: 8px !important;
+            border: 1px solid var(--border-soft) !important;
+            padding: 5px 12px !important;
+            min-height: 44px;
+            font-size: 14px;
+        }
+
+        .choices__input {
+            background-color: transparent !important;
+            font-size: 14px !important;
+        }
+
+        .choices:focus-within .choices__inner {
+            border-color: var(--blue-main) !important;
+            box-shadow: 0 0 0 3px var(--blue-soft);
+        }
+
+        /* Dropdown list styling */
+        .choices__list--dropdown {
+            border-radius: 8px;
+            border: 1px solid var(--border-soft);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            margin-top: 5px;
+        }
+
+        .choices__list--dropdown .choices__item--selectable.is-highlighted {
+            background-color: var(--blue-soft, #f1f5f9);
+        }
+
+        /* --- End Choices.js Styling --- */
 
         /* Option Item Styling */
         .option-item {
@@ -87,7 +123,6 @@
 
         .form-check-input:checked {
             background-color: #198754;
-            /* Green for correct answer */
             border-color: #198754;
         }
 
@@ -127,8 +162,9 @@
                         <label class="form-label">Pertanyaan <span class="text-danger">*</span></label>
                         <textarea name="pertanyaan" class="form-control form-control-custom" rows="4"
                             placeholder="Tuliskan pertanyaan disini..." required>{{ old('pertanyaan') }}</textarea>
-                        {{-- Di bawah textarea pertanyaan --}}
-                        <div class="mb-4">
+
+                        {{-- Gambar Soal --}}
+                        <div class="mt-3">
                             <label class="form-label fw-bold">Gambar Soal (Opsional)</label>
                             <input type="file" name="gambar" class="form-control" accept="image/*">
                             @if (isset($soal) && $soal->gambar)
@@ -140,12 +176,98 @@
                         </div>
                     </div>
 
-                    {{-- Kategori --}}
+                    {{-- Kategori dengan Choices.js --}}
                     <div class="mb-4">
                         <label class="form-label">Kategori Soal <span class="text-danger">*</span></label>
-                        <select name="kategori" class="form-select form-select-custom">
+                        {{-- Tambahkan ID di sini --}}
+                        <select name="kategori" id="choices-kategori" class="form-select form-select-custom">
                             <option value="">-- Pilih Kategori --</option>
-                            @foreach (['Umum', 'Gak Umum'] as $kategori)
+                            @php
+                                $kategoriList = [
+                                    // --- BIDAN ---
+                                    'Bidan Pra PK', 'Bidan PK 1', 'Bidan PK 1.5', 'Bidan PK 2',
+                                    'Bidan PK 2.5', 'Bidan PK 3', 'Bidan PK 3.5', 'Bidan PK 4',
+                                    'Bidan PK 4.5', 'Bidan PK 5',
+
+                                    // --- PERAWAT UMUM ---
+                                    'Perawat Pra PK', 'Perawat PK 1', 'Perawat PK 1.5', 'Perawat PK 2',
+                                    'Perawat PK 2.5', 'Perawat PK 3', 'Perawat PK 3.5', 'Perawat PK 4',
+                                    'Perawat PK 4.5', 'Perawat PK 5',
+
+                                    // --- KEPERAWATAN KRITIS (ICU) ---
+                                    'Keperawatan Kritis ICU PK 2', 'Keperawatan Kritis ICU PK 2.5',
+                                    'Keperawatan Kritis ICU PK 3', 'Keperawatan Kritis ICU PK 3.5',
+                                    'Keperawatan Kritis ICU PK 4', 'Keperawatan Kritis ICU PK 4.5',
+                                    'Keperawatan Kritis ICU PK 5',
+
+                                    // --- KEPERAWATAN KRITIS (ICVCU) ---
+                                    'Keperawatan Kritis ICVCU PK 2', 'Keperawatan Kritis ICVCU PK 2.5',
+                                    'Keperawatan Kritis ICVCU PK 3', 'Keperawatan Kritis ICVCU PK 3.5',
+                                    'Keperawatan Kritis ICVCU PK 4', 'Keperawatan Kritis ICVCU PK 4.5',
+                                    'Keperawatan Kritis ICVCU PK 5',
+
+                                    // --- KEPERAWATAN KRITIS (Gawat Darurat) ---
+                                    'Keperawatan Kritis Gawat Darurat PK 2', 'Keperawatan Kritis Gawat Darurat PK 2.5',
+                                    'Keperawatan Kritis Gawat Darurat PK 3', 'Keperawatan Kritis Gawat Darurat PK 3.5',
+                                    'Keperawatan Kritis Gawat Darurat PK 4', 'Keperawatan Kritis Gawat Darurat PK 4.5',
+                                    'Keperawatan Kritis Gawat Darurat PK 5',
+
+                                    // --- KEPERAWATAN KRITIS (Anestesi) ---
+                                    'Keperawatan Kritis Anestesi PK 2', 'Keperawatan Kritis Anestesi PK 2.5',
+                                    'Keperawatan Kritis Anestesi PK 3', 'Keperawatan Kritis Anestesi PK 3.5',
+                                    'Keperawatan Kritis Anestesi PK 4', 'Keperawatan Kritis Anestesi PK 4.5',
+                                    'Keperawatan Kritis Anestesi PK 5',
+
+                                    // --- KEPERAWATAN ANAK (PICU) ---
+                                    'Keperawatan Anak PICU PK 2', 'Keperawatan Anak PICU PK 2.5',
+                                    'Keperawatan Anak PICU PK 3', 'Keperawatan Anak PICU PK 3.5',
+                                    'Keperawatan Anak PICU PK 4', 'Keperawatan Anak PICU PK 4.5',
+                                    'Keperawatan Anak PICU PK 5',
+
+                                    // --- KEPERAWATAN ANAK (NICU) ---
+                                    'Keperawatan Anak NICU PK 2', 'Keperawatan Anak NICU PK 2.5',
+                                    'Keperawatan Anak NICU PK 3', 'Keperawatan Anak NICU PK 3.5',
+                                    'Keperawatan Anak NICU PK 4', 'Keperawatan Anak NICU PK 4.5',
+                                    'Keperawatan Anak NICU PK 5',
+
+                                    // --- KEPERAWATAN ANAK (Neonatus) ---
+                                    'Keperawatan Anak Neonatus PK 2', 'Keperawatan Anak Neonatus PK 2.5',
+                                    'Keperawatan Anak Neonatus PK 3', 'Keperawatan Anak Neonatus PK 3.5',
+                                    'Keperawatan Anak Neonatus PK 4', 'Keperawatan Anak Neonatus PK 4.5',
+                                    'Keperawatan Anak Neonatus PK 5',
+
+                                    // --- KEPERAWATAN ANAK (Pediatri) ---
+                                    'Keperawatan Anak Pediatri PK 2', 'Keperawatan Anak Pediatri PK 2.5',
+                                    'Keperawatan Anak Pediatri PK 3', 'Keperawatan Anak Pediatri PK 3.5',
+                                    'Keperawatan Anak Pediatri PK 4', 'Keperawatan Anak Pediatri PK 4.5',
+                                    'Keperawatan Anak Pediatri PK 5',
+
+                                    // --- KMB (Interna) ---
+                                    'Keperawatan Medikal Bedah Interna PK 2', 'Keperawatan Medikal Bedah Interna PK 2.5',
+                                    'Keperawatan Medikal Bedah Interna PK 3', 'Keperawatan Medikal Bedah Interna PK 3.5',
+                                    'Keperawatan Medikal Bedah Interna PK 4', 'Keperawatan Medikal Bedah Interna PK 4.5',
+                                    'Keperawatan Medikal Bedah Interna PK 5',
+
+                                    // --- KMB (Bedah) ---
+                                    'Keperawatan Medikal Bedah Bedah PK 2', 'Keperawatan Medikal Bedah Bedah PK 2.5',
+                                    'Keperawatan Medikal Bedah Bedah PK 3', 'Keperawatan Medikal Bedah Bedah PK 3.5',
+                                    'Keperawatan Medikal Bedah Bedah PK 4', 'Keperawatan Medikal Bedah Bedah PK 4.5',
+                                    'Keperawatan Medikal Bedah Bedah PK 5',
+
+                                    // --- KMB (OK) ---
+                                    'Keperawatan Medikal Bedah Kamar Operasi PK 2', 'Keperawatan Medikal Bedah Kamar Operasi PK 2.5',
+                                    'Keperawatan Medikal Bedah Kamar Operasi PK 3', 'Keperawatan Medikal Bedah Kamar Operasi PK 3.5',
+                                    'Keperawatan Medikal Bedah Kamar Operasi PK 4', 'Keperawatan Medikal Bedah Kamar Operasi PK 4.5',
+                                    'Keperawatan Medikal Bedah Kamar Operasi PK 5',
+
+                                    // --- KMB (Isolasi) ---
+                                    'Keperawatan Medikal Bedah Isolasi PK 2', 'Keperawatan Medikal Bedah Isolasi PK 2.5',
+                                    'Keperawatan Medikal Bedah Isolasi PK 3', 'Keperawatan Medikal Bedah Isolasi PK 3.5',
+                                    'Keperawatan Medikal Bedah Isolasi PK 4', 'Keperawatan Medikal Bedah Isolasi PK 4.5',
+                                    'Keperawatan Medikal Bedah Isolasi PK 5',
+                                ];
+                            @endphp
+                            @foreach ($kategoriList as $kategori)
                                 <option value="{{ $kategori }}" {{ old('kategori') == $kategori ? 'selected' : '' }}>
                                     {{ $kategori }}
                                 </option>
@@ -202,10 +324,28 @@
             </form>
         </div>
     </div>
+@endsection
 
-    {{-- Script untuk Highlight Row saat Radio dipilih --}}
+@push('scripts')
+    {{-- 2. Include Choices.js JS --}}
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+
+            // --- A. Init Choices.js untuk Kategori ---
+            const element = document.querySelector('#choices-kategori');
+            const choices = new Choices(element, {
+                searchEnabled: true,
+                searchPlaceholderValue: 'Cari kategori...',
+                itemSelectText: 'Tekan untuk memilih',
+                shouldSort: false, // Penting! Agar urutan PK tidak berantakan (tetap sesuai PHP array)
+                placeholder: true,
+                placeholderValue: '-- Pilih Kategori --'
+            });
+
+
+            // --- B. Logic untuk Highlight Jawaban Benar ---
             const radios = document.querySelectorAll('.key-radio');
             const rows = document.querySelectorAll('.option-item');
 
@@ -233,4 +373,4 @@
             updateHighlight();
         });
     </script>
-@endsection
+@endpush

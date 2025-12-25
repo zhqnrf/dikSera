@@ -244,7 +244,7 @@
 
                             {{-- 3. Detail Bidang & KFK (MULTI SELECT EDIT) --}}
                             <div class="col-md-6">
-                                <label class="form-label">Bidang Keahlian <span class="required-star">*</span></label>
+                                <label class="form-label">KFK <span class="required-star">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-briefcase"></i></span>
                                     <input type="text" name="bidang" class="form-control"
