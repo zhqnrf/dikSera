@@ -70,7 +70,29 @@
                             </tr>
                             <tr>
                                 <td class="text-muted">Tipe Perawat</td>
-                                <td class="fw-bold">: {{ $profile->type_perawat ?? '—' }}</td>
+                                <td class="fw-bold">:
+                                    @php
+                                        $tp = $profile->type_perawat ?? null;
+                                        if (is_array($tp)) {
+                                            $tpDisplay = implode(', ', $tp);
+                                        } else {
+                                            $tpDisplay = '—';
+                                            if ($tp) {
+                                                if (is_string($tp)) {
+                                                    $maybe = json_decode($tp, true);
+                                                    if (json_last_error() === JSON_ERROR_NONE && is_array($maybe)) {
+                                                        $tpDisplay = implode(', ', $maybe);
+                                                    } else {
+                                                        $tpDisplay = $tp;
+                                                    }
+                                                } else {
+                                                    $tpDisplay = (string) $tp;
+                                                }
+                                            }
+                                        }
+                                    @endphp
+                                    {{ $tpDisplay }}
+                                </td>
                             </tr>
                             <tr>
                                 <td class="text-muted">Tempat, Tgl Lahir</td>

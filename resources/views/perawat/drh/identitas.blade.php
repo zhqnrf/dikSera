@@ -54,8 +54,8 @@
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Tipe Perawat <span class="text-danger">*</span></label>
-                                    <select name="type_perawat" id="type-perawat" class="form-select">
-                                        <option value="">Pilih Tipe Perawat...</option>
+                                    <select name="type_perawat[]" id="type-perawat" class="form-select" multiple>
+                                        <option value="" disabled>Pilih Tipe Perawat...</option>
                                         @php
                                             $typeList = [
                                                 // --- BIDAN ---
@@ -192,9 +192,16 @@
                                             ];
                                         @endphp
 
+                                        @php
+                                            $selectedValue = old('type_perawat', $profile->type_perawat ?? []);
+                                            if (!is_array($selectedValue)) {
+                                                $selectedValue = $selectedValue ? [$selectedValue] : [];
+                                            }
+                                        @endphp
+
                                         @foreach ($typeList as $type)
                                             <option value="{{ $type }}"
-                                                {{ old('type_perawat', $profile->type_perawat ?? '') === $type ? 'selected' : '' }}>
+                                                {{ in_array($type, $selectedValue) ? 'selected' : '' }}>
                                                 {{ $type }}
                                             </option>
                                         @endforeach
@@ -432,6 +439,8 @@
                 itemSelectText: '',
                 shouldSort: false,
                 allowHTML: false,
+                removeItemButton: true,
+                maxItemCount: 5
             });
         });
     </script>
