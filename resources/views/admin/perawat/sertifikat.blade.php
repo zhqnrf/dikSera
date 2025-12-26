@@ -409,6 +409,21 @@
                                                     <i class="bi bi-arrow-counterclockwise"></i>
                                                 </button>
                                             </form>
+                                            {{-- Approve Lifetime (hanya muncul jika is_lifetime dan belum approved) --}}
+                                            @if ($item->is_lifetime && !$item->lifetime_approved)
+                                                <form action="{{ route('admin.perawat.verifikasi.kelayakan') }}"
+                                                    method="POST">
+                                                    @csrf
+                                                    <input type="hidden" name="id" value="{{ $item->id }}">
+                                                    <input type="hidden" name="tipe" value="tambahan">
+                                                    <input type="hidden" name="kelayakan" value="layak">
+                                                    <input type="hidden" name="approve_lifetime" value="1">
+                                                    <button type="submit" class="btn-verify btn-verify-success"
+                                                        title="Approve Lifetime">
+                                                        <i class="bi bi-award"></i>
+                                                    </button>
+                                                </form>
+                                            @endif
                                         </div>
                                     </td>
                                     <td class="text-end">

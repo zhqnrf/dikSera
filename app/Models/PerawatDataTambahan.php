@@ -18,8 +18,18 @@ class PerawatDataTambahan extends Model
         'lembaga',
         'tgl_terbit',
         'tgl_expired',
+        'is_lifetime',
+        'lifetime_approved',
         'file_path',
         'kelayakan',
+    ];
+
+    protected $casts = [
+        'tgl_terbit' => 'date',
+        'tgl_expired' => 'date',
+        'is_lifetime' => 'boolean',
+        'lifetime_approved' => 'boolean',
+        'lifetime_approved_at' => 'datetime',
     ];
 
     public function user()

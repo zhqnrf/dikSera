@@ -3,7 +3,6 @@
 @section('title', 'Data Lisensi Saya')
 
 @push('styles')
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary-blue: #2563eb;
@@ -11,323 +10,364 @@
             --text-dark: #0f172a;
             --text-gray: #64748b;
             --bg-light: #f1f5f9;
+            --border-color: #e2e8f0;
         }
 
         body {
-            background-color: #f8fafc;
-            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-light);
             color: var(--text-dark);
+            font-size: 14px;
         }
 
-        /* --- Header Area --- */
+        /* --- Page Header --- */
         .page-header {
-            margin-bottom: 25px;
             display: flex;
             justify-content: space-between;
-            align-items: flex-end;
+            align-items: center;
+            margin-bottom: 24px;
         }
 
         .page-title {
             font-size: 1.5rem;
             font-weight: 700;
-            color: var(--text-dark);
             margin: 0;
-            letter-spacing: -0.5px;
-        }
-
-        .page-subtitle {
-            color: var(--text-gray);
-            font-size: 0.9rem;
-            margin-top: 4px;
-        }
-
-        /* --- Buttons --- */
-        .btn-white {
-            background: white;
-            color: var(--text-gray);
-            border: 1px solid #e2e8f0;
-            padding: 10px 18px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .btn-white:hover {
-            background-color: #f8fafc;
             color: var(--text-dark);
-            border-color: #cbd5e1;
         }
 
-        /* --- Table Card --- */
-        .table-card {
+        /* --- Action Area (Create Logic) --- */
+        .action-area {
+            margin-bottom: 20px;
+        }
+
+        .alert-info-custom {
+            background-color: #eff6ff;
+            border: 1px solid #dbeafe;
+            color: #1e40af;
+            border-radius: 10px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+
+        /* --- Table Styling --- */
+        .card-table {
             background: white;
+            border: 1px solid var(--border-color);
             border-radius: 12px;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
             overflow: hidden;
+            box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.05);
         }
 
-        .custom-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .custom-table thead th {
-            background-color: #f1f5f9;
-            color: #475569;
+        .table-custom th {
+            background-color: #f8fafc;
+            color: var(--text-gray);
+            font-weight: 600;
             font-size: 0.75rem;
-            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            padding: 16px 24px;
-            border-bottom: 1px solid #e2e8f0;
-            text-align: left;
+            letter-spacing: 0.5px;
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .custom-table tbody tr {
-            transition: background-color 0.2s;
+        .table-custom td {
+            padding: 16px 20px;
+            vertical-align: middle;
             border-bottom: 1px solid #f1f5f9;
+            color: var(--text-dark);
         }
 
-        .custom-table tbody tr:last-child {
+        .table-custom tr:last-child td {
             border-bottom: none;
         }
 
-        .custom-table tbody tr:hover {
-            background-color: #eff6ff;
+        .table-custom tr:hover td {
+            background-color: #fcfcfc;
         }
 
-        .custom-table td {
-            padding: 20px 24px;
-            vertical-align: middle;
-            font-size: 0.95rem;
-            color: var(--text-gray);
-        }
-
-        /* --- Typography & Elements --- */
-        .data-title {
-            font-weight: 600;
+        /* --- Data Styling --- */
+        .license-name {
+            font-weight: 700;
             color: var(--text-dark);
+            font-size: 0.95rem;
             display: block;
-            margin-bottom: 4px;
-            font-size: 1rem;
         }
 
-        .data-sub {
-            font-size: 0.85rem;
+        .license-sub {
+            font-size: 0.8rem;
             color: var(--text-gray);
             display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .license-number {
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
+            background: #f1f5f9;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            color: #334155;
+        }
+
+        /* --- Badges --- */
+        .badge-status {
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: inline-flex;
             align-items: center;
             gap: 5px;
         }
 
-        /* --- Custom Status Badges --- */
-        .status-badge {
-            padding: 6px 12px;
-            border-radius: 50px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .status-active {
-            background-color: #dcfce7;
+        .bs-active {
+            background: #dcfce7;
             color: #166534;
             border: 1px solid #bbf7d0;
         }
 
-        .status-warning {
-            background-color: #fef9c3;
+        .bs-warning {
+            background: #fef9c3;
             color: #854d0e;
             border: 1px solid #fde047;
         }
 
-        .status-danger {
-            background-color: #fee2e2;
+        .bs-danger {
+            background: #fee2e2;
             color: #991b1b;
             border: 1px solid #fecaca;
         }
 
-        /* Action Buttons (For View File Only) */
-        .action-btn {
-            width: 34px;
-            height: 34px;
+        /* --- Buttons --- */
+        .btn-create {
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 10px 20px;
             border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            color: #94a3b8;
+            gap: 8px;
             transition: 0.2s;
-            background: transparent;
+            border: none;
+        }
+
+        .btn-create:hover {
+            background-color: var(--primary-hover);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .btn-renew {
+            margin-top: 8px;
+            background-color: white;
+            border: 1px solid #cbd5e1;
+            color: var(--text-dark);
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: 0.2s;
+        }
+
+        .btn-renew:hover {
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+            background: #eff6ff;
+        }
+
+        .btn-generate {
+            color: var(--primary-blue);
+            background: #eff6ff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.2s;
+        }
+
+        .btn-generate:hover {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .btn-back {
+            color: var(--text-gray);
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 8px;
             border: 1px solid transparent;
         }
 
-        .action-btn:hover {
-            background: #dbeafe;
-            color: var(--primary-blue);
-        }
-
-        /* Alert */
-        .alert-blue {
-            background-color: #eff6ff;
-            border: 1px solid #bfdbfe;
-            color: #1e40af;
-            border-radius: 8px;
-            padding: 12px 20px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .btn-back:hover {
+            background: white;
+            border-color: #e2e8f0;
+            color: var(--text-dark);
         }
     </style>
 @endpush
 
 @section('content')
-    <div class="container py-5">
-        {{-- Header --}}
+    <div class="container py-4">
+
+        {{-- HEADER --}}
         <div class="page-header">
             <div>
                 <h1 class="page-title">Data Lisensi Saya</h1>
-                <p class="page-subtitle">Daftar lisensi (STR/SIP) yang tercatat dalam sistem.</p>
+                <p class="text-muted small mb-0">Kelola dan perpanjang masa berlaku lisensi (STR/SIP) Anda.</p>
             </div>
-            <div class="d-flex gap-2">
-                <a href="{{ route('dashboard') }}" class="btn-white"><i class="bi bi-arrow-left"></i> Kembali ke
-                    Dashboard</a>
-            </div>
+            <a href="{{ route('dashboard') }}" class="btn-back">
+                <i class="bi bi-arrow-left"></i> Kembali Dashboard
+            </a>
         </div>
 
         @if (session('success'))
-            <div class="alert-blue"><i class="bi bi-check-circle-fill"></i> {{ session('success') }}</div>
+            <div
+                class="alert alert-success border-0 bg-success bg-opacity-10 text-success rounded-3 mb-4 d-flex align-items-center gap-2">
+                <i class="bi bi-check-circle-fill"></i> {{ session('success') }}
+            </div>
         @endif
 
-        <div class="table-card">
+        {{-- LOGIC TOMBOL CREATE --}}
+        <div class="action-area">
+            @php
+                $latestJob = $user->perawatPekerjaans()->orderBy('tahun_mulai', 'desc')->first();
+                $canCreate = false;
+                if ($latestJob) {
+                    $canCreate = !$user
+                        ->perawatLisensis()
+                        ->where('unit_kerja_saat_buat', $latestJob->unit_kerja)
+                        ->exists();
+                }
+            @endphp
+
+            @if ($canCreate)
+                <a href="{{ route('perawat.lisensi.create') }}" class="btn-create shadow-sm">
+                    <i class="bi bi-plus-lg"></i> Buat Lisensi Baru
+                </a>
+            @else
+                <div class="alert-info-custom">
+                    <i class="bi bi-info-circle-fill fs-5"></i>
+                    <div>
+                        <strong>Info:</strong> Anda sudah membuat lisensi untuk unit kerja saat ini
+                        (<strong>{{ $latestJob->unit_kerja ?? '-' }}</strong>).
+                    </div>
+                </div>
+            @endif
+        </div>
+
+        {{-- TABEL DATA --}}
+        <div class="card-table">
             <div class="table-responsive">
-                <table class="custom-table">
+                <table class="table table-custom mb-0">
                     <thead>
                         <tr>
                             <th width="5%">No</th>
-                            <th width="30%">Lisensi</th>
-                            <th width="20%">Nomor</th>
-                            <th width="25%">Masa Berlaku</th>
-                            <th width="15%">Status</th>
-                            <th width="5%" class="text-center">Aksi</th>
+                            <th width="30%">Detail Lisensi</th>
+                            <th width="20%">Nomor Registrasi</th>
+                            <th width="20%">Masa Berlaku</th>
+                            <th width="15%">Status & Aksi</th>
+                            <th width="10%" class="text-end">Dokumen</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($data as $item)
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
+                                <td class="text-muted">{{ $loop->iteration }}</td>
 
                                 {{-- Nama & Lembaga --}}
                                 <td>
-                                    <span class="data-title">{{ $item->nama }}</span>
-                                    <span class="text-muted" style="font-size: 0.8rem;">
+                                    <span class="license-name">{{ $item->nama }}</span>
+                                    <div class="license-sub mt-1">
                                         <i class="bi bi-building"></i> {{ $item->lembaga }}
-                                    </span>
+                                    </div>
                                 </td>
 
-                                {{-- Nomor --}}
-                                <td><span class="data-title">{{ $item->nomor }}</span></td>
+                                {{-- Nomor (Monospace) --}}
+                                <td>
+                                    <span class="license-number">{{ $item->nomor }}</span>
+                                </td>
 
                                 {{-- Tanggal --}}
                                 <td>
-                                    <span class="data-sub">
-                                        {{ \Carbon\Carbon::parse($item->tgl_terbit)->format('d-m-Y') }} s/d
-                                        {{ \Carbon\Carbon::parse($item->tgl_expired)->format('d-m-Y') }}
-                                    </span>
+                                    <div class="d-flex flex-column" style="font-size: 0.85rem; line-height: 1.4;">
+                                        <span class="text-muted">Terbit: <span
+                                                class="text-dark fw-medium">{{ \Carbon\Carbon::parse($item->tgl_terbit)->format('d M Y') }}</span></span>
+                                        <span class="text-muted">Habis: <span
+                                                class="text-dark fw-medium">{{ \Carbon\Carbon::parse($item->tgl_expired)->format('d M Y') }}</span></span>
+                                    </div>
                                 </td>
 
-                                {{-- Status --}}
+                                {{-- Status & Logic Perpanjangan --}}
                                 <td>
                                     @php
                                         $expired = \Carbon\Carbon::parse($item->tgl_expired);
-                                        $terbit = \Carbon\Carbon::parse($item->tgl_terbit);
                                         $today = \Carbon\Carbon::now();
                                         $diff = $today->diffInDays($expired, false);
-
-                                        // LOGIKA TOMBOL UPDATE PDF
-                                        // Default tombol update: FALSE
-                                        $showUpdateBtn = false;
-
-                                        // Cek jika file ada
-                                        if ($item->file_path && Storage::disk('public')->exists($item->file_path)) {
-                                            // Ambil waktu terakhir file diubah
-                                            $fileTimestamp = Storage::disk('public')->lastModified($item->file_path);
-                                            $fileDate = \Carbon\Carbon::createFromTimestamp($fileTimestamp);
-
-                                            // JIKA Tanggal Terbit Lisensi (DB) LEBIH BARU dari Tanggal File
-                                            // Berarti lisensi sudah diperpanjang, tapi file PDF masih versi lama
-                                            if ($terbit->startOfDay()->gt($fileDate)) {
-                                                $showUpdateBtn = true;
-                                            }
-                                        }
                                     @endphp
 
                                     @if ($diff < 0)
-                                        {{-- KONDISI 1: EXPIRED --}}
-                                        <span class="status-badge status-danger">Expired</span>
+                                        {{-- EXPIRED --}}
+                                        <span class="badge-status bs-danger"><i class="bi bi-x-circle"></i> Expired</span>
 
-                                        {{-- Form Perpanjang Muncul --}}
-                                        <div class="mt-2">
-                                            <form action="{{ route('perawat.pengajuan.store') }}" method="POST">
-                                                @csrf
-                                                <input type="hidden" name="lisensi_id" value="{{ $item->id }}">
-                                                <button type="submit" class="btn btn-sm btn-primary"
-                                                    style="font-size: 0.75rem;">
-                                                    <i class="bi bi-arrow-repeat"></i> Perpanjang
-                                                </button>
-                                            </form>
-                                        </div>
+                                        <form action="{{ route('perawat.pengajuan.store') }}" method="POST"
+                                            class="d-block">
+                                            @csrf
+                                            <input type="hidden" name="lisensi_id" value="{{ $item->id }}">
+                                            <button type="submit" class="btn-renew text-danger border-danger">
+                                                <i class="bi bi-arrow-repeat"></i> Perpanjang
+                                            </button>
+                                        </form>
                                     @elseif($diff < 90)
-                                        {{-- KONDISI 2: HAMPIR EXPIRED --}}
-                                        <span class="status-badge status-warning">Hampir Expired</span>
+                                        {{-- HAMPIR EXPIRED --}}
+                                        <span class="badge-status bs-warning"><i class="bi bi-exclamation-triangle"></i>
+                                            Hampir Expired</span>
 
-                                        {{-- Form Perpanjang Muncul --}}
-                                        <div class="mt-2">
-                                            <form action="{{ route('perawat.pengajuan.store') }}" method="POST">
-                                                @csrf
-                                                <input type="hidden" name="lisensi_id" value="{{ $item->id }}">
-                                                <button type="submit" class="btn btn-sm btn-primary"
-                                                    style="font-size: 0.75rem;">
-                                                    <i class="bi bi-arrow-repeat"></i> Perpanjang
-                                                </button>
-                                            </form>
-                                        </div>
+                                        <form action="{{ route('perawat.pengajuan.store') }}" method="POST"
+                                            class="d-block">
+                                            @csrf
+                                            <input type="hidden" name="lisensi_id" value="{{ $item->id }}">
+                                            <button type="submit" class="btn-renew text-warning border-warning">
+                                                <i class="bi bi-arrow-repeat"></i> Perpanjang
+                                            </button>
+                                        </form>
                                     @else
-                                        {{-- KONDISI 3: AKTIF --}}
-                                        <span class="status-badge status-active">Aktif</span>
+                                        {{-- AKTIF --}}
+                                        <span class="badge-status bs-active"><i class="bi bi-check-circle"></i> Aktif</span>
                                     @endif
                                 </td>
 
-                                {{-- KOLOM DOKUMEN / AKSI --}}
-                                <td class="text-center">
-                                    <div class="d-flex flex-column gap-2 align-items-center">
-
-
-                                        {{-- Tombol Generate/Update PDF: Selalu tampil agar isi dokumen selalu up to date --}}
-                                        <a href="{{ route('perawat.lisensi.generate', $item->id) }}"
-                                            class="btn btn-sm btn-outline-primary fw-bold"
-                                            title="Generate/Update PDF">
-                                            <i class="bi bi-printer"></i> Generate
-                                        </a>
-
-                                    </div>
+                                {{-- Tombol Generate --}}
+                                <td class="text-end">
+                                    <a href="{{ route('perawat.lisensi.generate', $item->id) }}" class="btn-generate"
+                                        title="Generate PDF Terbaru">
+                                        <i class="bi bi-file-earmark-pdf"></i> PDF
+                                    </a>
                                 </td>
                             </tr>
                         @empty
                             <tr>
                                 <td colspan="6" class="text-center py-5">
-                                    <div class="text-muted" style="opacity: 0.6;">
-                                        <i class="bi bi-clipboard-x fs-1 d-block mb-2"></i> Belum ada data lisensi.
+                                    <div class="d-flex flex-column align-items-center opacity-50">
+                                        <i class="bi bi-folder-x display-4 text-muted mb-2"></i>
+                                        <h6 class="fw-bold text-muted">Belum Ada Data Lisensi</h6>
+                                        <p class="small text-muted mb-0">Silakan buat lisensi baru jika memenuhi syarat.</p>
                                     </div>
                                 </td>
                             </tr>

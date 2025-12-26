@@ -140,6 +140,35 @@ class TelegramService
     }
 
     /**
+     * Notifikasi ketika user mengajukan dokumen Seumur Hidup (Lifetime)
+     */
+    public function notifyLifetimeRequested($nurseUser, $dokumen)
+    {
+        $admins = User::where('role', 'admin')
+            ->whereNotNull('telegram_chat_id')
+            ->get();
+
+        if ($admins->isEmpty()) return false;
+
+        $message = "<b>📣 PEMBERITAHUAN PENGAJUAN LIFETIME DOKUMEN</b>\n";
+        $message .= "Perawat: <b>" . $nurseUser->name . "</b>\n";
+        $message .= "Jenis: " . ($dokumen->jenis ?? '-') . "\n";
+        $message .= "Nama Dokumen: " . ($dokumen->nama ?? '-') . "\n";
+        $message .= "Nomor: " . ($dokumen->nomor ?? '-') . "\n";
+        $message .= "Waktu Pengajuan: " . date('d F Y H:i') . "\n\n";
+        $message .= "Silakan buka panel admin untuk melakukan verifikasi: " . url('/admin/perawat/' . $nurseUser->id) . "\n";
+
+        $sent = 0;
+        foreach ($admins as $admin) {
+            if ($this->executeSendMessage($admin->telegram_chat_id, $message)) {
+                $sent++;
+            }
+        }
+
+        return $sent > 0;
+    }
+
+    /**
      * Notifikasi untuk PEWAWANCARA saat ada jadwal baru
      */
     public function notifyNewScheduleForInterviewer($pewawancaraUser, $jadwal)

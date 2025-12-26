@@ -7,6 +7,7 @@ use App\Models\Form;
 use Illuminate\Support\Facades\DB;
 use App\Models\UserAnswer;
 use App\Models\ExamResult;
+use App\Models\PengajuanSertifikat;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -17,18 +18,30 @@ class UserFormController extends Controller
         $user = auth()->user();
         $now = Carbon::now();
 
-        $forms = Form::where('status', 'publish')
-            ->where(function ($query) use ($user) {
-                $query->where('target_peserta', 'semua')
-                    ->orWhereHas('participants', function ($q) use ($user) {
-                        $q->where('users.id', $user->id);
-                    });
-            })
-            ->with(['examResults' => function ($query) use ($user) {
-                $query->where('user_id', $user->id);
-            }])
-            ->orderBy('waktu_mulai', 'desc')
-            ->get();
+        // Ambil pengajuan aktif user
+        $pengajuanAktif = PengajuanSertifikat::where('user_id', $user->id)
+            ->where('status', 'method_selected')
+            ->with('lisensiLama')
+            ->latest()
+            ->first();
+
+        $forms = collect();
+        if ($pengajuanAktif && $pengajuanAktif->lisensiLama) {
+            // Filter form berdasarkan nama lisensi
+            $forms = Form::where('status', 'publish')
+                ->where(function ($query) use ($user) {
+                    $query->where('target_peserta', 'semua')
+                        ->orWhereHas('participants', function ($q) use ($user) {
+                            $q->where('users.id', $user->id);
+                        });
+                })
+                ->where('nama', $pengajuanAktif->lisensiLama->nama)
+                ->with(['examResults' => function ($query) use ($user) {
+                    $query->where('user_id', $user->id);
+                }])
+                ->orderBy('waktu_mulai', 'desc')
+                ->get();
+        }
 
         return view('perawat.ujian_aktif.index', compact('forms', 'now'));
     }

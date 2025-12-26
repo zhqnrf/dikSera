@@ -25,6 +25,7 @@ class PerawatLisensi extends Model
         'kfk',
         'tgl_mulai',
         'tgl_diselenggarakan',
+        'unit_kerja_saat_buat', // TAMBAH INI
     ];
 
     public function user()

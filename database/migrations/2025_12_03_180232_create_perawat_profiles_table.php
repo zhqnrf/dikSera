@@ -50,12 +50,15 @@ class CreatePerawatProfilesTable extends Migration
             $table->string('hobby', 150)->nullable();
             $table->string('foto_3x4', 255)->nullable(); // path di storage
 
+            // Tipe Perawat (hardcode kategori soal)
+            $table->string('type_perawat', 50)->nullable();
+
             $table->timestamps();
 
             $table->foreign('user_id')
-                  ->references('id')
-                  ->on('users')
-                  ->onDelete('cascade');
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade');
         });
     }
 

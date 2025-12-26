@@ -322,6 +322,7 @@ class AdminPerawatController extends Controller
             'tipe' => 'required|in:str,sip,lisensi,tambahan',
             'id' => 'required|integer',
             'kelayakan' => 'required|in:layak,tidak_layak,pending',
+            'approve_lifetime' => 'nullable|in:1',
         ]);
 
         $model = null;
@@ -342,6 +343,16 @@ class AdminPerawatController extends Controller
 
         if ($model) {
             $model->kelayakan = $request->kelayakan;
+
+            // Jika dokumen tambahan dan admin menekan approve_lifetime,
+            // set lifetime_approved fields and mark as layak.
+            if ($request->tipe === 'tambahan' && $request->has('approve_lifetime') && $request->input('approve_lifetime') == '1') {
+                $model->lifetime_approved = true;
+                $model->lifetime_approved_by = auth()->id();
+                $model->lifetime_approved_at = now();
+                $model->kelayakan = 'layak';
+            }
+
             $model->save();
         }
 

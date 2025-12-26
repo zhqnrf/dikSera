@@ -69,6 +69,10 @@
                                 <td class="fw-bold">: {{ $profile->nirp ?? '—' }}</td>
                             </tr>
                             <tr>
+                                <td class="text-muted">Tipe Perawat</td>
+                                <td class="fw-bold">: {{ $profile->type_perawat ?? '—' }}</td>
+                            </tr>
+                            <tr>
                                 <td class="text-muted">Tempat, Tgl Lahir</td>
                                 <td class="fw-bold">
                                     :

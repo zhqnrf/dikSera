@@ -46,6 +46,9 @@ class PerawatProfile extends Model
         'cacat_tubuh',
         'hobby',
         'foto_3x4',
+
+        // Tipe Perawat
+        'type_perawat',
     ];
 
 
