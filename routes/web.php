@@ -215,10 +215,12 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/tanda-jasa/{id}', [PerawatDrhController::class, 'tandajasaUpdate'])->name('tandajasa.update');
         Route::delete('/tanda-jasa/{id}', [PerawatDrhController::class, 'tandajasaDestroy'])->name('tandajasa.destroy');
 
-        // === DOKUMEN: LISENSI (READ ONLY) ===
+        // === DOKUMEN: LISENSI ===
         Route::get('/dokumen/lisensi', [PerawatDrhController::class, 'lisensiIndex'])->name('lisensi.index');
-        Route::get('/perawat/lisensi/create', [PerawatLisensiController::class, 'lisensiCreate'])->name('lisensi.create');
-        Route::post('/perawat/lisensi', [PerawatLisensiController::class, 'lisensiStore'])->name('lisensi.store');
+        Route::get('/perawat/lisensi/create/{metode}', [PerawatLisensiController::class, 'lisensiCreate'])
+            ->name('lisensi.create');
+        Route::post('/perawat/lisensi', [PerawatLisensiController::class, 'lisensiStore'])
+            ->name('lisensi.store');
 
 
         // === DOKUMEN: STR ===

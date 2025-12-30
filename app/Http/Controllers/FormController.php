@@ -2,19 +2,60 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\BankSoal;
+use App\Models\ExamResult;
+use Illuminate\Http\Request;
 use App\Models\Form;
 use App\Models\User;
 use App\Models\PenanggungJawabUjian;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use App\Models\ExamResult;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class FormController extends Controller
 {
+    // --- LIST KFK SESUAI PERMINTAAN ---
+    private function getKfkOptions()
+    {
+        $levels_bk = ['Pra BK', 'BK 1', 'BK 1.5', 'BK 2', 'BK 2.5', 'BK 3', 'BK 3.5', 'BK 4', 'BK 4.5', 'BK 5'];
+        $levels_pk_all = ['Pra PK', 'PK 1', 'PK 1.5', 'PK 2', 'PK 2.5', 'PK 3', 'PK 3.5', 'PK 4', 'PK 4.5', 'PK 5'];
+        $levels_pk_special = ['PK 2', 'PK 2.5', 'PK 3', 'PK 3.5', 'PK 4', 'PK 4.5', 'PK 5'];
+
+        $kfk = [];
+
+        // 1. Bidan
+        foreach ($levels_bk as $lvl) $kfk['Bidan'][] = "Bidan $lvl";
+
+        // 2. Perawat Umum
+        foreach ($levels_pk_all as $lvl) $kfk['Perawat Umum'][] = "Perawat $lvl";
+
+        // 3. Keperawatan Kritis
+        $kritis_subs = ['ICU', 'ICVCU', 'Gawat Darurat', 'Anestesi'];
+        foreach ($kritis_subs as $sub) {
+            foreach ($levels_pk_special as $lvl) {
+                $kfk["Keperawatan Kritis ($sub)"][] = "Keperawatan Kritis $sub $lvl";
+            }
+        }
+
+        // 4. Keperawatan Anak
+        $anak_subs = ['PICU', 'NICU', 'Neonatus', 'Pediatri'];
+        foreach ($anak_subs as $sub) {
+            foreach ($levels_pk_special as $lvl) {
+                $kfk["Keperawatan Anak ($sub)"][] = "Keperawatan Anak $sub $lvl";
+            }
+        }
+
+        // 5. KMB
+        $kmb_subs = ['Interna', 'Bedah', 'Kamar Operasi', 'Isolasi'];
+        foreach ($kmb_subs as $sub) {
+            foreach ($levels_pk_special as $lvl) {
+                $kfk["KMB ($sub)"][] = "Keperawatan Medikal Bedah $sub $lvl";
+            }
+        }
+
+        return $kfk;
+    }
+
     public function index()
     {
         $forms = Form::with('penanggungJawab')->latest()->get();
@@ -24,24 +65,23 @@ class FormController extends Controller
     public function create()
     {
         $pjs = PenanggungJawabUjian::all();
-        $users = User::where('role', 'perawat')->get()
-            ->sortByDesc(function ($user) {
-                return count($user->dokumen_warning) > 0;
-            });
+        $users = User::where('role', 'perawat')->get();
+        $kfkOptions = $this->getKfkOptions(); // Load KFK
 
-        return view('admin.form.create', compact('users', 'pjs'));
+        return view('admin.form.create', compact('users', 'pjs', 'kfkOptions'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'judul' => 'required|string|max:255',
-            'penanggung_jawab_id' => 'required|exists:penanggung_jawab_ujians,id',
-            'waktu_mulai' => 'required|date',
-            'waktu_selesai' => 'required|date|after:waktu_mulai',
-            'target_peserta' => 'required',
-            'participants' => 'nullable|array',
-            'participants.*' => 'exists:users,id',
+            'target_peserta' => 'required|in:semua,khusus,kfk', // Tambah 'kfk'
+            
+            // Validasi jika pilih khusus
+            'participants' => 'required_if:target_peserta,khusus|array',
+            
+            // Validasi jika pilih kfk
+            'kfk_target' => 'required_if:target_peserta,kfk|array',
         ]);
 
         $form = Form::create([
@@ -52,6 +92,7 @@ class FormController extends Controller
             'waktu_mulai' => $request->waktu_mulai,
             'waktu_selesai' => $request->waktu_selesai,
             'target_peserta' => $request->target_peserta,
+            'kfk_target' => $request->target_peserta == 'kfk' ? $request->kfk_target : null, // Simpan KFK
             'status' => 'draft',
         ]);
 
@@ -59,58 +100,41 @@ class FormController extends Controller
             $form->participants()->attach($request->participants);
         }
 
-        // Pakai ->with('success') agar ditangkap JS CDN
         return redirect()->route('admin.form.index')->with('success', 'Form berhasil dibuat!');
-    }
-
-    public function updateStatus(Request $request, Form $form)
-    {
-        $request->validate(['status' => 'required|in:draft,publish,closed']);
-
-        if ($form->status == $request->status) {
-            return back()->with('info', 'Status sudah ' . ucfirst($request->status));
-        }
-
-        $form->update(['status' => $request->status]);
-        return back()->with('success', "Status berhasil diubah menjadi " . ucfirst($request->status));
     }
 
     public function edit(Form $form)
     {
         $pjs = PenanggungJawabUjian::all();
-        $users = User::where('role', 'perawat')->get()
-            ->sortByDesc(function ($user) {
-                return count($user->dokumen_warning) > 0;
-            });
-
-        $form->load('participants');
+        $users = User::where('role', 'perawat')->get();
         $selectedParticipants = $form->participants->pluck('id')->toArray();
+        $kfkOptions = $this->getKfkOptions(); // Load KFK
+        
+        // Ambil KFK yang tersimpan (jika ada)
+        $selectedKfk = $form->kfk_target ?? [];
 
-        return view('admin.form.edit', compact('form', 'users', 'selectedParticipants', 'pjs'));
+        return view('admin.form.edit', compact('form', 'users', 'selectedParticipants', 'pjs', 'kfkOptions', 'selectedKfk'));
     }
 
     public function update(Request $request, Form $form)
     {
         $request->validate([
-            'judul' => 'required|string|max:255',
-            'penanggung_jawab_id' => 'required|exists:penanggung_jawab_ujians,id',
-            'waktu_mulai' => 'required|date',
-            'waktu_selesai' => 'required|date|after:waktu_mulai',
-            'target_peserta' => 'required',
-            'participants' => 'nullable|array',
-            'participants.*' => 'exists:users,id',
+            'target_peserta' => 'required|in:semua,khusus,kfk',
+            'participants' => 'required_if:target_peserta,khusus|array',
+            'kfk_target' => 'required_if:target_peserta,kfk|array',
         ]);
 
         $form->update([
             'judul' => $request->judul,
-            'slug' => Str::slug($request->judul) . '-' . Str::random(5),
             'deskripsi' => $request->deskripsi,
             'penanggung_jawab_id' => $request->penanggung_jawab_id,
             'waktu_mulai' => $request->waktu_mulai,
             'waktu_selesai' => $request->waktu_selesai,
             'target_peserta' => $request->target_peserta,
+            'kfk_target' => $request->target_peserta == 'kfk' ? $request->kfk_target : null,
         ]);
 
+        // Sync Peserta Khusus
         if ($request->target_peserta == 'khusus') {
             $form->participants()->sync($request->participants ?? []);
         } else {

@@ -7,9 +7,9 @@
         :root {
             --primary-blue: #2563eb;
             --primary-hover: #1d4ed8;
-            --text-dark: #0f172a;
+            --text-dark: #1e293b;
             --text-gray: #64748b;
-            --bg-light: #f1f5f9;
+            --bg-light: #f8fafc;
             --border-color: #e2e8f0;
         }
 
@@ -19,7 +19,7 @@
             font-size: 14px;
         }
 
-        /* --- Page Header --- */
+        /* --- Header --- */
         .page-header {
             display: flex;
             justify-content: space-between;
@@ -34,40 +34,28 @@
             color: var(--text-dark);
         }
 
-        /* --- Action Area (Create Logic) --- */
+        /* --- Action Area --- */
         .action-area {
             margin-bottom: 20px;
         }
 
-        .alert-info-custom {
-            background-color: #eff6ff;
-            border: 1px solid #dbeafe;
-            color: #1e40af;
-            border-radius: 10px;
-            padding: 12px 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.9rem;
-        }
-
-        /* --- Table Styling --- */
+        /* --- Table Card --- */
         .card-table {
             background: white;
             border: 1px solid var(--border-color);
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
 
         .table-custom th {
-            background-color: #f8fafc;
+            background-color: #f1f5f9;
             color: var(--text-gray);
             font-weight: 600;
             font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            padding: 14px 20px;
+            padding: 16px 20px;
             border-bottom: 1px solid var(--border-color);
         }
 
@@ -75,7 +63,6 @@
             padding: 16px 20px;
             vertical-align: middle;
             border-bottom: 1px solid #f1f5f9;
-            color: var(--text-dark);
         }
 
         .table-custom tr:last-child td {
@@ -83,10 +70,10 @@
         }
 
         .table-custom tr:hover td {
-            background-color: #fcfcfc;
+            background-color: #f8fafc;
         }
 
-        /* --- Data Styling --- */
+        /* --- Typography --- */
         .license-name {
             font-weight: 700;
             color: var(--text-dark);
@@ -99,47 +86,64 @@
             color: var(--text-gray);
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 5px;
+            margin-top: 4px;
         }
 
         .license-number {
             font-family: 'Courier New', monospace;
             font-weight: 700;
             background: #f1f5f9;
+            color: #475569;
             padding: 4px 8px;
             border-radius: 4px;
             font-size: 0.85rem;
-            color: #334155;
         }
 
         /* --- Badges --- */
+        .badge-metode {
+            font-size: 0.7rem;
+            padding: 4px 8px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .bg-metode-interview {
+            background: #e0f2fe;
+            color: #0369a1;
+            border: 1px solid #bae6fd;
+        }
+
+        .bg-metode-pg {
+            background: #f0fdf4;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
+        }
+
         .badge-status {
             padding: 5px 10px;
             border-radius: 6px;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             font-weight: 700;
-            text-transform: uppercase;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
         }
 
         .bs-active {
             background: #dcfce7;
             color: #166534;
-            border: 1px solid #bbf7d0;
         }
 
         .bs-warning {
             background: #fef9c3;
             color: #854d0e;
-            border: 1px solid #fde047;
         }
 
         .bs-danger {
             background: #fee2e2;
             color: #991b1b;
-            border: 1px solid #fecaca;
         }
 
         /* --- Buttons --- */
@@ -149,18 +153,16 @@
             padding: 10px 20px;
             border-radius: 8px;
             font-weight: 600;
-            text-decoration: none;
+            border: none;
             display: inline-flex;
             align-items: center;
             gap: 8px;
             transition: 0.2s;
-            border: none;
         }
 
         .btn-create:hover {
             background-color: var(--primary-hover);
             color: white;
-            transform: translateY(-1px);
         }
 
         .btn-renew {
@@ -170,32 +172,40 @@
             color: var(--text-dark);
             font-size: 0.75rem;
             font-weight: 600;
-            padding: 4px 10px;
+            padding: 6px 12px;
             border-radius: 6px;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
+            width: 100%;
             transition: 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
         }
 
         .btn-renew:hover {
-            border-color: var(--primary-blue);
-            color: var(--primary-blue);
-            background: #eff6ff;
+            border-color: #f59e0b;
+            background-color: #fffbeb;
+            color: #b45309;
+        }
+
+        .btn-renew.danger-renew:hover {
+            border-color: #ef4444;
+            background-color: #fef2f2;
+            color: #b91c1c;
         }
 
         .btn-generate {
             color: var(--primary-blue);
-            background: #eff6ff;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.8rem;
+            background: #e0f2fe;
+            padding: 8px 14px;
+            border-radius: 8px;
             font-weight: 600;
+            font-size: 0.85rem;
             text-decoration: none;
+            transition: 0.2s;
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            transition: 0.2s;
         }
 
         .btn-generate:hover {
@@ -213,6 +223,7 @@
             padding: 8px 16px;
             border-radius: 8px;
             border: 1px solid transparent;
+            transition: 0.2s;
         }
 
         .btn-back:hover {
@@ -244,29 +255,84 @@
             </div>
         @endif
 
-        {{-- LOGIC TOMBOL CREATE --}}
+        {{-- LOGIC TOMBOL CREATE (Updated Logic) --}}
         <div class="action-area">
             @php
                 $latestJob = $user->perawatPekerjaans()->orderBy('tahun_mulai', 'desc')->first();
-                $canCreate = false;
-                if ($latestJob) {
-                    $canCreate = !$user
+                $unitKerja = $latestJob ? $latestJob->unit_kerja : null;
+
+                $canInterview = false;
+                $canPG = false;
+
+                if ($unitKerja) {
+                    $hasInterview = $user
                         ->perawatLisensis()
-                        ->where('unit_kerja_saat_buat', $latestJob->unit_kerja)
+                        ->where('unit_kerja_saat_buat', $unitKerja)
+                        ->where('metode_perpanjangan', 'interview_only')
                         ->exists();
+
+                    $hasPG = $user
+                        ->perawatLisensis()
+                        ->where('unit_kerja_saat_buat', $unitKerja)
+                        ->where('metode_perpanjangan', 'pg_interview')
+                        ->exists();
+
+                    $canInterview = !$hasInterview;
+                    $canPG = !$hasPG;
                 }
             @endphp
 
-            @if ($canCreate)
-                <a href="{{ route('perawat.lisensi.create') }}" class="btn-create shadow-sm">
-                    <i class="bi bi-plus-lg"></i> Buat Lisensi Baru
-                </a>
+            @if ($canInterview || $canPG)
+                <div class="dropdown d-inline-block">
+                    <button class="btn btn-create dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        <i class="bi bi-plus-lg"></i> Ajukan Lisensi Baru
+                    </button>
+                    <ul class="dropdown-menu shadow-sm border-0 rounded-3 mt-2">
+                        @if ($canInterview)
+                            <li>
+                                <a class="dropdown-item py-2 px-3"
+                                    href="{{ route('perawat.lisensi.create', 'interview_only') }}">
+                                    <i class="bi bi-mic me-2 text-primary"></i> Kredensialing
+                                </a>
+                            </li>
+                        @else
+                            <li>
+                                <button class="dropdown-item py-2 px-3 text-muted" disabled style="opacity: 0.6;">
+                                    <i class="bi bi-check-circle-fill me-2 text-success"></i> Kredensialing
+                                </button>
+                            </li>
+                        @endif
+
+                        @if ($canInterview && $canPG)
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                        @endif
+
+                        @if ($canPG)
+                            <li>
+                                <a class="dropdown-item py-2 px-3"
+                                    href="{{ route('perawat.lisensi.create', 'pg_interview') }}">
+                                    <i class="bi bi-file-earmark-text me-2 text-success"></i> Uji Kompetensi 
+                                </a>
+                            </li>
+                        @else
+                            <li>
+                                <button class="dropdown-item py-2 px-3 text-muted" disabled style="opacity: 0.6;">
+                                    <i class="bi bi-check-circle-fill me-2 text-success"></i> Uji Kompetensi
+                                </button>
+                            </li>
+                        @endif
+                    </ul>
+                </div>
             @else
-                <div class="alert-info-custom">
-                    <i class="bi bi-info-circle-fill fs-5"></i>
+                <div class="alert alert-info d-flex align-items-center p-3 mb-0"
+                    style="background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; color: #1e40af;">
+                    <i class="bi bi-info-circle-fill fs-4 me-3"></i>
                     <div>
-                        <strong>Info:</strong> Anda sudah membuat lisensi untuk unit kerja saat ini
-                        (<strong>{{ $latestJob->unit_kerja ?? '-' }}</strong>).
+                        <strong>Info Pengajuan</strong><br>
+                        Anda sudah melengkapi kedua jenis lisensi untuk unit: <strong>{{ $unitKerja ?? '-' }}</strong>.
                     </div>
                 </div>
             @endif
@@ -279,42 +345,54 @@
                     <thead>
                         <tr>
                             <th width="5%">No</th>
-                            <th width="30%">Detail Lisensi</th>
-                            <th width="20%">Nomor Registrasi</th>
-                            <th width="20%">Masa Berlaku</th>
-                            <th width="15%">Status & Aksi</th>
-                            <th width="10%" class="text-end">Dokumen</th>
+                            <th width="15%">Detail Lisensi</th>
+                            <th width="15%">Metode</th>
+                            <th width="20%">Nomor & Masa Berlaku</th>
+                            <th width="20%">Status & Aksi</th>
+                            <th width="12%" class="text-end">Dokumen</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($data as $item)
                             <tr>
-                                <td class="text-muted">{{ $loop->iteration }}</td>
+                                <td class="text-muted text-center">{{ $loop->iteration }}</td>
 
                                 {{-- Nama & Lembaga --}}
                                 <td>
                                     <span class="license-name">{{ $item->nama }}</span>
-                                    <div class="license-sub mt-1">
+                                    <div class="license-sub">
                                         <i class="bi bi-building"></i> {{ $item->lembaga }}
                                     </div>
-                                </td>
-
-                                {{-- Nomor (Monospace) --}}
-                                <td>
-                                    <span class="license-number">{{ $item->nomor }}</span>
-                                </td>
-
-                                {{-- Tanggal --}}
-                                <td>
-                                    <div class="d-flex flex-column" style="font-size: 0.85rem; line-height: 1.4;">
-                                        <span class="text-muted">Terbit: <span
-                                                class="text-dark fw-medium">{{ \Carbon\Carbon::parse($item->tgl_terbit)->format('d M Y') }}</span></span>
-                                        <span class="text-muted">Habis: <span
-                                                class="text-dark fw-medium">{{ \Carbon\Carbon::parse($item->tgl_expired)->format('d M Y') }}</span></span>
+                                    <div class="license-sub text-primary">
+                                        <i class="bi bi-geo-alt"></i> Unit: {{ $item->unit_kerja_saat_buat }}
                                     </div>
                                 </td>
 
-                                {{-- Status & Logic Perpanjangan --}}
+                                {{-- Metode Badge --}}
+                                <td>
+                                    @if ($item->metode_perpanjangan == 'interview_only')
+                                        <span class="badge-metode bg-metode-interview">Wawancara</span>
+                                    @else
+                                        <span class="badge-metode bg-metode-pg">Ujian & Wawancara</span>
+                                    @endif
+                                </td>
+
+                                {{-- Nomor & Tanggal --}}
+                                <td>
+                                    <div class="mb-2">
+                                        <span class="license-number">{{ $item->nomor }}</span>
+                                    </div>
+                                    <div class="d-flex flex-column" style="font-size: 0.8rem; color: #64748b;">
+                                        <span>Terbit:
+                                            {{ \Carbon\Carbon::parse($item->tgl_terbit)->format('d M Y') }}</span>
+                                        <span
+                                            class="fw-bold {{ \Carbon\Carbon::parse($item->tgl_expired)->isPast() ? 'text-danger' : 'text-dark' }}">
+                                            Habis: {{ \Carbon\Carbon::parse($item->tgl_expired)->format('d M Y') }}
+                                        </span>
+                                    </div>
+                                </td>
+
+                                {{-- Status & Tombol Perpanjang (INI YANG DIPERBAIKI) --}}
                                 <td>
                                     @php
                                         $expired = \Carbon\Carbon::parse($item->tgl_expired);
@@ -324,26 +402,25 @@
 
                                     @if ($diff < 0)
                                         {{-- EXPIRED --}}
-                                        <span class="badge-status bs-danger"><i class="bi bi-x-circle"></i> Expired</span>
+                                        <span class="badge-status bs-danger mb-1"><i class="bi bi-x-circle"></i>
+                                            Expired</span>
 
-                                        <form action="{{ route('perawat.pengajuan.store') }}" method="POST"
-                                            class="d-block">
+                                        <form action="{{ route('perawat.pengajuan.store') }}" method="POST">
                                             @csrf
                                             <input type="hidden" name="lisensi_id" value="{{ $item->id }}">
-                                            <button type="submit" class="btn-renew text-danger border-danger">
+                                            <button type="submit" class="btn-renew danger-renew">
                                                 <i class="bi bi-arrow-repeat"></i> Perpanjang
                                             </button>
                                         </form>
                                     @elseif($diff < 90)
                                         {{-- HAMPIR EXPIRED --}}
-                                        <span class="badge-status bs-warning"><i class="bi bi-exclamation-triangle"></i>
-                                            Hampir Expired</span>
+                                        <span class="badge-status bs-warning mb-1"><i
+                                                class="bi bi-exclamation-triangle"></i> Hampir Expired</span>
 
-                                        <form action="{{ route('perawat.pengajuan.store') }}" method="POST"
-                                            class="d-block">
+                                        <form action="{{ route('perawat.pengajuan.store') }}" method="POST">
                                             @csrf
                                             <input type="hidden" name="lisensi_id" value="{{ $item->id }}">
-                                            <button type="submit" class="btn-renew text-warning border-warning">
+                                            <button type="submit" class="btn-renew">
                                                 <i class="bi bi-arrow-repeat"></i> Perpanjang
                                             </button>
                                         </form>
@@ -353,10 +430,10 @@
                                     @endif
                                 </td>
 
-                                {{-- Tombol Generate --}}
+                                {{-- Generate PDF --}}
                                 <td class="text-end">
                                     <a href="{{ route('perawat.lisensi.generate', $item->id) }}" class="btn-generate"
-                                        title="Generate PDF Terbaru">
+                                        title="Unduh PDF">
                                         <i class="bi bi-file-earmark-pdf"></i> PDF
                                     </a>
                                 </td>
@@ -365,9 +442,10 @@
                             <tr>
                                 <td colspan="6" class="text-center py-5">
                                     <div class="d-flex flex-column align-items-center opacity-50">
-                                        <i class="bi bi-folder-x display-4 text-muted mb-2"></i>
+                                        <i class="bi bi-clipboard-x display-4 text-muted mb-2"></i>
                                         <h6 class="fw-bold text-muted">Belum Ada Data Lisensi</h6>
-                                        <p class="small text-muted mb-0">Silakan buat lisensi baru jika memenuhi syarat.</p>
+                                        <p class="small text-muted mb-0">Klik tombol "Ajukan Lisensi Baru" untuk memulai.
+                                        </p>
                                     </div>
                                 </td>
                             </tr>

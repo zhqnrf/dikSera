@@ -54,21 +54,21 @@
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Tipe Perawat <span class="text-danger">*</span></label>
-                                    <select name="type_perawat" id="type-perawat" class="form-select">
-                                        <option value="">Pilih Tipe Perawat...</option>
+                                    <select name="type_perawat[]" id="type-perawat" class="form-select" multiple>
+                                        <option value="" disabled>Pilih Tipe Perawat...</option>
                                         @php
                                             $typeList = [
                                                 // --- BIDAN ---
-                                                'Bidan Pra PK',
-                                                'Bidan PK 1',
-                                                'Bidan PK 1.5',
-                                                'Bidan PK 2',
-                                                'Bidan PK 2.5',
-                                                'Bidan PK 3',
-                                                'Bidan PK 3.5',
-                                                'Bidan PK 4',
-                                                'Bidan PK 4.5',
-                                                'Bidan PK 5',
+                                                'Bidan Pra BK',
+                                                'Bidan BK 1',
+                                                'Bidan BK 1.5',
+                                                'Bidan BK 2',
+                                                'Bidan BK 2.5',
+                                                'Bidan BK 3',
+                                                'Bidan BK 3.5',
+                                                'Bidan BK 4',
+                                                'Bidan BK 4.5',
+                                                'Bidan BK 5',
 
                                                 // --- PERAWAT UMUM ---
                                                 'Perawat Pra PK',
@@ -192,9 +192,26 @@
                                             ];
                                         @endphp
 
+                                        @php
+                                            $selectedValue = old('type_perawat', $profile->type_perawat ?? []);
+                                            // Normalize old value to array — accept array, comma/string, or JSON
+                                            if (is_string($selectedValue)) {
+                                                $decoded = json_decode($selectedValue, true);
+                                                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                                                    $selectedValue = $decoded;
+                                                } elseif (strpos($selectedValue, ',') !== false) {
+                                                    $selectedValue = array_map('trim', explode(',', $selectedValue));
+                                                } else {
+                                                    $selectedValue = $selectedValue ? [$selectedValue] : [];
+                                                }
+                                            } elseif (!is_array($selectedValue)) {
+                                                $selectedValue = $selectedValue ? [$selectedValue] : [];
+                                            }
+                                        @endphp
+
                                         @foreach ($typeList as $type)
                                             <option value="{{ $type }}"
-                                                {{ old('type_perawat', $profile->type_perawat ?? '') === $type ? 'selected' : '' }}>
+                                                {{ in_array($type, $selectedValue) ? 'selected' : '' }}>
                                                 {{ $type }}
                                             </option>
                                         @endforeach
@@ -432,6 +449,8 @@
                 itemSelectText: '',
                 shouldSort: false,
                 allowHTML: false,
+                removeItemButton: true,
+                maxItemCount: 5
             });
         });
     </script>
