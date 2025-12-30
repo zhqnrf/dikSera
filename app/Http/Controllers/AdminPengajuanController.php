@@ -86,7 +86,11 @@ class AdminPengajuanController extends Controller
             if (!$examResult) {
                 return back()->with('error', 'Peserta belum mengerjakan ujian! Tidak ada nilai untuk disetujui.');
             }
-            // Update status lulus hanya jika ada exam result
+            // Cek jika exam terakhir masih remidi
+            if ($examResult->remidi ?? ($examResult->total_nilai < 75)) {
+                return back()->with('error', 'Nilai peserta masih remidi (<75). Tidak bisa di-approve sebelum lulus.');
+            }
+            // Update status lulus hanya jika ada exam result dan sudah tidak remidi
             $examResult->update(['lulus' => 1]);
         }
 

@@ -21,6 +21,7 @@ class CreateExamResultsTable extends Migration
             $table->integer('total_nilai'); // Total skor
             $table->integer('total_benar'); // Jumlah soal benar
             $table->integer('total_salah'); // Jumlah soal salah
+            $table->boolean('remidi')->default(false); // Remidi otomatis jika nilai < 75
             $table->timestamp('waktu_selesai')->useCurrent();
 
             $table->timestamps();

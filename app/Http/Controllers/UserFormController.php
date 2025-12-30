@@ -132,12 +132,15 @@ class UserFormController extends Controller
 
         // --- VALIDASI LOGIC UJIAN ---
 
-        // 3. Cek apakah sudah mengerjakan
-        $alreadySubmitted = ExamResult::where('user_id', $user->id)
-            ->where('form_id', $form->id)
-            ->exists();
 
-        if ($alreadySubmitted) {
+        // 3. Cek apakah sudah mengerjakan
+        $userResult = ExamResult::where('user_id', $user->id)
+            ->where('form_id', $form->id)
+            ->latest('id')
+            ->first();
+
+        if ($userResult && (!$userResult->remidi && $userResult->total_nilai >= 75)) {
+            // Sudah mengerjakan dan TIDAK remidi (lulus)
             return redirect()->route('perawat.ujian.index')
                 ->with('error', 'Anda sudah menyelesaikan ujian ini.');
         }
@@ -173,11 +176,13 @@ class UserFormController extends Controller
         }
 
         // 2. Cek double submit
-        $alreadySubmitted = ExamResult::where('user_id', $user->id)
+        $userResult = ExamResult::where('user_id', $user->id)
             ->where('form_id', $form->id)
-            ->exists();
+            ->latest('id')
+            ->first();
 
-        if ($alreadySubmitted) {
+        if ($userResult && (!$userResult->remidi && $userResult->total_nilai >= 75)) {
+            // Sudah mengerjakan dan TIDAK remidi (lulus)
             return redirect()->route('perawat.ujian.index')
                 ->with('error', 'Anda sudah mengerjakan ujian ini sebelumnya.');
         }
@@ -237,6 +242,7 @@ class UserFormController extends Controller
                 'total_nilai' => $finalScore,
                 'total_benar' => $totalBenar,
                 'total_salah' => $totalSalah,
+                'remidi' => $finalScore < 75 ? true : false,
                 'waktu_selesai' => now(),
             ]);
 

@@ -150,32 +150,54 @@
                 @foreach ($forms as $form)
                     @php
                         // --- LOGIKA STATUS ---
-
-                        // 1. Cek apakah user sudah submit
                         $userResult = $form->examResults->first(); // Ambil hasil user (jika ada)
                         $isSubmitted = $userResult !== null;
-
-                        // 2. Cek Waktu
+                        $isRemidi = $isSubmitted && (($userResult->remidi ?? ($userResult->total_nilai < 75)));
                         $isStarted = $now->greaterThanOrEqualTo($form->waktu_mulai);
                         $isEnded = $now->greaterThan($form->waktu_selesai);
 
-                        // 3. Tentukan Tampilan
-                        if ($isSubmitted) {
-                            // SUDAH MENGERJAKAN
+                        // Cek hasil terakhir (jika remidi, cek hasil terbaru)
+                        $lastResult = $form->examResults->sortByDesc('id')->first();
+                        $isRemidiLast = $lastResult && ($lastResult->remidi ?? ($lastResult->total_nilai < 75));
+
+                        if ($isSubmitted && !$isRemidiLast) {
+                            // SUDAH MENGERJAKAN & TIDAK REMIDI (terakhir lulus)
                             $badgeClass = 'bg-soft-primary';
                             $badgeIcon = 'bi-check-all';
                             $statusLabel = 'Selesai Dikerjakan';
-
-                            // Tombol lihat nilai
                             $btnClass = 'btn-outline-primary';
                             $btnLabel = 'Lihat Nilai Saya';
                             $btnIcon = 'bi-trophy';
                             $linkRoute = route('perawat.ujian.selesai', [
                                 'form' => $form->slug,
-                                'result_id' => $userResult->id,
+                                'result_id' => $lastResult->id,
                             ]);
                             $isClickable = true;
                             $opacityClass = '';
+                        } elseif ($isRemidiLast && $isStarted && !$isEnded) {
+                            // REMIDI & MASIH BISA DIKERJAKAN
+                            $badgeClass = 'bg-soft-warning';
+                            $badgeIcon = 'bi-exclamation-triangle';
+                            $statusLabel = 'Remidi';
+
+                            $btnClass = 'btn-danger';
+                            $btnLabel = 'Kerjakan Lagi';
+                            $btnIcon = 'bi-arrow-repeat';
+                            $linkRoute = route('perawat.ujian.show', $form->slug);
+                            $isClickable = true;
+                            $opacityClass = '';
+                        } elseif ($isRemidiLast && $isEnded) {
+                            // REMIDI tapi waktu habis
+                            $badgeClass = 'bg-soft-secondary';
+                            $badgeIcon = 'bi-x-circle';
+                            $statusLabel = 'Remidi (Waktu Habis)';
+
+                            $btnClass = 'btn-light text-muted border';
+                            $btnLabel = 'Waktu Habis';
+                            $btnIcon = 'bi-clock-history';
+                            $linkRoute = '#';
+                            $isClickable = false;
+                            $opacityClass = 'opacity-75 grayscale';
                         } elseif ($isEnded) {
                             // WAKTU HABIS (Dan belum mengerjakan)
                             $badgeClass = 'bg-soft-secondary';
@@ -187,7 +209,7 @@
                             $btnIcon = 'bi-clock-history';
                             $linkRoute = '#';
                             $isClickable = false;
-                            $opacityClass = 'opacity-75 grayscale'; // Efek visual redup
+                            $opacityClass = 'opacity-75 grayscale';
                         } elseif (!$isStarted) {
                             // BELUM MULAI
                             $badgeClass = 'bg-soft-warning';
