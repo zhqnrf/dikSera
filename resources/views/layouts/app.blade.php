@@ -348,7 +348,7 @@
                         </div>
                         <div class="brand-info">
                             <div class="brand-name">DIKSERA</div>
-                            <div class="brand-caption">Digitalisasi Kompetensi, <br> Sertifikasi & Evaluasi Perawat
+                            <div class="brand-caption">Digitalisasi Kompetensi, <br> Sertifikasi & Evaluasi Keperawatan
                             </div>
                         </div>
                     </div>
