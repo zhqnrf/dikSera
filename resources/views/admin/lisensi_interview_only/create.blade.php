@@ -288,9 +288,137 @@
                                         <option value="">Pilih Jenjang KFK...</option>
                                         @php
                                             $kfks = [
-                                                'Pra PK', 'Pra BK',
-                                                'PK 1', 'PK 1.5', 'PK 2', 'PK 2.5', 'PK 3', 'PK 3.5', 'PK 4', 'PK 4.5', 'PK 5',
-                                                'BK 1', 'BK 1.5', 'BK 2', 'BK 2.5', 'BK 3', 'BK 3.5', 'BK 4', 'BK 4.5', 'BK 5'
+                                                // --- BIDAN ---
+                                                'Bidan Pra BK',
+                                                'Bidan BK 1',
+                                                'Bidan BK 1.5',
+                                                'Bidan BK 2',
+                                                'Bidan BK 2.5',
+                                                'Bidan BK 3',
+                                                'Bidan BK 3.5',
+                                                'Bidan BK 4',
+                                                'Bidan BK 4.5',
+                                                'Bidan BK 5',
+
+                                                // --- PERAWAT UMUM ---
+                                                'Perawat Pra PK',
+                                                'Perawat PK 1',
+                                                'Perawat PK 1.5',
+                                                'Perawat PK 2',
+                                                'Perawat PK 2.5',
+                                                'Perawat PK 3',
+                                                'Perawat PK 3.5',
+                                                'Perawat PK 4',
+                                                'Perawat PK 4.5',
+                                                'Perawat PK 5',
+
+                                                // --- KEPERAWATAN KRITIS (ICU) ---
+                                                'Keperawatan Kritis ICU PK 2',
+                                                'Keperawatan Kritis ICU PK 2.5',
+                                                'Keperawatan Kritis ICU PK 3',
+                                                'Keperawatan Kritis ICU PK 3.5',
+                                                'Keperawatan Kritis ICU PK 4',
+                                                'Keperawatan Kritis ICU PK 4.5',
+                                                'Keperawatan Kritis ICU PK 5',
+
+                                                // --- KEPERAWATAN KRITIS (ICVCU) ---
+                                                'Keperawatan Kritis ICVCU PK 2',
+                                                'Keperawatan Kritis ICVCU PK 2.5',
+                                                'Keperawatan Kritis ICVCU PK 3',
+                                                'Keperawatan Kritis ICVCU PK 3.5',
+                                                'Keperawatan Kritis ICVCU PK 4',
+                                                'Keperawatan Kritis ICVCU PK 4.5',
+                                                'Keperawatan Kritis ICVCU PK 5',
+
+                                                // --- KEPERAWATAN KRITIS (Gawat Darurat) ---
+                                                'Keperawatan Kritis Gawat Darurat PK 2',
+                                                'Keperawatan Kritis Gawat Darurat PK 2.5',
+                                                'Keperawatan Kritis Gawat Darurat PK 3',
+                                                'Keperawatan Kritis Gawat Darurat PK 3.5',
+                                                'Keperawatan Kritis Gawat Darurat PK 4',
+                                                'Keperawatan Kritis Gawat Darurat PK 4.5',
+                                                'Keperawatan Kritis Gawat Darurat PK 5',
+
+                                                // --- KEPERAWATAN KRITIS (Anestesi) ---
+                                                'Keperawatan Kritis Anestesi PK 2',
+                                                'Keperawatan Kritis Anestesi PK 2.5',
+                                                'Keperawatan Kritis Anestesi PK 3',
+                                                'Keperawatan Kritis Anestesi PK 3.5',
+                                                'Keperawatan Kritis Anestesi PK 4',
+                                                'Keperawatan Kritis Anestesi PK 4.5',
+                                                'Keperawatan Kritis Anestesi PK 5',
+
+                                                // --- KEPERAWATAN ANAK (PICU) ---
+                                                'Keperawatan Anak PICU PK 2',
+                                                'Keperawatan Anak PICU PK 2.5',
+                                                'Keperawatan Anak PICU PK 3',
+                                                'Keperawatan Anak PICU PK 3.5',
+                                                'Keperawatan Anak PICU PK 4',
+                                                'Keperawatan Anak PICU PK 4.5',
+                                                'Keperawatan Anak PICU PK 5',
+
+                                                // --- KEPERAWATAN ANAK (NICU) ---
+                                                'Keperawatan Anak NICU PK 2',
+                                                'Keperawatan Anak NICU PK 2.5',
+                                                'Keperawatan Anak NICU PK 3',
+                                                'Keperawatan Anak NICU PK 3.5',
+                                                'Keperawatan Anak NICU PK 4',
+                                                'Keperawatan Anak NICU PK 4.5',
+                                                'Keperawatan Anak NICU PK 5',
+
+                                                // --- KEPERAWATAN ANAK (Neonatus) ---
+                                                'Keperawatan Anak Neonatus PK 2',
+                                                'Keperawatan Anak Neonatus PK 2.5',
+                                                'Keperawatan Anak Neonatus PK 3',
+                                                'Keperawatan Anak Neonatus PK 3.5',
+                                                'Keperawatan Anak Neonatus PK 4',
+                                                'Keperawatan Anak Neonatus PK 4.5',
+                                                'Keperawatan Anak Neonatus PK 5',
+
+                                                // --- KEPERAWATAN ANAK (Pediatri) ---
+                                                'Keperawatan Anak Pediatri PK 2',
+                                                'Keperawatan Anak Pediatri PK 2.5',
+                                                'Keperawatan Anak Pediatri PK 3',
+                                                'Keperawatan Anak Pediatri PK 3.5',
+                                                'Keperawatan Anak Pediatri PK 4',
+                                                'Keperawatan Anak Pediatri PK 4.5',
+                                                'Keperawatan Anak Pediatri PK 5',
+
+                                                // --- KMB (Interna) ---
+                                                'Keperawatan Medikal Bedah Interna PK 2',
+                                                'Keperawatan Medikal Bedah Interna PK 2.5',
+                                                'Keperawatan Medikal Bedah Interna PK 3',
+                                                'Keperawatan Medikal Bedah Interna PK 3.5',
+                                                'Keperawatan Medikal Bedah Interna PK 4',
+                                                'Keperawatan Medikal Bedah Interna PK 4.5',
+                                                'Keperawatan Medikal Bedah Interna PK 5',
+
+                                                // --- KMB (Bedah) ---
+                                                'Keperawatan Medikal Bedah Bedah PK 2',
+                                                'Keperawatan Medikal Bedah Bedah PK 2.5',
+                                                'Keperawatan Medikal Bedah Bedah PK 3',
+                                                'Keperawatan Medikal Bedah Bedah PK 3.5',
+                                                'Keperawatan Medikal Bedah Bedah PK 4',
+                                                'Keperawatan Medikal Bedah Bedah PK 4.5',
+                                                'Keperawatan Medikal Bedah Bedah PK 5',
+
+                                                // --- KMB (Kamar Operasi) ---
+                                                'Keperawatan Medikal Bedah Kamar Operasi PK 2',
+                                                'Keperawatan Medikal Bedah Kamar Operasi PK 2.5',
+                                                'Keperawatan Medikal Bedah Kamar Operasi PK 3',
+                                                'Keperawatan Medikal Bedah Kamar Operasi PK 3.5',
+                                                'Keperawatan Medikal Bedah Kamar Operasi PK 4',
+                                                'Keperawatan Medikal Bedah Kamar Operasi PK 4.5',
+                                                'Keperawatan Medikal Bedah Kamar Operasi PK 5',
+
+                                                // --- KMB (Isolasi) ---
+                                                'Keperawatan Medikal Bedah Isolasi PK 2',
+                                                'Keperawatan Medikal Bedah Isolasi PK 2.5',
+                                                'Keperawatan Medikal Bedah Isolasi PK 3',
+                                                'Keperawatan Medikal Bedah Isolasi PK 3.5',
+                                                'Keperawatan Medikal Bedah Isolasi PK 4',
+                                                'Keperawatan Medikal Bedah Isolasi PK 4.5',
+                                                'Keperawatan Medikal Bedah Isolasi PK 5',
                                             ];
                                         @endphp
                                         @foreach ($kfks as $kfk)
