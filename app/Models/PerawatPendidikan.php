@@ -10,12 +10,13 @@ class PerawatPendidikan extends Model
         'user_id',
         'jenjang',
         'nama_institusi',
-        'jurusan',       
-        'tahun_masuk',   
+        'jurusan',
+        'tahun_masuk',
         'tahun_lulus',
         // BARU
-        'akreditasi',    
+        'akreditasi',
         'tempat',
-        'dokumen_path', 
+        'dokumen_path',
+        'nomor_ijazah',
     ];
 }

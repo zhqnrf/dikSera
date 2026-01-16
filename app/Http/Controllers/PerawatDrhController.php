@@ -199,12 +199,13 @@ class PerawatDrhController extends Controller
         $request->validate([
             'jenjang'        => 'required|string|max:50',
             'nama_institusi' => 'required|string|max:150',
-            'akreditasi'     => 'nullable|string|max:10',
+            'akreditasi'     => 'nullable|string|max:50',
             'tempat'         => 'nullable|string|max:100',
             'tahun_lulus'    => 'nullable|string|max:10',
             'jurusan'        => 'nullable|string|max:150',
             'tahun_masuk'    => 'nullable|string|max:10',
             'dokumen'        => 'nullable|mimes:pdf,jpg,jpeg,png|max:4096',
+            'nomor_ijazah'   => 'nullable|string|max:100',
         ]);
 
         $data = $request->except(['dokumen', '_token']);
@@ -240,12 +241,13 @@ class PerawatDrhController extends Controller
         $request->validate([
             'jenjang'        => 'required|string|max:50',
             'nama_institusi' => 'required|string|max:150',
-            'akreditasi'     => 'nullable|string|max:10',
+            'akreditasi'     => 'nullable|string|max:50',
             'tempat'         => 'nullable|string|max:100',
             'tahun_lulus'    => 'nullable|string|max:10',
             'jurusan'        => 'nullable|string|max:150',
             'tahun_masuk'    => 'nullable|string|max:10',
             'dokumen'        => 'nullable|mimes:pdf,jpg,jpeg,png|max:4096',
+            'nomor_ijazah'   => 'nullable|string|max:100',
         ]);
 
         $data = $request->except(['dokumen', '_token', '_method']);

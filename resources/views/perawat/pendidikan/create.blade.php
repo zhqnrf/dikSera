@@ -58,7 +58,8 @@
         color: #ef4444;
     }
 
-    .form-control {
+    /* .form-select agar style dropdown sama dengan input */
+    .form-control, .form-select {
         border: 1px solid var(--input-border);
         border-radius: 10px;
         padding: 12px 16px;
@@ -66,9 +67,10 @@
         color: var(--text-dark);
         background-color: #fff;
         transition: all 0.2s ease;
+        width: 100%;
     }
 
-    .form-control:focus {
+    .form-control:focus, .form-select:focus {
         border-color: var(--primary-blue);
         box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
         outline: none;
@@ -168,8 +170,20 @@
                         {{-- Jenjang & Institusi --}}
                         <div class="col-md-4">
                             <label class="form-label">Jenjang <span class="required-star">*</span></label>
-                            <input type="text" name="jenjang" class="form-control" value="{{ old('jenjang') }}" placeholder="Contoh: S1 / D3" required>
+                            <select name="jenjang" class="form-select" required>
+                                <option value="">- Pilih Jenjang -</option>
+                                <option value="SD" {{ old('jenjang') == 'SD' ? 'selected' : '' }}>SD</option>
+                                <option value="SMP" {{ old('jenjang') == 'SMP' ? 'selected' : '' }}>SMP</option>
+                                <option value="SMA" {{ old('jenjang') == 'SMA' ? 'selected' : '' }}>SMA</option>
+                                <option value="SMK" {{ old('jenjang') == 'SMK' ? 'selected' : '' }}>SMK</option>
+                                <option value="D3" {{ old('jenjang') == 'D3' ? 'selected' : '' }}>D3</option>
+                                <option value="D4" {{ old('jenjang') == 'D4' ? 'selected' : '' }}>D4</option>
+                                <option value="S1" {{ old('jenjang') == 'S1' ? 'selected' : '' }}>S1</option>
+                                <option value="S2" {{ old('jenjang') == 'S2' ? 'selected' : '' }}>S2</option>
+                                <option value="S3" {{ old('jenjang') == 'S3' ? 'selected' : '' }}>S3</option>
+                            </select>
                         </div>
+
                         <div class="col-md-8">
                             <label class="form-label">Nama Institusi <span class="required-star">*</span></label>
                             <input type="text" name="nama_institusi" class="form-control" value="{{ old('nama_institusi') }}" placeholder="Nama Universitas / Sekolah" required>
@@ -185,18 +199,36 @@
                             <input type="text" name="tempat" class="form-control" value="{{ old('tempat') }}">
                         </div>
 
-                        {{-- Akreditasi & Tahun --}}
-                        <div class="col-md-4">
+                        {{-- Akreditasi, Tahun, & No Ijazah (DI SINI PERUBAHANNYA) --}}
+                        {{-- Dibagi menjadi 4 kolom (col-md-3) --}}
+
+                        <div class="col-md-3">
                             <label class="form-label">Akreditasi</label>
-                            <input type="text" name="akreditasi" class="form-control" value="{{ old('akreditasi') }}" placeholder="A / B / Unggul">
+                            <select name="akreditasi" class="form-select">
+                                <option value="">- Pilih -</option>
+                                <option value="Unggul" {{ old('akreditasi') == 'Unggul' ? 'selected' : '' }}>Unggul</option>
+                                <option value="A" {{ old('akreditasi') == 'A' ? 'selected' : '' }}>A</option>
+                                <option value="B" {{ old('akreditasi') == 'B' ? 'selected' : '' }}>B</option>
+                                <option value="C" {{ old('akreditasi') == 'C' ? 'selected' : '' }}>C</option>
+                                <option value="Baik Sekali" {{ old('akreditasi') == 'Baik Sekali' ? 'selected' : '' }}>Baik Sekali</option>
+                                <option value="Baik" {{ old('akreditasi') == 'Baik' ? 'selected' : '' }}>Baik</option>
+                            </select>
                         </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Tahun Masuk</label>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Thn Masuk</label>
                             <input type="number" name="tahun_masuk" class="form-control" value="{{ old('tahun_masuk') }}" placeholder="YYYY">
                         </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Tahun Lulus</label>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Thn Lulus</label>
                             <input type="number" name="tahun_lulus" class="form-control" value="{{ old('tahun_lulus') }}" placeholder="YYYY">
+                        </div>
+
+                        {{-- NEW: Field Nomor Ijazah --}}
+                        <div class="col-md-3">
+                            <label class="form-label">Nomor Ijazah</label>
+                            <input type="text" name="nomor_ijazah" class="form-control" value="{{ old('nomor_ijazah') }}" placeholder="No. Seri Ijazah">
                         </div>
 
                         {{-- Upload Dokumen --}}

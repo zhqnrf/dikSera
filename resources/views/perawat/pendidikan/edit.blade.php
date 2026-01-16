@@ -58,7 +58,8 @@
         color: #ef4444;
     }
 
-    .form-control {
+    /* .form-select agar style dropdown sama dengan input */
+    .form-control, .form-select {
         border: 1px solid var(--input-border);
         border-radius: 10px;
         padding: 12px 16px;
@@ -66,10 +67,11 @@
         color: var(--text-dark);
         background-color: #fff;
         transition: all 0.2s ease;
+        width: 100%;
     }
 
     /* Focus Orange untuk Edit */
-    .form-control:focus {
+    .form-control:focus, .form-select:focus {
         border-color: var(--accent-orange);
         box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.1);
         outline: none;
@@ -185,8 +187,25 @@
                         {{-- Jenjang & Institusi --}}
                         <div class="col-md-4">
                             <label class="form-label">Jenjang <span class="required-star">*</span></label>
-                            <input type="text" name="jenjang" class="form-control" value="{{ old('jenjang', $pendidikan->jenjang) }}" required>
+
+                            {{-- Dropdown Jenjang --}}
+                            <select name="jenjang" class="form-select" required>
+                                <option value="">- Pilih Jenjang -</option>
+                                {{-- Ambil value lama dari old input atau dari database --}}
+                                @php $j = old('jenjang', $pendidikan->jenjang); @endphp
+
+                                <option value="SD" {{ $j == 'SD' ? 'selected' : '' }}>SD</option>
+                                <option value="SMP" {{ $j == 'SMP' ? 'selected' : '' }}>SMP</option>
+                                <option value="SMA" {{ $j == 'SMA' ? 'selected' : '' }}>SMA</option>
+                                <option value="SMK" {{ $j == 'SMK' ? 'selected' : '' }}>SMK</option>
+                                <option value="D3" {{ $j == 'D3' ? 'selected' : '' }}>D3</option>
+                                <option value="D4" {{ $j == 'D4' ? 'selected' : '' }}>D4</option>
+                                <option value="S1" {{ $j == 'S1' ? 'selected' : '' }}>S1</option>
+                                <option value="S2" {{ $j == 'S2' ? 'selected' : '' }}>S2</option>
+                                <option value="S3" {{ $j == 'S3' ? 'selected' : '' }}>S3</option>
+                            </select>
                         </div>
+
                         <div class="col-md-8">
                             <label class="form-label">Nama Institusi <span class="required-star">*</span></label>
                             <input type="text" name="nama_institusi" class="form-control" value="{{ old('nama_institusi', $pendidikan->nama_institusi) }}" required>
@@ -202,18 +221,40 @@
                             <input type="text" name="tempat" class="form-control" value="{{ old('tempat', $pendidikan->tempat) }}">
                         </div>
 
-                        {{-- Akreditasi & Tahun --}}
-                        <div class="col-md-4">
+                        {{-- Akreditasi, Tahun & No Ijazah --}}
+                        {{-- Ubah menjadi col-md-3 agar muat 4 kolom --}}
+
+                        <div class="col-md-3">
                             <label class="form-label">Akreditasi</label>
-                            <input type="text" name="akreditasi" class="form-control" value="{{ old('akreditasi', $pendidikan->akreditasi) }}">
+
+                            {{-- Dropdown Akreditasi --}}
+                            <select name="akreditasi" class="form-select">
+                                <option value="">- Pilih -</option>
+                                @php $a = old('akreditasi', $pendidikan->akreditasi); @endphp
+
+                                <option value="Unggul" {{ $a == 'Unggul' ? 'selected' : '' }}>Unggul</option>
+                                <option value="A" {{ $a == 'A' ? 'selected' : '' }}>A</option>
+                                <option value="B" {{ $a == 'B' ? 'selected' : '' }}>B</option>
+                                <option value="C" {{ $a == 'C' ? 'selected' : '' }}>C</option>
+                                <option value="Baik Sekali" {{ $a == 'Baik Sekali' ? 'selected' : '' }}>Baik Sekali</option>
+                                <option value="Baik" {{ $a == 'Baik' ? 'selected' : '' }}>Baik</option>
+                            </select>
                         </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Tahun Masuk</label>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Thn Masuk</label>
                             <input type="number" name="tahun_masuk" class="form-control" value="{{ old('tahun_masuk', $pendidikan->tahun_masuk) }}">
                         </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Tahun Lulus</label>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Thn Lulus</label>
                             <input type="number" name="tahun_lulus" class="form-control" value="{{ old('tahun_lulus', $pendidikan->tahun_lulus) }}">
+                        </div>
+
+                        {{-- NEW: Field Nomor Ijazah --}}
+                        <div class="col-md-3">
+                            <label class="form-label">Nomor Ijazah</label>
+                            <input type="text" name="nomor_ijazah" class="form-control" value="{{ old('nomor_ijazah', $pendidikan->nomor_ijazah) }}" placeholder="No. Seri Ijazah">
                         </div>
 
                         {{-- Upload Dokumen --}}
