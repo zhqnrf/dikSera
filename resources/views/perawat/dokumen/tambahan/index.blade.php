@@ -263,7 +263,6 @@
 
                                     {{-- Jenis (Badge) & Lembaga (Building Icon) --}}
                                     <div class="text-muted" style="font-size: 0.8rem; margin-top: 2px;">
-                                        <span class="badge bg-light text-dark border me-1">{{ $item->jenis }}</span>
                                         <span><i class="bi bi-building"></i> {{ $item->lembaga }}</span>
                                     </div>
                                 </td>

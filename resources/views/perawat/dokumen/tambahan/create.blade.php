@@ -169,14 +169,6 @@
                         @csrf
                         <div class="row g-4">
 
-                            {{-- Jenis Dokumen (TEXT MANUAL) --}}
-                            <div class="col-md-6">
-                                <label class="form-label">Jenis Dokumen <span class="required-star">*</span></label>
-                                <input type="text" name="jenis"
-                                    class="form-control @error('jenis') is-invalid @enderror" value="{{ old('jenis') }}"
-                                    placeholder="Contoh: Sertifikat, SK, Surat Tugas" required>
-                            </div>
-
                             {{-- Nama Dokumen --}}
                             <div class="col-md-6">
                                 <label class="form-label">Nama Dokumen <span class="required-star">*</span></label>

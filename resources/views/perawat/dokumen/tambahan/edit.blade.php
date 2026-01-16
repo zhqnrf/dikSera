@@ -187,13 +187,6 @@
 
                         <div class="row g-4">
 
-                            {{-- Jenis (TEXT MANUAL) --}}
-                            <div class="col-md-6">
-                                <label class="form-label">Jenis Dokumen <span class="required-star">*</span></label>
-                                <input type="text" name="jenis" class="form-control"
-                                    value="{{ old('jenis', $data->jenis) }}" required placeholder="Contoh: Sertifikat">
-                            </div>
-
                             {{-- Nama --}}
                             <div class="col-md-6">
                                 <label class="form-label">Nama Dokumen <span class="required-star">*</span></label>

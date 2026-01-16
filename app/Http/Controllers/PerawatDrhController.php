@@ -1151,7 +1151,6 @@ class PerawatDrhController extends Controller
         $isLifetime = $request->has('is_lifetime') && $request->input('is_lifetime') == '1';
 
         $rules = [
-            'jenis'      => 'required|string|max:100',
             'nama'       => 'required|string|max:100',
             'lembaga'    => 'required|string|max:100',
             'nomor'      => 'required|string|max:100',
@@ -1215,7 +1214,6 @@ class PerawatDrhController extends Controller
         $isLifetime = $request->has('is_lifetime') && $request->input('is_lifetime') == '1';
 
         $rules = [
-            'jenis'      => 'required|string|max:100',
             'nama'       => 'required|string|max:100',
             'lembaga'    => 'required|string|max:100',
             'nomor'      => 'required|string|max:100',

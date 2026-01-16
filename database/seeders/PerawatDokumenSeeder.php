@@ -66,7 +66,6 @@ class PerawatDokumenSeeder extends Seeder
         // 5. Insert Data Tambahan
         DB::table('perawat_data_tambahans')->insert([
             'user_id'     => $user_id,
-            'jenis'       => 'Identitas',
             'nama'        => 'NPWP',
             'lembaga'     => 'Pajak',
             'nomor'       => $faker->numerify('01'),
