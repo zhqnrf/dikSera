@@ -241,7 +241,7 @@
         <div class="page-header">
             <div>
                 <h1 class="page-title">Data Lisensi Saya</h1>
-                <p class="text-muted small mb-0">Kelola dan perpanjang masa berlaku lisensi (STR/SIP) Anda.</p>
+                <p class="text-muted small mb-0">Riwayat pengajuan Uji Kompetensi dan Kredensialing.</p>
             </div>
             <a href="{{ route('dashboard') }}" class="btn-back">
                 <i class="bi bi-arrow-left"></i> Kembali Dashboard
@@ -255,87 +255,15 @@
             </div>
         @endif
 
-        {{-- LOGIC TOMBOL CREATE (Updated Logic) --}}
-        <div class="action-area">
-            @php
-                $latestJob = $user->perawatPekerjaans()->orderBy('tahun_mulai', 'desc')->first();
-                $unitKerja = $latestJob ? $latestJob->unit_kerja : null;
-
-                $canInterview = false;
-                $canPG = false;
-
-                if ($unitKerja) {
-                    $hasInterview = $user
-                        ->perawatLisensis()
-                        ->where('unit_kerja_saat_buat', $unitKerja)
-                        ->where('metode_perpanjangan', 'interview_only')
-                        ->exists();
-
-                    $hasPG = $user
-                        ->perawatLisensis()
-                        ->where('unit_kerja_saat_buat', $unitKerja)
-                        ->where('metode_perpanjangan', 'pg_interview')
-                        ->exists();
-
-                    $canInterview = !$hasInterview;
-                    $canPG = !$hasPG;
-                }
-            @endphp
-
-            @if ($canInterview || $canPG)
-                <div class="dropdown d-inline-block">
-                    <button class="btn btn-create dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                        aria-expanded="false">
-                        <i class="bi bi-plus-lg"></i> Ajukan Lisensi Baru
-                    </button>
-                    <ul class="dropdown-menu shadow-sm border-0 rounded-3 mt-2">
-                        @if ($canInterview)
-                            <li>
-                                <a class="dropdown-item py-2 px-3"
-                                    href="{{ route('perawat.lisensi.create', 'interview_only') }}">
-                                    <i class="bi bi-mic me-2 text-primary"></i> Kredensialing
-                                </a>
-                            </li>
-                        @else
-                            <li>
-                                <button class="dropdown-item py-2 px-3 text-muted" disabled style="opacity: 0.6;">
-                                    <i class="bi bi-check-circle-fill me-2 text-success"></i> Kredensialing
-                                </button>
-                            </li>
-                        @endif
-
-                        @if ($canInterview && $canPG)
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                        @endif
-
-                        @if ($canPG)
-                            <li>
-                                <a class="dropdown-item py-2 px-3"
-                                    href="{{ route('perawat.lisensi.create', 'pg_interview') }}">
-                                    <i class="bi bi-file-earmark-text me-2 text-success"></i> Uji Kompetensi 
-                                </a>
-                            </li>
-                        @else
-                            <li>
-                                <button class="dropdown-item py-2 px-3 text-muted" disabled style="opacity: 0.6;">
-                                    <i class="bi bi-check-circle-fill me-2 text-success"></i> Uji Kompetensi
-                                </button>
-                            </li>
-                        @endif
-                    </ul>
-                </div>
-            @else
-                <div class="alert alert-info d-flex align-items-center p-3 mb-0"
-                    style="background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; color: #1e40af;">
-                    <i class="bi bi-info-circle-fill fs-4 me-3"></i>
-                    <div>
-                        <strong>Info Pengajuan</strong><br>
-                        Anda sudah melengkapi kedua jenis lisensi untuk unit: <strong>{{ $unitKerja ?? '-' }}</strong>.
-                    </div>
-                </div>
-            @endif
+        {{-- INFO ALERT (Opsional: Memberi tahu cara pengajuan) --}}
+        <div class="alert alert-info d-flex align-items-center p-3 mb-4"
+            style="background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; color: #1e40af;">
+            <i class="bi bi-info-circle-fill fs-4 me-3"></i>
+            <div>
+                <strong>Ingin Mengajukan Lisensi Baru?</strong><br>
+                Silakan pilih menu <b>"Pengajuan Lisensi"</b> di sidebar sebelah kiri. Pastikan Anda melakukan <b>Uji
+                    Kompetensi</b> terlebih dahulu sebelum mengajukan Kredensialing.
+            </div>
         </div>
 
         {{-- TABEL DATA --}}
@@ -371,9 +299,9 @@
                                 {{-- Metode Badge --}}
                                 <td>
                                     @if ($item->metode_perpanjangan == 'interview_only')
-                                        <span class="badge-metode bg-metode-interview">Wawancara</span>
+                                        <span class="badge-metode bg-metode-interview">Kredensialing</span>
                                     @else
-                                        <span class="badge-metode bg-metode-pg">Ujian & Wawancara</span>
+                                        <span class="badge-metode bg-metode-pg">Uji Kompetensi</span>
                                     @endif
                                 </td>
 
@@ -392,7 +320,7 @@
                                     </div>
                                 </td>
 
-                                {{-- Status & Tombol Perpanjang (INI YANG DIPERBAIKI) --}}
+                                {{-- Status & Tombol Perpanjang --}}
                                 <td>
                                     @php
                                         $expired = \Carbon\Carbon::parse($item->tgl_expired);
@@ -401,10 +329,8 @@
                                     @endphp
 
                                     @if ($diff < 0)
-                                        {{-- EXPIRED --}}
                                         <span class="badge-status bs-danger mb-1"><i class="bi bi-x-circle"></i>
                                             Expired</span>
-
                                         <form action="{{ route('perawat.pengajuan.store') }}" method="POST">
                                             @csrf
                                             <input type="hidden" name="lisensi_id" value="{{ $item->id }}">
@@ -413,10 +339,8 @@
                                             </button>
                                         </form>
                                     @elseif($diff < 90)
-                                        {{-- HAMPIR EXPIRED --}}
                                         <span class="badge-status bs-warning mb-1"><i
                                                 class="bi bi-exclamation-triangle"></i> Hampir Expired</span>
-
                                         <form action="{{ route('perawat.pengajuan.store') }}" method="POST">
                                             @csrf
                                             <input type="hidden" name="lisensi_id" value="{{ $item->id }}">
@@ -425,7 +349,6 @@
                                             </button>
                                         </form>
                                     @else
-                                        {{-- AKTIF --}}
                                         <span class="badge-status bs-active"><i class="bi bi-check-circle"></i> Aktif</span>
                                     @endif
                                 </td>
@@ -443,9 +366,9 @@
                                 <td colspan="6" class="text-center py-5">
                                     <div class="d-flex flex-column align-items-center opacity-50">
                                         <i class="bi bi-clipboard-x display-4 text-muted mb-2"></i>
-                                        <h6 class="fw-bold text-muted">Belum Ada Data Lisensi</h6>
-                                        <p class="small text-muted mb-0">Klik tombol "Ajukan Lisensi Baru" untuk memulai.
-                                        </p>
+                                        <h6 class="fw-bold text-muted">Belum Ada Riwayat</h6>
+                                        <p class="small text-muted mb-0">Silakan ajukan Uji Kompetensi melalui menu di
+                                            sidebar.</p>
                                     </div>
                                 </td>
                             </tr>
