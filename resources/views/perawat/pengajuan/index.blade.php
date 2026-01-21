@@ -622,29 +622,30 @@
                                 @endif
                             @endif
 
-                            {{-- SELESAI --}}
+                            {{-- Jika Status Completed --}}
                             @if ($item->status == 'completed')
                                 <div class="certificate-box mt-3">
                                     <div class="certificate-icon"><i class="bi bi-trophy-fill"></i></div>
 
-                                    @if (is_null($item->metode))
-                                        <h4 class="fw-bold text-success mb-2">Lisensi Baru Diterbitkan</h4>
-                                        <p class="text-secondary mb-4 col-md-8 mx-auto" style="font-size: 0.95rem;">
-                                            Pengajuan penerbitan lisensi baru Anda telah selesai.
+                                    @if ($item->metode == 'interview_only')
+                                        {{-- Tampilan Kredensialing --}}
+                                        <h4 class="fw-bold text-success mb-2">Selamat! Kredensial Valid</h4>
+                                        <p class="text-secondary mb-4 col-md-8 mx-auto">
+                                            Proses validasi kompetensi Anda telah selesai. Silakan unduh hasil keputusan.
                                         </p>
-                                        <a href="{{ route('perawat.lisensi.index') }}"
-                                            class="btn btn-outline-success fw-bold px-4 py-2">
-                                            <i class="bi bi-arrow-right-circle me-2"></i> Cek Daftar Lisensi
+                                        <a href="{{ route('perawat.lisensi.download_hasil', $item->id) }}"
+                                            class="btn btn-primary fw-bold px-4 py-2 shadow-sm">
+                                            <i class="bi bi-file-earmark-arrow-down me-2"></i> Unduh Dokumen SK
                                         </a>
                                     @else
-                                        <h4 class="fw-bold text-success mb-2">Selamat! Lisensi Diperbarui</h4>
-                                        <p class="text-secondary mb-4 col-md-8 mx-auto" style="font-size: 0.95rem;">
-                                            Proses evaluasi telah selesai dan lisensi Anda telah aktif kembali.
+                                        {{-- Tampilan Uji Kompetensi / Lisensi Baru --}}
+                                        <h4 class="fw-bold text-success mb-2">Selamat! Lisensi Terbit</h4>
+                                        <p class="text-secondary mb-4 col-md-8 mx-auto">
+                                            Anda dinyatakan kompeten. Sertifikat digital Anda sudah siap.
                                         </p>
-                                        <a href="{{ route('perawat.pengajuan.sertifikat', $item->id) }}"
+                                        <a href="{{ route('perawat.lisensi.download_hasil', $item->id) }}"
                                             class="btn btn-success fw-bold px-4 py-2 shadow-sm" target="_blank">
-                                            <i class="bi bi-file-earmark-pdf-fill me-2"></i>
-                                            {{ $item->metode == 'interview_only' ? 'Unduh Dokumen SK' : 'Unduh Sertifikat (PDF)' }}
+                                            <i class="bi bi-award-fill me-2"></i> Unduh Sertifikat PDF
                                         </a>
                                     @endif
                                 </div>

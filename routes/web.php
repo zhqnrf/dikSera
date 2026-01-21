@@ -263,6 +263,8 @@ Route::middleware(['auth'])->group(function () {
 
         // CETAK SERTIFIKAT
         Route::get('/pengajuan/{id}/sertifikat', [PengajuanSertifikatController::class, 'printSertifikat'])->name('pengajuan.sertifikat');
+        Route::get('/lisensi/download-hasil/{id}', [PerawatLisensiController::class, 'downloadHasil'])
+            ->name('lisensi.download_hasil');
 
         // PENGAJUAN PERPANJANGAN
         Route::get('/pengajuan', [PengajuanSertifikatController::class, 'index'])->name('pengajuan.index');

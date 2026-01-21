@@ -26,6 +26,11 @@ class PengajuanSertifikat extends Model
         return $this->belongsTo(PerawatLisensi::class, 'lisensi_lama_id');
     }
 
+    public function penanggungJawab()
+    {
+        return $this->belongsTo(PenanggungJawabUjian::class, 'penanggung_jawab_id');
+    }
+
     /**
      * LOGIC BERSIH-BERSIH NILAI & JADWAL
      */

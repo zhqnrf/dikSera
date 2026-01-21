@@ -7,6 +7,8 @@ use App\Models\PerawatLisensi;
 use App\Models\PerawatPekerjaan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage; // <--- TAMBAHKAN INI
+use Barryvdh\DomPDF\Facade\Pdf; // <--- TAMBAHKAN INI
 
 class PerawatLisensiController extends Controller
 {
@@ -116,5 +118,49 @@ class PerawatLisensiController extends Controller
             'title' => 'Berhasil Diajukan',
             'text' => 'Data lisensi berhasil disimpan. Menunggu persetujuan Admin.'
         ]);
+    }
+
+    public function downloadHasil($id)
+    {
+        // 1. Cari data pengajuan
+        $pengajuan = PengajuanSertifikat::with(['jadwalWawancara.penilaian', 'user', 'lisensiLama'])
+            ->where('user_id', Auth::id())
+            ->findOrFail($id);
+
+        // 2. LOGIKA KREDENSIALING (Interview Only)
+        if ($pengajuan->metode == 'interview_only') {
+
+            // Ambil path file
+            $filePath = $pengajuan->jadwalWawancara->penilaian->file_hasil ?? null;
+
+            // Cek keberadaan file
+            if ($filePath && Storage::disk('public')->exists($filePath)) {
+
+                // --- PERBAIKAN DISINI AGAR TIDAK MERAH ---
+                // Kita gunakan helper storage_path untuk mendapatkan full path file
+                $fullPath = storage_path('app/public/' . $filePath);
+
+                // Gunakan response()->download() yang lebih dikenali VS Code
+                return response()->download($fullPath, 'Surat_Keputusan_Kredensial.pdf');
+            } else {
+                return back()->with('swal', [
+                    'icon' => 'error',
+                    'title' => 'Gagal',
+                    'text' => 'File dokumen SK belum tersedia atau dihapus.'
+                ]);
+            }
+        }
+
+        // 3. LOGIKA UJI KOMPETENSI / LISENSI BARU
+        else {
+            $data = [
+                'nama' => $pengajuan->user->name,
+                'nomor_lisensi' => $pengajuan->lisensiLama->nomor ?? 'BARU',
+                'tanggal_lulus' => $pengajuan->updated_at->format('d F Y'),
+            ];
+
+            $pdf = Pdf::loadView('perawat.dokumen.pdf_sertifikat', ['data' => $data]);
+            return $pdf->stream('Sertifikat_Kompetensi.pdf');
+        }
     }
 }
