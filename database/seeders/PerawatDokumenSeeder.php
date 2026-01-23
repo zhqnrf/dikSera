@@ -47,19 +47,6 @@ class PerawatDokumenSeeder extends Seeder
         ]);
         $this->command->info('-> Data SIP berhasil masuk.');
 
-        // 4. Insert Lisensi
-        DB::table('perawat_lisensis')->insert([
-            'user_id'     => $user_id,
-            'nama'        => 'BTCLS',
-            'lembaga'     => 'Gadar Medik',
-            'nomor'       => $faker->numerify('CERT/BTCLS/001'),
-            'tgl_terbit'  => $faker->date('Y-m-d', '-1 years'),
-            'tgl_expired' => $faker->date('Y-m-d', '+4 years'),
-            'file_path'   => null,
-            'created_at'  => now(),
-            'updated_at'  => now(),
-        ]);
-        $this->command->info('-> Data Lisensi berhasil masuk.');
 
         // 5. Insert Data Tambahan
         DB::table('perawat_data_tambahans')->insert([

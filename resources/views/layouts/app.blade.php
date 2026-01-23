@@ -526,13 +526,59 @@
                                 <i class="bi bi-file-earmark-plus-fill"></i> Data Tambahan
                             </a>
                         </div>
-
-                        {{-- STATUS PENGAJUAN (MODUL 8 & RENEWAL) --}}
-                        <a href="{{ route('perawat.pengajuan.index') }}"
-                            class="nav-linkx {{ request()->routeIs('perawat.pengajuan.*') ? 'active' : '' }}">
+                        {{-- 
+                        <a href="{{ route('perawat.lisensi.index') }}"
+                            class="nav-linkx {{ request()->routeIs('perawat.lisensi.*') ? 'active' : '' }}">
                             <i class="bi bi-file-earmark-arrow-up-fill"></i>
-                            <span class="link-text">Status Pengajuan</span>
-                        </a>
+                            <span class="link-text">Kredensialing</span>
+                        </a> --}}
+
+                        {{-- LOGIKA CEK DATA DI SIDEBAR --}}
+                        @php
+                            $hasUjiKomp = \App\Models\PerawatLisensi::where('user_id', Auth::id())
+                                ->where('metode', 'pg_interview')
+                                ->exists();
+
+                            $isKredensialActive = request()->routeIs('perawat.lisensi.create');
+                        @endphp
+
+                        {{-- KREDENSIALING (MODUL BARU) --}}
+                        <div class="nav-linkx nav-dropdown {{ $isKredensialActive ? 'active' : '' }}"
+                            data-dropdown="#submenu-kredensial">
+                            <i class="bi bi-file-earmark-arrow-up-fill"></i>
+                            <span class="link-text">Pengajuan Lisensi</span>
+                            <i class="bi bi-chevron-down dropdown-icon"></i>
+                        </div>
+
+                        <div id="submenu-kredensial" class="nav-submenu {{ $isKredensialActive ? 'show' : '' }}">
+
+                            {{-- 1. Uji Kompetensi (Selalu Terbuka) --}}
+                            <a href="{{ route('perawat.lisensi.create', 'pg_interview') }}"
+                                class="nav-linkx {{ request()->fullUrlIs(route('perawat.lisensi.create', 'pg_interview')) ? 'active' : '' }}">
+                                <i class="bi bi-clipboard-data-fill"></i> Uji Kompetensi
+                            </a>
+
+                            {{-- 2. Kredensialing (Terkunci jika belum Uji Kompetensi) --}}
+                            @if ($hasUjiKomp)
+                                <a href="{{ route('perawat.lisensi.create', 'interview_only') }}"
+                                    class="nav-linkx {{ request()->fullUrlIs(route('perawat.lisensi.create', 'interview_only')) ? 'active' : '' }}">
+                                    <i class="bi bi-person-check-fill"></i> Kredensialing
+                                </a>
+                            @else
+                                {{-- Tampilan Terkunci --}}
+                                <div class="nav-linkx text-muted" style="cursor: not-allowed; opacity: 0.6;"
+                                    title="Wajib Uji Kompetensi Terlebih Dahulu">
+                                    <i class="bi bi-lock-fill"></i> Kredensialing
+                                </div>
+                            @endif
+
+                            {{-- Link ke Riwayat/Data Lisensi (Index) --}}
+                            <a href="{{ route('perawat.lisensi.index') }}"
+                                class="nav-linkx {{ request()->routeIs('perawat.lisensi.index') ? 'active' : '' }}">
+                                <i class="bi bi-clock-history"></i> Daftar Lisensi
+                            </a>
+
+                        </div>
 
                         {{-- UJIAN & EVALUASI (MODUL 7) --}}
                         <a href="{{ route('perawat.ujian.index') }}"
@@ -546,10 +592,13 @@
                             @endif
                         </a>
 
-                        <a href="{{ route('perawat.lisensi.index') }}"
-                            class="nav-linkx {{ request()->routeIs('perawat.lisensi.*') ? 'active' : '' }}">
+                        <div class="nav-section-title">Riwayat</div>
+
+                        {{-- STATUS PENGAJUAN (MODUL 8 & RENEWAL) --}}
+                        <a href="{{ route('perawat.pengajuan.index') }}"
+                            class="nav-linkx {{ request()->routeIs('perawat.pengajuan.*') ? 'active' : '' }}">
                             <i class="bi bi-file-earmark-arrow-up-fill"></i>
-                            <span class="link-text">Kredensialing</span>
+                            <span class="link-text">Status Pengajuan</span>
                         </a>
 
                         <div class="nav-section-title">Lainnya</div>
@@ -620,8 +669,14 @@
                             <span class="link-text">Bidan Dan Perawat</span>
                         </a>
 
-
                         <div class="nav-section-title">Kredensialing</div>
+
+                        {{-- APPROVAL PENGAJUAN & WAWANCARA (MODUL 8) --}}
+                        <a href="{{ route('admin.pengajuan.index') }}"
+                            class="nav-linkx {{ request()->routeIs('admin.pengajuan.*') || request()->routeIs('admin.pengajuan_wawancara.*') ? 'active' : '' }}">
+                            <i class="bi bi-check-square-fill"></i>
+                            <span class="link-text">Approval Pengajuan</span>
+                        </a>
                         <a href="{{ route('admin.lisensi_pg_interview.index') }}"
                             class="nav-linkx {{ request()->routeIs('admin.lisensi_pg_interview.*') ? 'active' : '' }}">
                             <i class="bi bi-file-earmark-text"></i>
@@ -631,13 +686,6 @@
                             class="nav-linkx {{ request()->routeIs('admin.lisensi_interview_only.*') ? 'active' : '' }}">
                             <i class="bi bi-person-video2"></i>
                             <span class="link-text">Kredensialing</span>
-                        </a>
-
-                        {{-- APPROVAL PENGAJUAN & WAWANCARA (MODUL 8) --}}
-                        <a href="{{ route('admin.pengajuan.index') }}"
-                            class="nav-linkx {{ request()->routeIs('admin.pengajuan.*') || request()->routeIs('admin.pengajuan_wawancara.*') ? 'active' : '' }}">
-                            <i class="bi bi-check-square-fill"></i>
-                            <span class="link-text">Approval Pengajuan</span>
                         </a>
 
                         <div class="nav-section-title">Manajemen Ujian</div>

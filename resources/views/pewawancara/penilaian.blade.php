@@ -3,8 +3,10 @@
 @section('title', 'Penilaian Wawancara')
 
 @push('styles')
+    {{-- Paste CSS Style yang sama seperti sebelumnya di sini --}}
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* ... CSS SAMA PERSIS SEPERTI SEBELUMNYA ... */
         :root {
             --primary-color: #2563eb;
             --text-dark: #1e293b;
@@ -111,58 +113,6 @@
             color: var(--primary-color);
         }
 
-        .score-card {
-            background: #fff;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 16px;
-            transition: all 0.2s;
-        }
-
-        .score-card:focus-within {
-            border-color: var(--primary-color);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .score-label {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--text-gray);
-            margin-bottom: 8px;
-            display: block;
-        }
-
-        .score-input-wrapper {
-            position: relative;
-        }
-
-        .score-input {
-            width: 100%;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            padding: 10px 14px;
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            text-align: center;
-        }
-
-        .score-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-
-        .score-suffix {
-            position: absolute;
-            right: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 0.85rem;
-            color: #94a3b8;
-            font-weight: 500;
-        }
-
         .decision-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -218,22 +168,26 @@
             border-color: #cbd5e1;
         }
 
-        .decision-item input[value="lulus"]:checked+.decision-box {
+        .decision-item input:checked+.decision-box {
+            transform: translateY(-2px);
+        }
+
+        /* Valid / Lulus Color */
+        .decision-item input[value="lulus"]:checked+.decision-box,
+        .decision-item input[value="valid"]:checked+.decision-box {
             background: var(--success-bg);
             border-color: var(--success-border);
             color: var(--success-text);
             box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
         }
 
-        .decision-item input[value="tidak_lulus"]:checked+.decision-box {
+        /* Invalid / Tidak Lulus Color */
+        .decision-item input[value="tidak_lulus"]:checked+.decision-box,
+        .decision-item input[value="tidak_valid"]:checked+.decision-box {
             background: var(--danger-bg);
             border-color: var(--danger-border);
             color: var(--danger-text);
             box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
-        }
-
-        .decision-item input:checked+.decision-box i {
-            transform: scale(1.2);
         }
 
         .btn-save {
@@ -254,26 +208,79 @@
             box-shadow: 0 6px 12px rgba(37, 99, 235, 0.4);
         }
 
-        .avg-badge {
-            background: #334155;
-            color: #fff;
-            padding: 6px 12px;
+        /* Styles Khusus Kredensial */
+        .checklist-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .check-item {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            padding: 12px 16px;
             border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 600;
+            display: flex;
+            align-items: center;
+            transition: 0.2s;
+        }
+
+        .check-item:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+        }
+
+        .check-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 12px;
+            accent-color: var(--primary-color);
+            cursor: pointer;
+        }
+
+        .check-label {
+            cursor: pointer;
+            width: 100%;
+            font-size: 0.95rem;
+        }
+
+        .upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            background: #f8fafc;
+            transition: 0.2s;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            background: #eff6ff;
         }
     </style>
 @endpush
 
 @section('content')
-    <div class="container py-5">
+    {{-- DETEKSI LOGIKA BERDASARKAN METODE DARI DB --}}
+    @php
+        // Gunakan $jadwal->pengajuan sesuai nama relasi di Controller & Model
+        // Tambahkan '?? null' untuk keamanan jika data kosong
+        $metode = $jadwal->pengajuan->metode ?? '';
+        $isKredensial = $metode === 'interview_only';
+    @endphp
 
+    <div class="container py-5">
         <div class="page-header">
             <div>
-                <h1 class="page-title">Penilaian Wawancara</h1>
-                <p class="text-muted small mb-0 mt-1">Input skor kompetensi dan hasil akhir seleksi wawancara.</p>
+                <h1 class="page-title">
+                    {{ $isKredensial ? 'Asesmen Kredensialing' : 'Penilaian Wawancara' }}
+                </h1>
+                <p class="text-muted small mb-0 mt-1">
+                    {{ $isKredensial ? 'Validasi kompetensi dan berkas.' : 'Hasil akhir seleksi wawancara kompetensi.' }}
+                </p>
             </div>
-            <a href="{{ route('dashboard.pewawancara') }}" class="btn btn-light border fw-bold shadow-sm"
+            <a href="{{ route('pewawancara.antrian') }}" class="btn btn-light border fw-bold shadow-sm"
                 style="border-radius: 8px;">
                 <i class="bi bi-arrow-left me-1"></i> Kembali
             </a>
@@ -286,125 +293,131 @@
             </div>
         @endif
 
-        <form action="{{ route('pewawancara.penilaian.store', $jadwal->id) }}" method="POST">
+        <form action="{{ route('pewawancara.penilaian.store', $jadwal->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
 
             <div class="form-card">
-
                 <div class="ticket-header">
                     <div class="info-block border-end border-light pe-4">
                         <div class="info-icon text-primary"><i class="bi bi-person-badge"></i></div>
                         <div>
                             <div class="info-label">Peserta</div>
-                            <div class="info-value">{{ $jadwal->pengajuan->user->name }}</div>
+                            {{-- Sesuaikan relasi user --}}
+                            <div class="info-value">{{ $jadwal->pengajuanSertifikat->user->name ?? 'User' }}</div>
                         </div>
                     </div>
                     <div class="info-block ps-4">
                         <div class="info-icon text-info"><i class="bi bi-calendar-event"></i></div>
                         <div>
-                            <div class="info-label">Jadwal Wawancara</div>
-                            <div class="info-value">{{ $jadwal->waktu_wawancara->format('d M Y, H:i') }}</div>
+                            <div class="info-label">Metode</div>
+                            <div class="info-value">
+                                @if ($isKredensial)
+                                    <span class="badge bg-secondary">Kredensial (Interview Only)</span>
+                                @else
+                                    <span class="badge bg-primary">Uji Kompetensi (PG + Interview)</span>
+                                @endif
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="form-body">
 
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div class="section-header mb-0 border-0 pb-0">
-                            <i class="bi bi-calculator section-icon"></i> A. Poin Penilaian
+                    {{-- === TAMPILAN KHUSUS KREDENSIALING === --}}
+                    @if ($isKredensial)
+                        <div class="section-header">
+                            <i class="bi bi-list-check section-icon"></i> A. Daftar Tilik Kompetensi (Checklist)
                         </div>
-                        <div class="avg-badge" id="avgDisplay" style="display: none;">
-                            Rata-rata: <span id="avgScore">0</span>
-                        </div>
-                    </div>
 
-                    <div class="row g-4 mb-5">
-                        <div class="col-md-4">
-                            <div class="score-card">
-                                <label class="score-label">Kompetensi Teknis</label>
-                                <div class="score-input-wrapper">
-                                    <input type="number" name="skor_kompetensi"
-                                        class="score-input calc-input @error('skor_kompetensi') is-invalid @enderror"
-                                        min="0" max="100" placeholder="0" required
-                                        value="{{ old('skor_kompetensi') }}">
-                                    <span class="score-suffix">/100</span>
+                        <div class="checklist-grid">
+                            {{-- Generate 20 Checkbox --}}
+                            @for ($i = 1; $i <= 20; $i++)
+                                <div class="check-item">
+                                    <input type="checkbox" name="poin_penilaian[]" value="{{ $i }}"
+                                        id="poin_{{ $i }}">
+                                    <label for="poin_{{ $i }}" class="check-label">
+                                        Poin Kompetensi Keperawatan #{{ $i }}
+                                    </label>
                                 </div>
-                                @error('skor_kompetensi')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
+                            @endfor
                         </div>
-                        <div class="col-md-4">
-                            <div class="score-card">
-                                <label class="score-label">Sikap & Etika</label>
-                                <div class="score-input-wrapper">
-                                    <input type="number" name="skor_sikap"
-                                        class="score-input calc-input @error('skor_sikap') is-invalid @enderror"
-                                        min="0" max="100" placeholder="0" required
-                                        value="{{ old('skor_sikap') }}">
-                                    <span class="score-suffix">/100</span>
-                                </div>
-                                @error('skor_sikap')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="score-card">
-                                <label class="score-label">Pengetahuan Umum</label>
-                                <div class="score-input-wrapper">
-                                    <input type="number" name="skor_pengetahuan"
-                                        class="score-input calc-input @error('skor_pengetahuan') is-invalid @enderror"
-                                        min="0" max="100" placeholder="0" required
-                                        value="{{ old('skor_pengetahuan') }}">
-                                    <span class="score-suffix">/100</span>
-                                </div>
-                                @error('skor_pengetahuan')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <label class="score-label ms-1">Catatan Tambahan (Opsional)</label>
-                            <textarea name="catatan" class="form-control" rows="3"
-                                placeholder="Tuliskan catatan mengenai kelebihan atau kekurangan peserta..."
-                                style="background: #f8fafc; border-color: #cbd5e1;">{{ old('catatan') }}</textarea>
-                        </div>
-                    </div>
 
+                        <div class="section-header mt-4">
+                            <i class="bi bi-cloud-upload section-icon"></i> B. Upload Dokumen Hasil
+                        </div>
+
+                        <div class="mb-5">
+                            <div class="upload-area">
+                                <i class="bi bi-file-earmark-text fs-1 text-muted mb-2"></i>
+                                <p class="mb-2 fw-bold">Upload Berkas Penilaian (Word/PDF)</p>
+                                <input type="file" name="file_hasil" class="form-control" accept=".doc,.docx,.pdf"
+                                    required>
+                                <small class="text-muted d-block mt-2">File ini akan dikirim ke peserta.</small>
+                            </div>
+                            @error('file_hasil')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+
+                        {{-- === TAMPILAN KHUSUS UJI KOMPETENSI === --}}
+                    @else
+                        <div class="section-header">
+                            <i class="bi bi-pencil-square section-icon"></i> A. Catatan Pewawancara
+                        </div>
+
+                        <div class="mb-5">
+                            <textarea name="catatan" class="form-control p-3" rows="6"
+                                placeholder="Tuliskan catatan hasil wawancara di sini..."
+                                style="background: #f8fafc; border-color: #cbd5e1; border-radius: 12px;">{{ old('catatan') }}</textarea>
+                            @error('catatan')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+                    @endif
+
+
+                    {{-- === KEPUTUSAN AKHIR (Dynamic Label) === --}}
                     <div class="section-header">
-                        <i class="bi bi-gavel section-icon"></i> B. Keputusan Akhir
+                        <i class="bi bi-gavel section-icon"></i>
+                        {{ $isKredensial ? 'C. Hasil Validasi' : 'B. Keputusan Akhir' }}
                     </div>
 
                     <div class="decision-grid mb-5">
+                        {{-- OPSI POSITIF --}}
                         <div class="decision-item">
-                            <input type="radio" name="keputusan" value="lulus" id="dec_lulus" required
-                                {{ old('keputusan') == 'lulus' ? 'checked' : '' }}>
-                            <label for="dec_lulus" class="decision-box">
+                            <input type="radio" name="keputusan" value="{{ $isKredensial ? 'valid' : 'lulus' }}"
+                                id="dec_pass" required
+                                {{ old('keputusan') == ($isKredensial ? 'valid' : 'lulus') ? 'checked' : '' }}>
+
+                            <label for="dec_pass" class="decision-box">
                                 <i class="bi bi-check-circle-fill"></i>
-                                <div class="decision-title">LULUS</div>
-                                <div class="decision-desc">Direkomendasikan Lulus</div>
+                                <div class="decision-title">{{ $isKredensial ? 'VALID' : 'LULUS' }}</div>
+                                <div class="decision-desc">
+                                    {{ $isKredensial ? 'Berkas & Kompetensi Sesuai' : 'Direkomendasikan Lulus' }}
+                                </div>
                             </label>
                         </div>
+
+                        {{-- OPSI NEGATIF --}}
                         <div class="decision-item">
-                            <input type="radio" name="keputusan" value="tidak_lulus" id="dec_fail" required
-                                {{ old('keputusan') == 'tidak_lulus' ? 'checked' : '' }}>
+                            <input type="radio" name="keputusan"
+                                value="{{ $isKredensial ? 'tidak_valid' : 'tidak_lulus' }}" id="dec_fail" required
+                                {{ old('keputusan') == ($isKredensial ? 'tidak_valid' : 'tidak_lulus') ? 'checked' : '' }}>
+
                             <label for="dec_fail" class="decision-box">
                                 <i class="bi bi-x-circle-fill"></i>
-                                <div class="decision-title">TIDAK LULUS</div>
-                                <div class="decision-desc">Belum Memenuhi Syarat</div>
+                                <div class="decision-title">{{ $isKredensial ? 'TIDAK VALID' : 'TIDAK LULUS' }}</div>
+                                <div class="decision-desc">
+                                    {{ $isKredensial ? 'Perlu Revisi / Tidak Lengkap' : 'Belum Memenuhi Syarat' }}
+                                </div>
                             </label>
                         </div>
                     </div>
-                    @error('keputusan')
-                        <small class="text-danger d-block mb-3">{{ $message }}</small>
-                    @enderror
 
                     <div class="text-end">
                         <button type="submit" class="btn-save"
-                            onclick="return confirm('Yakin simpan penilaian ini? Data tidak dapat diubah.')">
-                            <i class="bi bi-save2 me-2"></i> Simpan Penilaian
+                            onclick="return confirm('Apakah Anda yakin ingin menyimpan hasil ini?')">
+                            <i class="bi bi-save2 me-2"></i> Simpan Hasil
                         </button>
                     </div>
 
@@ -413,37 +426,3 @@
         </form>
     </div>
 @endsection
-
-@push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const inputs = document.querySelectorAll('.calc-input');
-            const avgDisplay = document.getElementById('avgDisplay');
-            const avgScore = document.getElementById('avgScore');
-
-            function calculateAvg() {
-                let total = 0;
-                let filled = 0;
-                inputs.forEach(input => {
-                    const val = parseFloat(input.value);
-                    if (!isNaN(val)) {
-                        total += val;
-                        filled++;
-                    }
-                });
-
-                if (filled > 0) {
-                    const avg = (total / 3).toFixed(1);
-                    avgScore.innerText = avg;
-                    avgDisplay.style.display = 'inline-block';
-                } else {
-                    avgDisplay.style.display = 'none';
-                }
-            }
-
-            inputs.forEach(input => {
-                input.addEventListener('input', calculateAvg);
-            });
-        });
-    </script>
-@endpush

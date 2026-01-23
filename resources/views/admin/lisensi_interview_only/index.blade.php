@@ -166,8 +166,8 @@
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">
         <div>
             {{-- Judul Spesifik --}}
-            <h4 class="fw-bold mb-1">Data Lisensi (Metode Wawancara)</h4>
-            <p class="text-muted small mb-0">Monitor kompetensi dan masa berlaku untuk perpanjangan wawancara.</p>
+            <h4 class="fw-bold mb-1">Data Lisensi (Skill)</h4>
+            <p class="text-muted small mb-0">Monitor kompetensi dan masa berlaku untuk perpanjangan Skill.</p>
         </div>
 
         <div class="d-flex gap-2">
@@ -303,7 +303,7 @@
                                 <div class="mb-2">
                                     {{-- Karena ini khusus wawancara, kita bisa hardcode badge atau tetap pakai check untuk validasi --}}
                                     <span class="badge-soft badge-purple">
-                                        <i class="bi bi-person-video2"></i> Hanya Wawancara
+                                        <i class="bi bi-person-video2"></i> Hanya Skill
                                     </span>
                                 </div>
 
@@ -386,7 +386,7 @@
                                 <div class="text-muted mb-2">
                                     <i class="bi bi-card-checklist display-6 opacity-25"></i>
                                 </div>
-                                <span class="text-muted small">Belum ada data lisensi (wawancara) ditemukan.</span>
+                                <span class="text-muted small">Belum ada data lisensi (Hanya Skill) ditemukan.</span>
                             </td>
                         </tr>
                     @endforelse

@@ -189,13 +189,17 @@
 
                         {{-- Tanggal --}}
                         <div class="col-md-6">
-                            <label class="form-label">Tanggal Terbit <span class="required-star">*</span></label>
-                            <input type="date" name="tgl_terbit" class="form-control" value="{{ old('tgl_terbit', $data->tgl_terbit) }}" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Tanggal Expired <span class="required-star">*</span></label>
-                            <input type="date" name="tgl_expired" class="form-control" value="{{ old('tgl_expired', $data->tgl_expired) }}" required>
-                        </div>
+    <label class="form-label">Tanggal Terbit <span class="required-star">*</span></label>
+    <input type="date" name="tgl_terbit" class="form-control @error('tgl_terbit') is-invalid @enderror" value="{{ old('tgl_terbit', $data->tgl_terbit ?? '') }}" required>
+</div>
+
+<div class="col-md-6">
+    {{-- HAPUS required-star dan tambahkan keterangan --}}
+    <label class="form-label">Tanggal Expired <small class="text-muted">(Kosongkan jika Seumur Hidup)</small></label>
+    
+    {{-- HAPUS attribute required di input --}}
+    <input type="date" name="tgl_expired" class="form-control @error('tgl_expired') is-invalid @enderror" value="{{ old('tgl_expired', $data->tgl_expired ?? '') }}">
+</div>
 
                         {{-- Upload --}}
                         <div class="col-12">

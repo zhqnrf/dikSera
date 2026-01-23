@@ -7,6 +7,7 @@ use App\Models\JadwalWawancara;
 use App\Models\WawancaraPenilaian;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class PewawancaraController extends Controller
 {
@@ -114,40 +115,71 @@ class PewawancaraController extends Controller
     // --- SIMPAN NILAI ---
     public function storePenilaian(Request $request, $id)
     {
-        $jadwal = JadwalWawancara::findOrFail($id);
+        $jadwal = JadwalWawancara::with('pengajuan')->findOrFail($id);
         $user = Auth::user();
 
-        // --- VALIDASI AKSES (Sama seperti show) ---
+        // Validasi Akses
         if ($user->role !== 'admin') {
             $pewawancara = $user->penanggungJawab;
             if (!$pewawancara || $jadwal->penanggung_jawab_id != $pewawancara->id) {
                 abort(403, 'Akses Ditolak.');
             }
         }
-        // ------------------------------------------
 
-        $request->validate([
-            'skor_kompetensi'  => 'required|integer|min:0|max:100',
-            'skor_sikap'       => 'required|integer|min:0|max:100',
-            'skor_pengetahuan' => 'required|integer|min:0|max:100',
-            'keputusan'        => 'required|in:lulus,tidak_lulus',
-            'catatan'          => 'nullable|string'
-        ]);
+        // Tentukan jenis penilaian: Kredensialing (interview_only) atau UjiKom (pg_interview)
+        $isKredensial = $jadwal->pengajuan->metode === 'interview_only';
 
         DB::beginTransaction();
         try {
-            WawancaraPenilaian::create([
+            // Inisialisasi data default
+            $data = [
                 'jadwal_wawancara_id' => $jadwal->id,
-                'skor_kompetensi'     => $request->skor_kompetensi,
-                'skor_sikap'          => $request->skor_sikap,
-                'skor_pengetahuan'    => $request->skor_pengetahuan,
-                'catatan_pewawancara' => $request->catatan,
-                'keputusan'           => $request->keputusan
-            ]);
+                'skor_kompetensi'     => 0,
+                'skor_sikap'          => 0,
+                'skor_pengetahuan'    => 0,
+                'catatan_pewawancara' => null,
+                'detail_penilaian'    => null, // Menyimpan JSON checklist
+                'file_hasil'          => null, // Menyimpan path file
+                'keputusan'           => null
+            ];
 
+            if ($isKredensial) {
+                // --- Logika Kredensialing ---
+                $request->validate([
+                    'keputusan'      => 'required|in:valid,tidak_valid',
+                    'file_hasil'     => 'required|file|mimes:pdf,doc,docx|max:5120',
+                    'poin_penilaian' => 'nullable|array'
+                ]);
+
+                // Upload File
+                if ($request->hasFile('file_hasil')) {
+                    $data['file_hasil'] = $request->file('file_hasil')->store('dokumen_kredensial', 'public');
+                }
+
+                // Mapping Data
+                $data['detail_penilaian'] = json_encode($request->poin_penilaian);
+                // Konversi status UI (valid/invalid) ke DB Enum (lulus/tidak_lulus)
+                $data['keputusan'] = ($request->keputusan == 'valid') ? 'lulus' : 'tidak_lulus';
+                $data['catatan_pewawancara'] = 'Asesmen Kredensialing (Lihat Lampiran)';
+            } else {
+                // --- Logika Uji Kompetensi ---
+                $request->validate([
+                    'keputusan' => 'required|in:lulus,tidak_lulus',
+                    'catatan'   => 'nullable|string'
+                ]);
+
+                $data['catatan_pewawancara'] = $request->catatan;
+                $data['keputusan'] = $request->keputusan;
+            }
+
+            // Simpan Data Penilaian
+            WawancaraPenilaian::create($data);
+
+            // Update Status Jadwal
             $jadwal->update(['status' => 'completed']);
 
-            if ($request->keputusan == 'lulus') {
+            // Update Status Pengajuan & Lisensi
+            if ($data['keputusan'] == 'lulus') {
                 $jadwal->pengajuan->update(['status' => 'completed']);
 
                 if ($jadwal->pengajuan->lisensiLama) {
@@ -157,21 +189,22 @@ class PewawancaraController extends Controller
                     ]);
                 }
             } else {
-                // Jika tidak lulus pada tahap wawancara, tandai pengajuan supaya user bisa ajukan ulang
                 $jadwal->pengajuan->update(['status' => 'interview_failed']);
             }
 
             DB::commit();
 
-            // Redirect sesuai role
-            if ($user->role === 'admin') {
-                return redirect()->route('admin.pengajuan.index')->with('success', 'Penilaian berhasil disimpan oleh Admin.');
-            } else {
-                return redirect()->route('pewawancara.antrian')->with('success', 'Penilaian berhasil disimpan.');
-            }
+            $route = $user->role === 'admin' ? 'admin.pengajuan.index' : 'pewawancara.antrian';
+            return redirect()->route($route)->with('success', 'Penilaian berhasil disimpan.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+
+            // Bersihkan file jika upload sukses tapi transaksi DB gagal
+            if (isset($data['file_hasil']) && Storage::disk('public')->exists($data['file_hasil'])) {
+                Storage::disk('public')->delete($data['file_hasil']);
+            }
+
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage())->withInput();
         }
     }
 

@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\JadwalWawancara;
+use App\Models\PenanggungJawabUjian;
 use Illuminate\Http\Request;
 use App\Models\PengajuanSertifikat;
 use App\Models\PerawatLisensi;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AdminPengajuanController extends Controller
 {
@@ -12,13 +15,15 @@ class AdminPengajuanController extends Controller
     {
         $listSertifikat = PerawatLisensi::select('nama')->distinct()->pluck('nama');
 
+        $pjs = PenanggungJawabUjian::all();
+
         $query = PengajuanSertifikat::with(['user', 'lisensiLama', 'jadwalWawancara', 'user.examResult']);
 
         if ($request->filled('search')) {
             $search = $request->search;
             $query->whereHas('user', function ($q) use ($search) {
                 $q->where('name', 'LIKE', "%{$search}%")
-                  ->orWhere('email', 'LIKE', "%{$search}%");
+                    ->orWhere('email', 'LIKE', "%{$search}%");
             });
         }
 
@@ -41,38 +46,93 @@ class AdminPengajuanController extends Controller
         }
         $pengajuan = $query->latest()->paginate(10);
 
-        return view('admin.pengajuan.index', compact('pengajuan', 'listSertifikat'));
+        return view('admin.pengajuan.index', compact('pengajuan', 'listSertifikat', 'pjs'));
     }
 
     public function approve(Request $request, $id)
-{
-    $pengajuan = PengajuanSertifikat::findOrFail($id);
+    {
+        $pengajuan = PengajuanSertifikat::with('lisensiLama')->findOrFail($id);
 
-    if (!$pengajuan->metode) {
-         $pengajuan->metode = 'pg_only';
+        // 1. Validasi Input Admin
+        $request->validate([
+            'nomor'       => 'required|string',
+            'tgl_terbit'  => 'required|date',
+            'tgl_expired' => 'required|date|after_or_equal:tgl_terbit',
+        ]);
+
+        // 2. Logika Berdasarkan Jenis Pengajuan
+        if ($pengajuan->jenis_pengajuan == 'baru') {
+
+            // --- KASUS: PENGAJUAN BARU ---
+            // Admin wajib isi Nama, Lembaga, Bidang karena Perawat tidak mengisi ini
+            $request->validate([
+                'nama'    => 'required|string',
+                'lembaga' => 'required|string',
+                'bidang'  => 'required|string',
+            ]);
+
+            // Buat Record Baru di Index Lisensi Perawat
+            PerawatLisensi::create([
+                'user_id'              => $pengajuan->user_id,
+                'nama'                 => $request->nama,
+                'nomor'                => $request->nomor,
+                'lembaga'              => $request->lembaga,
+                'bidang'               => $request->bidang,
+                'tgl_terbit'           => $request->tgl_terbit,
+                'tgl_expired'          => $request->tgl_expired,
+                // Tanggal mulai dianggap sama dengan terbit untuk kasus baru
+                'tgl_mulai'            => $request->tgl_terbit,
+                'tgl_diselenggarakan'  => $request->tgl_terbit,
+                // KFK bisa diambil dari manual input admin atau default
+                'kfk'                  => $request->kfk_manual ? json_encode([$request->kfk_manual]) : json_encode(['-']),
+                'status'               => 'active', // Langsung Aktif
+                'unit_kerja_saat_buat' => $pengajuan->user->unit_kerja ?? 'Umum',
+                'file_path'            => $pengajuan->file_dokumen_baru // Link ke file yang diupload perawat
+            ]);
+        } else {
+
+            // --- KASUS: PERPANJANGAN (LAMA) ---
+            $lisensi = $pengajuan->lisensiLama;
+
+            if ($lisensi) {
+                // Update Data Lisensi yang ada
+                $updateData = [
+                    'nomor'       => $request->nomor, // Update nomor baru
+                    'tgl_terbit'  => $request->tgl_terbit,
+                    'tgl_expired' => $request->tgl_expired,
+                    'status'      => 'active',
+                    // Update file path ke sertifikat baru yang diupload (jika ada)
+                    // Atau biarkan history (tergantung kebutuhan, disini kita update tanggalnya saja agar aktif lagi)
+                ];
+
+                // Jika admin input jenjang KFK baru, update juga
+                if ($request->filled('kfk_manual')) {
+                    $updateData['kfk'] = json_encode([$request->kfk_manual]);
+                }
+
+                $lisensi->update($updateData);
+            }
+        }
+
+        // 3. Update Status Pengajuan Jadi Selesai
+        $pengajuan->update([
+            'status'     => 'completed',
+            'keterangan' => 'Disetujui Admin. Data lisensi telah diperbarui/dibuat.',
+            // Jika ada pewawancara/metode, bisa di-set null atau sesuai kebutuhan karena ini manual admin
+        ]);
+
+        return back()->with('success', 'Pengajuan disetujui. Data Lisensi Perawat berhasil diperbarui/dibuat.');
     }
 
-    if ($pengajuan->metode == 'interview_only') {
-        $pengajuan->update([
-            'status' => 'exam_passed',
-        ]);
-        $msg = "Pengajuan disetujui. Metode: Hanya Wawancara. Peserta dapat langsung mengajukan jadwal.";
-    } else {
-        $pengajuan->update([
-            'status' => 'method_selected',
-        ]);
-        $msg = "Pengajuan disetujui. Perawat dapat segera ujian.";
-    }
-
-    return back()->with('success', $msg);
-}
-
-    public function reject($id)
+    public function reject(Request $request, $id)
     {
         $pengajuan = PengajuanSertifikat::findOrFail($id);
-        $pengajuan->update(['status' => 'rejected']);
+        $pengajuan->update([
+            'status' => 'rejected',
+            'keterangan' => 'Ditolak Admin.'
+        ]);
 
-        return back()->with('success', 'Pengajuan ditolak.');
+        return back()->with('success', 'Pengajuan telah ditolak.');
     }
 
     // --- PERBAIKAN 1: Single Approve Score ---
@@ -104,7 +164,6 @@ class AdminPengajuanController extends Controller
                 ]);
             }
             return back()->with('success', "Nilai (Skor: {$examResult->total_nilai}) disetujui & Status Ujian diubah LULUS. Proses selesai.");
-
         } else if ($pengajuan->metode == 'interview_only') {
             // [KHUSUS INTERVIEW ONLY] Langsung finalize tanpa butuh ExamResult
             $pengajuan->update(['status' => 'completed']);
@@ -120,7 +179,6 @@ class AdminPengajuanController extends Controller
             ]);
 
             return back()->with('success', "Pengajuan wawancara disetujui & selesai. Lisensi diperpanjang.");
-
         } else {
             // [PG + Interview]
             $pengajuan->update(['status' => 'exam_passed']);
@@ -164,29 +222,29 @@ class AdminPengajuanController extends Controller
         return back()->with('success', 'Proses perpanjangan selesai sepenuhnya & Lisensi diperbarui.');
     }
 
-   public function bulkApprove(Request $request)
-{
-    // ... validasi ...
-    $ids = $request->ids;
-    $pengajuans = PengajuanSertifikat::whereIn('id', $ids)->where('status', 'pending')->get();
-    $count = 0;
+    public function bulkApprove(Request $request)
+    {
+        // ... validasi ...
+        $ids = $request->ids;
+        $pengajuans = PengajuanSertifikat::whereIn('id', $ids)->where('status', 'pending')->get();
+        $count = 0;
 
-    foreach ($pengajuans as $pengajuan) {
-        if (!$pengajuan->metode) {
-             $pengajuan->metode = 'pg_only';
+        foreach ($pengajuans as $pengajuan) {
+            if (!$pengajuan->metode) {
+                $pengajuan->metode = 'pg_only';
+            }
+
+            // --- LOGIKA BARU ---
+            if ($pengajuan->metode == 'interview_only') {
+                $pengajuan->update(['status' => 'exam_passed']);
+            } else {
+                $pengajuan->update(['status' => 'method_selected']);
+            }
+            $count++;
         }
 
-        // --- LOGIKA BARU ---
-        if ($pengajuan->metode == 'interview_only') {
-            $pengajuan->update(['status' => 'exam_passed']);
-        } else {
-            $pengajuan->update(['status' => 'method_selected']);
-        }
-        $count++;
+        return back()->with('success', "Berhasil menyetujui $count pengajuan terpilih.");
     }
-
-    return back()->with('success', "Berhasil menyetujui $count pengajuan terpilih.");
-}
 
     // --- PERBAIKAN 2: Bulk Approve Score ---
     public function bulkApproveScore(Request $request)
@@ -199,9 +257,9 @@ class AdminPengajuanController extends Controller
         $ids = $request->ids;
 
         $pengajuans = PengajuanSertifikat::with('user.examResult', 'lisensiLama')
-                        ->whereIn('id', $ids)
-                        ->where('status', 'method_selected')
-                        ->get();
+            ->whereIn('id', $ids)
+            ->where('status', 'method_selected')
+            ->get();
 
         $count = 0;
         $skipped = 0;
@@ -221,7 +279,7 @@ class AdminPengajuanController extends Controller
                 }
 
                 if ($pengajuan->metode == 'pg_only') {
-                     // ... (Kode pg_only tetap sama) ...
+                    // ... (Kode pg_only tetap sama) ...
                     $pengajuan->update(['status' => 'completed']);
                     if ($pengajuan->lisensiLama) {
                         $pengajuan->lisensiLama->update([
@@ -239,8 +297,8 @@ class AdminPengajuanController extends Controller
 
                     // Gunakan whereId atau relasi yang spesifik agar tidak mengupdate semua lisensi jika user punya banyak
                     // Asumsi: lisensis() me-refer ke relasi yang benar atau gunakan query update spesifik
-                    if($lisensi) {
-                         $lisensi->update([
+                    if ($lisensi) {
+                        $lisensi->update([
                             'tgl_terbit' => $newTerbit,
                             'tgl_expired' => $newExpired
                         ]);
@@ -272,9 +330,9 @@ class AdminPengajuanController extends Controller
 
         // Ambil pengajuan yang punya jadwal pending
         $pengajuans = PengajuanSertifikat::with('jadwalWawancara')
-                        ->whereIn('id', $ids)
-                        ->where('status', 'interview_scheduled')
-                        ->get();
+            ->whereIn('id', $ids)
+            ->where('status', 'interview_scheduled')
+            ->get();
 
         $count = 0;
         $skipped = 0;
@@ -325,5 +383,61 @@ class AdminPengajuanController extends Controller
         $count = PengajuanSertifikat::whereIn('id', $ids)->delete();
 
         return back()->with('success', "Berhasil menghapus $count data pengajuan secara permanen.");
+    }
+
+    public function exportJadwal()
+    {
+        // Ambil jadwal yang statusnya sudah disetujui atau selesai
+        $data = JadwalWawancara::with(['pengajuan.user', 'pewawancara'])
+            ->whereIn('status', ['approved', 'completed'])
+            ->latest()
+            ->get();
+
+        $fileName = 'Rekap_Jadwal_Wawancara_' . date('Y-m-d_H-i') . '.csv';
+
+        $headers = [
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$fileName",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $callback = function () use ($data) {
+            $file = fopen('php://output', 'w');
+
+            // Header Kolom Excel
+            fputcsv($file, [
+                'No',
+                'Nama Perawat',
+                'Unit Kerja',
+                'Nama Pewawancara',
+                'Tanggal',
+                'Jam',
+                'Lokasi',
+                'Deskripsi Skill/Topik',
+                'Status'
+            ]);
+
+            foreach ($data as $key => $row) {
+                $waktu = \Carbon\Carbon::parse($row->waktu_wawancara);
+
+                fputcsv($file, [
+                    $key + 1,
+                    $row->pengajuan->user->name ?? '-',
+                    $row->pengajuan->user->perawatPekerjaan->last()->unit_kerja ?? '-', // Sesuaikan relasi unit kerja
+                    $row->pewawancara->nama ?? '-',
+                    $waktu->format('Y-m-d'),
+                    $waktu->format('H:i'),
+                    $row->lokasi,
+                    $row->deskripsi_skill ?? '-',
+                    ucfirst($row->status)
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return new StreamedResponse($callback, 200, $headers);
     }
 }

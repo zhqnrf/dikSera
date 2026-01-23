@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Tambah Lisensi (Wawancara)')
+@section('title', 'Tambah Lisensi (Skill)')
 
 @push('styles')
     {{-- Load CSS Choices --}}
@@ -12,7 +12,7 @@
             --text-gray: #64748b;
             --bg-light: #f1f5f9;
             --input-border: #cbd5e1;
-            /* Warna Tema: Ungu untuk Wawancara (Opsional, agar beda) */
+            /* Warna Tema: Ungu untuk Skill (Opsional, agar beda) */
             --accent-color: #7c3aed;
             --accent-hover: #6d28d9;
             --accent-light: #f5f3ff;
@@ -181,8 +181,8 @@
                 {{-- Header --}}
                 <div class="page-header">
                     <div>
-                        <h1 class="page-title">Tambah Lisensi (Wawancara)</h1>
-                        <p class="text-muted small mb-0">Formulir administrasi data lisensi khusus wawancara.</p>
+                        <h1 class="page-title">Tambah Lisensi (Skill)</h1>
+                        <p class="text-muted small mb-0">Formulir administrasi data lisensi khusus Skill.</p>
                     </div>
                     {{-- ROUTE BACK SPESIFIK --}}
                     <a href="{{ route('admin.lisensi_interview_only.index') }}" class="btn-back">
@@ -208,7 +208,7 @@
 
                         <div class="row g-3">
 
-                            {{-- 1. Aturan Perpanjangan (HARDCODED UNTUK WAWANCARA) --}}
+                            {{-- 1. Aturan Perpanjangan (HARDCODED UNTUK Skill) --}}
                             <div class="col-12">
                                 <div class="metode-wrapper">
                                     <div class="d-flex gap-3 align-items-center">
@@ -226,7 +226,7 @@
                                                     <input type="hidden" name="metode_perpanjangan" value="interview_only">
                                                     <span class="badge"
                                                           style="background-color: var(--accent-color); font-size: 12px; padding: 6px 12px;">
-                                                        Hanya Wawancara
+                                                        Hanya Skill
                                                     </span>
                                                 </div>
                                             </div>
@@ -498,7 +498,7 @@
                         {{-- Submit Button --}}
                         <div class="mt-4 pt-2">
                             <button type="submit" class="btn-submit">
-                                <i class="bi bi-save2 me-1"></i> Simpan Lisensi (Wawancara)
+                                <i class="bi bi-save2 me-1"></i> Simpan Lisensi (Skill)
                             </button>
                         </div>
 

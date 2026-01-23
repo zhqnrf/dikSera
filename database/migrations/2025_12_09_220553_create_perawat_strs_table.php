@@ -19,7 +19,7 @@ class CreatePerawatStrsTable extends Migration
         $table->string('nama');
         $table->string('nomor');
         $table->date('tgl_terbit');
-        $table->date('tgl_expired');
+        $table->date('tgl_expired')->nullable();
         $table->string('file_path')->nullable();
 
         $table->timestamps();

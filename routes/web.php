@@ -79,26 +79,30 @@ Route::middleware(['auth'])->group(function () {
             Route::delete('/{id}', [AdminLisensiController::class, 'lisensiDestroy'])->defaults('metode', 'interview_only')->name('destroy');
         });
 
-        // === APPROVAL PENGAJUAN ===
+        // === APPROVAL PENGAJUAN (INI YANG PENTING) ===
         Route::get('/pengajuan', [AdminPengajuanController::class, 'index'])->name('pengajuan.index');
 
-        // [PENTING] BULK ACTIONS harus di atas route {id}
+        // Bulk Actions
         Route::delete('/pengajuan/bulk-destroy', [AdminPengajuanController::class, 'bulkDestroy'])->name('pengajuan.bulk_destroy');
         Route::post('/pengajuan/bulk-approve', [AdminPengajuanController::class, 'bulkApprove'])->name('pengajuan.bulk_approve');
         Route::post('/pengajuan/bulk-approve-score', [AdminPengajuanController::class, 'bulkApproveScore'])->name('pengajuan.bulk_approve_score');
         Route::post('/pengajuan/bulk-approve-interview', [AdminPengajuanController::class, 'bulkApproveInterview'])->name('pengajuan.bulk_approve_interview');
 
         // Single Actions
-        Route::delete('/pengajuan/{id}', [AdminPengajuanController::class, 'destroy'])->name('pengajuan.destroy');
-        Route::get('/pengajuan/{id}/reject', [AdminPengajuanController::class, 'reject'])->name('pengajuan.reject');
+        Route::get('/pengajuan/{id}', [AdminPengajuanController::class, 'show'])->name('pengajuan.show');
+        Route::get('/pengajuan/{id}/complete', [AdminPengajuanController::class, 'completeProcess'])->name('pengajuan.complete');
         Route::get('/pengajuan/{id}/approve-score', [AdminPengajuanController::class, 'approveExamScore'])->name('pengajuan.approve_score');
         Route::post('/pengajuan/{id}/approve', [AdminPengajuanController::class, 'approve'])->name('pengajuan.approve');
-        Route::get('/pengajuan/{id}/complete', [AdminPengajuanController::class, 'completeProcess'])->name('pengajuan.complete');
-        Route::get('/pengajuan/{id}', [AdminPengajuanController::class, 'show'])->name('pengajuan.show');
+        Route::post('/pengajuan/{id}/reject', [AdminPengajuanController::class, 'reject'])->name('pengajuan.reject');
 
-        // PENGAJUAN WAWANCARA (Admin Actions)
+        // [FIXED] DESTROY WAJIB DELETE
+        Route::delete('/pengajuan/{id}', [AdminPengajuanController::class, 'destroy'])->name('pengajuan.destroy');
+
+        Route::get('/pengajuan/export-jadwal', [AdminPengajuanController::class, 'exportJadwal'])->name('pengajuan.export_jadwal');
+
+        // PENGAJUAN WAWANCARA
         Route::prefix('pengajuan-wawancara')->name('pengajuan_wawancara.')->group(function () {
-            Route::get('/{id}/approve', [AdminPengajuanWawancaraController::class, 'approveJadwal'])->name('approve');
+            Route::post('/{id}/approve', [AdminPengajuanWawancaraController::class, 'approveJadwal'])->name('approve');
             Route::post('/{id}/reject', [AdminPengajuanWawancaraController::class, 'rejectJadwal'])->name('reject');
             Route::get('/{id}/penilaian', [AdminPengajuanWawancaraController::class, 'showPenilaian'])->name('penilaian');
             Route::post('/{id}/penilaian', [AdminPengajuanWawancaraController::class, 'storePenilaian'])->name('store_penilaian');
@@ -259,6 +263,8 @@ Route::middleware(['auth'])->group(function () {
 
         // CETAK SERTIFIKAT
         Route::get('/pengajuan/{id}/sertifikat', [PengajuanSertifikatController::class, 'printSertifikat'])->name('pengajuan.sertifikat');
+        Route::get('/lisensi/download-hasil/{id}', [PerawatLisensiController::class, 'downloadHasil'])
+            ->name('lisensi.download_hasil');
 
         // PENGAJUAN PERPANJANGAN
         Route::get('/pengajuan', [PengajuanSertifikatController::class, 'index'])->name('pengajuan.index');

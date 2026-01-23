@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Lisensi (Wawancara)')
+@section('title', 'Edit Lisensi (Skill)')
 
 @push('styles')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
@@ -11,7 +11,7 @@
             --text-gray: #64748b;
             --bg-light: #f1f5f9;
             --input-border: #cbd5e1;
-            /* Warna Tema: Ungu (Konsisten dengan Index/Create Wawancara) */
+            /* Warna Tema: Ungu (Konsisten dengan Index/Create Skill) */
             --accent-color: #7c3aed;
             --accent-hover: #6d28d9;
             --accent-light: #f5f3ff;
@@ -173,8 +173,8 @@
                 {{-- Header --}}
                 <div class="page-header">
                     <div>
-                        <h1 class="page-title">Edit Lisensi (Wawancara)</h1>
-                        <p class="text-muted small mb-0">Update informasi lisensi khusus wawancara.</p>
+                        <h1 class="page-title">Edit Lisensi (Skill)</h1>
+                        <p class="text-muted small mb-0">Update informasi lisensi khusus Skill.</p>
                     </div>
                     {{-- ROUTE BACK SPESIFIK --}}
                     <a href="{{ route('admin.lisensi_interview_only.index') }}" class="btn-back">
@@ -219,7 +219,7 @@
                                                     <input type="hidden" name="metode_perpanjangan" value="interview_only">
                                                     <span class="badge"
                                                         style="background-color: var(--accent-color); font-size: 12px; padding: 6px 12px;">
-                                                        Hanya Wawancara
+                                                        Hanya Skill
                                                     </span>
                                                 </div>
                                             </div>
