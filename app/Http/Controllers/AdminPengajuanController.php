@@ -53,86 +53,50 @@ class AdminPengajuanController extends Controller
     {
         $pengajuan = PengajuanSertifikat::with('lisensiLama')->findOrFail($id);
 
-        // 1. Validasi Input Admin
-        $request->validate([
-            'nomor'       => 'required|string',
-            'tgl_terbit'  => 'required|date',
-            'tgl_expired' => 'required|date|after_or_equal:tgl_terbit',
-        ]);
+        // [PRIORITAS 1] CEK APAKAH INI PENGAJUAN BARU? (Metode == NULL)
+        if (is_null($pengajuan->metode)) {
 
-        // 2. Logika Berdasarkan Jenis Pengajuan
-        if ($pengajuan->jenis_pengajuan == 'baru') {
-
-            // --- KASUS: PENGAJUAN BARU ---
-            // Admin wajib isi Nama, Lembaga, Bidang karena Perawat tidak mengisi ini
-            $request->validate([
-                'nama'    => 'required|string',
-                'lembaga' => 'required|string',
-                'bidang'  => 'required|string',
-            ]);
-
-            // Buat Record Baru di Index Lisensi Perawat
-            PerawatLisensi::create([
-                'user_id'              => $pengajuan->user_id,
-                'nama'                 => $request->nama,
-                'nomor'                => $request->nomor,
-                'lembaga'              => $request->lembaga,
-                'bidang'               => $request->bidang,
-                'tgl_terbit'           => $request->tgl_terbit,
-                'tgl_expired'          => $request->tgl_expired,
-                // Tanggal mulai dianggap sama dengan terbit untuk kasus baru
-                'tgl_mulai'            => $request->tgl_terbit,
-                'tgl_diselenggarakan'  => $request->tgl_terbit,
-                // KFK bisa diambil dari manual input admin atau default
-                'kfk'                  => $request->kfk_manual ? json_encode([$request->kfk_manual]) : json_encode(['-']),
-                'status'               => 'active', // Langsung Aktif
-                'unit_kerja_saat_buat' => $pengajuan->user->unit_kerja ?? 'Umum',
-                'file_path'            => $pengajuan->file_dokumen_baru // Link ke file yang diupload perawat
-            ]);
-        } else {
-
-            // --- KASUS: PERPANJANGAN (LAMA) ---
-            $lisensi = $pengajuan->lisensiLama;
-
-            if ($lisensi) {
-                // Update Data Lisensi yang ada
-                $updateData = [
-                    'nomor'       => $request->nomor, // Update nomor baru
-                    'tgl_terbit'  => $request->tgl_terbit,
-                    'tgl_expired' => $request->tgl_expired,
-                    'status'      => 'active',
-                    // Update file path ke sertifikat baru yang diupload (jika ada)
-                    // Atau biarkan history (tergantung kebutuhan, disini kita update tanggalnya saja agar aktif lagi)
-                ];
-
-                // Jika admin input jenjang KFK baru, update juga
-                if ($request->filled('kfk_manual')) {
-                    $updateData['kfk'] = json_encode([$request->kfk_manual]);
-                }
-
-                $lisensi->update($updateData);
+            // 1. Aktifkan Lisensi Perawat
+            if ($pengajuan->lisensiLama) {
+                $pengajuan->lisensiLama->update([
+                    'status' => 'active' // SAHKAN MENJADI AKTIF
+                ]);
             }
+
+            // 2. Tandai Tiket Selesai
+            $pengajuan->update([
+                'status' => 'completed',
+                'keterangan' => 'Lisensi Baru disetujui dan diaktifkan Admin.'
+            ]);
+
+            return back()->with('success', 'Lisensi Baru BERHASIL disetujui dan statusnya sekarang AKTIF.');
         }
 
-        // 3. Update Status Pengajuan Jadi Selesai
-        $pengajuan->update([
-            'status'     => 'completed',
-            'keterangan' => 'Disetujui Admin. Data lisensi telah diperbarui/dibuat.',
-            // Jika ada pewawancara/metode, bisa di-set null atau sesuai kebutuhan karena ini manual admin
-        ]);
+        // [PRIORITAS 2] LOGIKA PERPANJANGAN (Data Lama / Ada Metodenya)
+        if ($pengajuan->metode == 'interview_only') {
+            $pengajuan->update(['status' => 'exam_passed']);
+            $msg = "Perpanjangan disetujui (Metode: Wawancara). Peserta dapat memilih jadwal.";
+        } else {
+            // Default: pg_only atau pg_interview atau metode lain yang tidak null
+            $pengajuan->update(['status' => 'method_selected']);
+            $msg = "Perpanjangan disetujui (Metode: Ujian). Peserta dapat mengerjakan ujian.";
+        }
 
-        return back()->with('success', 'Pengajuan disetujui. Data Lisensi Perawat berhasil diperbarui/dibuat.');
+        return back()->with('success', $msg);
     }
 
-    public function reject(Request $request, $id)
+    public function reject($id)
     {
-        $pengajuan = PengajuanSertifikat::findOrFail($id);
-        $pengajuan->update([
-            'status' => 'rejected',
-            'keterangan' => 'Ditolak Admin.'
-        ]);
+        $pengajuan = PengajuanSertifikat::with('lisensiLama')->findOrFail($id);
 
-        return back()->with('success', 'Pengajuan telah ditolak.');
+        // Jika Lisensi Baru ditolak, maka lisensinya kita tandai rejected juga
+        if ($pengajuan->metode == 'new_submission' && $pengajuan->lisensiLama) {
+            $pengajuan->lisensiLama->update(['status' => 'rejected']);
+        }
+
+        $pengajuan->update(['status' => 'rejected']);
+
+        return back()->with('success', 'Pengajuan ditolak.');
     }
 
     // --- PERBAIKAN 1: Single Approve Score ---

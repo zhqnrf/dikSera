@@ -289,79 +289,24 @@
                                     <div class="info-label">Nama Lengkap</div>
                                     <div class="info-value">{{ $pengajuan->user->name }}</div>
                                 </div>
-
-                                {{-- TAMPILKAN JENIS --}}
                                 <div>
-                                    <div class="info-label">Jenis Pengajuan</div>
+                                    <div class="info-label">Email</div>
+                                    <div class="info-value">{{ $pengajuan->user->email }}</div>
+                                </div>
+                                <div>
+                                    <div class="info-label">Sertifikat / Lisensi Lama</div>
+                                    <div class="info-value">{{ $pengajuan->lisensiLama->nama ?? '-' }}</div>
+                                </div>
+                                <div>
+                                    <div class="info-label">Metode Evaluasi</div>
                                     <div class="info-value">
-                                        @if ($pengajuan->jenis_pengajuan == 'baru')
-                                            <span class="badge bg-primary">Pengajuan Baru</span>
+                                        @if ($pengajuan->metode == 'pg_only')
+                                            <span class="badge bg-light text-dark border">Ujian Tulis Saja</span>
                                         @else
-                                            <span class="badge bg-secondary">Perpanjangan</span>
+                                            <span class="badge bg-light text-dark border">Ujian Tulis + Wawancara</span>
                                         @endif
                                     </div>
                                 </div>
-
-                                {{-- TAMPILKAN LINK GDRIVE --}}
-                                <div class="col-span-2">
-                                    <div class="info-label">Dokumen Google Drive</div>
-                                    @if ($pengajuan->link_gdrive)
-                                        <a href="{{ $pengajuan->link_gdrive }}" target="_blank"
-                                            class="btn btn-sm btn-outline-danger mt-1">
-                                            <i class="bi bi-google me-1"></i> Buka Folder Drive
-                                        </a>
-                                    @else
-                                        <span class="text-muted">-</span>
-                                    @endif
-                                </div>
-                            </div>
-
-                            <hr class="my-4 border-light">
-
-                            {{-- LIST DOKUMEN --}}
-                            <h6 class="fw-bold mb-3"><i class="bi bi-paperclip text-primary"></i> Berkas Lampiran</h6>
-                            <div class="row g-3">
-                                @if ($pengajuan->jenis_pengajuan == 'lama')
-                                    <div class="col-md-6">
-                                        <div class="p-3 border rounded bg-light">
-                                            <label class="small text-muted fw-bold d-block mb-2">Surat Rekomendasi</label>
-                                            @if ($pengajuan->file_rekomendasi)
-                                                <a href="{{ asset('storage/' . $pengajuan->file_rekomendasi) }}"
-                                                    target="_blank" class="btn btn-sm btn-outline-primary w-100"><i
-                                                        class="bi bi-eye"></i> Lihat</a>
-                                            @else
-                                                <span class="text-danger small">Kosong</span>
-                                            @endif
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="p-3 border rounded bg-light">
-                                            <label class="small text-muted fw-bold d-block mb-2">Sertifikat Lama</label>
-                                            @if ($pengajuan->file_sertifikat_lama)
-                                                <a href="{{ asset('storage/' . $pengajuan->file_sertifikat_lama) }}"
-                                                    target="_blank" class="btn btn-sm btn-outline-primary w-100"><i
-                                                        class="bi bi-eye"></i> Lihat</a>
-                                            @else
-                                                <span class="text-danger small">Kosong</span>
-                                            @endif
-                                        </div>
-                                    </div>
-                                @else
-                                    {{-- PENGAJUAN BARU --}}
-                                    <div class="col-12">
-                                        <div class="p-3 border rounded bg-light">
-                                            <label class="small text-muted fw-bold d-block mb-2">Dokumen Pengajuan Baru
-                                                (PDF)</label>
-                                            @if ($pengajuan->file_dokumen_baru)
-                                                <a href="{{ asset('storage/' . $pengajuan->file_dokumen_baru) }}"
-                                                    target="_blank" class="btn btn-sm btn-outline-primary w-100"><i
-                                                        class="bi bi-file-earmark-pdf"></i> Buka PDF Dokumen</a>
-                                            @else
-                                                <span class="text-danger small">Kosong</span>
-                                            @endif
-                                        </div>
-                                    </div>
-                                @endif
                             </div>
                         </div>
                     </div>
@@ -500,127 +445,22 @@
                         {{-- Actions --}}
                         @if ($pengajuan->status == 'pending')
                             <div class="d-grid gap-2">
-                                {{-- TOMBOL BUKA MODAL APPROVE --}}
-                                <button type="button" class="btn btn-success w-100 fw-bold shadow-sm"
-                                    data-bs-toggle="modal" data-bs-target="#modalApprove">
-                                    <i class="bi bi-check-lg"></i> Verifikasi & Terbitkan Lisensi
-                                </button>
-
-                                {{-- TOMBOL TOLAK (Tetap) --}}
-                                <form action="{{ route('admin.pengajuan.reject', $pengajuan->id) }}" method="POST">
+                                <form action="{{ route('admin.pengajuan.approve', $pengajuan->id) }}" method="POST">
                                     @csrf
-                                    <button class="btn btn-outline-danger w-100 fw-bold mt-2"
-                                        onclick="return confirm('Tolak pengajuan ini?')">
-                                        <i class="bi bi-x-lg"></i> Tolak Pengajuan
+                                    <button class="btn btn-success w-100 fw-bold shadow-sm"
+                                        onclick="return confirm('Setujui pengajuan?')">
+                                        <i class="bi bi-check-lg"></i> Setujui
                                     </button>
                                 </form>
+                                <a href="#" class="btn btn-outline-danger fw-bold">
+                                    <i class="bi bi-x-lg"></i> Tolak
+                                </a>
                             </div>
                         @else
-                            <div class="p-2 bg-light rounded text-muted small border text-center">
-                                <i class="bi bi-lock-fill"></i> Pengajuan telah diproses.
+                            <div class="p-2 bg-light rounded text-muted small border">
+                                Tidak ada aksi pending.
                             </div>
                         @endif
-                    </div>
-                </div>
-
-                {{-- ========================================== --}}
-                {{-- MODAL APPROVE (ADMIN ISI TANGGAL DISINI) --}}
-                {{-- ========================================== --}}
-                <div class="modal fade" id="modalApprove" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-header bg-success text-white">
-                                <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square me-2"></i> Input Data
-                                    Lisensi</h5>
-                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-
-                            <form action="{{ route('admin.pengajuan.approve', $pengajuan->id) }}" method="POST">
-                                @csrf
-                                <div class="modal-body p-4">
-                                    <div class="alert alert-info border-0 d-flex gap-3 align-items-center">
-                                        <i class="bi bi-info-circle-fill fs-4"></i>
-                                        <div>
-                                            <strong>Perhatian Admin:</strong><br>
-                                            Silakan isi Tanggal Terbit, Expired, dan Nomor Lisensi berdasarkan dokumen
-                                            fisik/PDF yang telah Anda validasi. Data ini akan masuk ke riwayat lisensi
-                                            perawat.
-                                        </div>
-                                    </div>
-
-                                    <div class="row g-3">
-                                        {{-- JIKA PENGAJUAN BARU, ADMIN HARUS ISI NAMA LISENSI JUGA --}}
-                                        @if ($pengajuan->jenis_pengajuan == 'baru')
-                                            <div class="col-md-6">
-                                                <label class="form-label fw-bold">Nama Lisensi <span
-                                                        class="text-danger">*</span></label>
-                                                <input type="text" name="nama" class="form-control"
-                                                    placeholder="Contoh: STR, SIP, Sertifikat BTCLS" required>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label class="form-label fw-bold">Penerbit / Lembaga <span
-                                                        class="text-danger">*</span></label>
-                                                <input type="text" name="lembaga" class="form-control"
-                                                    placeholder="Contoh: Kemenkes RI" required>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <label class="form-label fw-bold">Bidang Kompetensi <span
-                                                        class="text-danger">*</span></label>
-                                                <input type="text" name="bidang" class="form-control"
-                                                    placeholder="Contoh: Keperawatan Umum" required>
-                                            </div>
-                                        @else
-                                            {{-- JIKA PERPANJANGAN, TAMPILKAN INFO LAMA (READONLY) --}}
-                                            <div class="col-12">
-                                                <label class="form-label text-muted">Lisensi yang Diperpanjang</label>
-                                                <input type="text" class="form-control bg-light"
-                                                    value="{{ $pengajuan->lisensiLama->nama ?? '-' }}" readonly>
-                                            </div>
-                                        @endif
-
-                                        <div class="col-12">
-                                            <hr>
-                                        </div>
-
-                                        {{-- INPUT DATA BARU (WAJIB DIISI ADMIN) --}}
-                                        <div class="col-md-12">
-                                            <label class="form-label fw-bold">Nomor Lisensi Baru <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="text" name="nomor" class="form-control font-monospace"
-                                                placeholder="Nomor Surat / Sertifikat" required>
-                                        </div>
-
-                                        <div class="col-md-6">
-                                            <label class="form-label fw-bold">Tanggal Terbit <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="date" name="tgl_terbit" class="form-control" required
-                                                value="{{ date('Y-m-d') }}">
-                                        </div>
-
-                                        <div class="col-md-6">
-                                            <label class="form-label fw-bold">Berlaku Sampai (Expired) <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="date" name="tgl_expired" class="form-control" required>
-                                        </div>
-
-                                        {{-- Opsi KFK (Opsional, jika admin perlu set level) --}}
-                                        <div class="col-md-12">
-                                            <label class="form-label fw-bold">Jenjang KFK (Opsional)</label>
-                                            <input type="text" name="kfk_manual" class="form-control"
-                                                placeholder="Isi jika perlu update jenjang (misal: PK 1, PK 2)">
-                                            <div class="form-text small">Kosongkan jika tidak ada perubahan jenjang.</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="modal-footer bg-light">
-                                    <button type="button" class="btn btn-secondary"
-                                        data-bs-dismiss="modal">Batal</button>
-                                    <button type="submit" class="btn btn-success fw-bold"><i
-                                            class="bi bi-save me-1"></i> Simpan & Setujui</button>
-                                </div>
-                            </form>
-                        </div>
                     </div>
                 </div>
 
