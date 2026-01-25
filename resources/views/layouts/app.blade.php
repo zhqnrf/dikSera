@@ -431,301 +431,234 @@
                 <i class="bi bi-chevron-left"></i>
             </div>
 
-            <aside class="app-sidebar" id="appSidebar">
-                <div>
-                    {{-- BRAND LOGO --}}
-                    <div class="brand-row">
-                        <div class="brand-logo">
-                            <img src="{{ asset('icon.png') }}" alt="Logo">
-                        </div>
-                        <div class="brand-info">
-                            <div class="brand-name">DIKSERA</div>
-                            <div class="brand-caption">Digitalisasi Kompetensi, <br> Sertifikasi & Evaluasi Keperawatan
-                            </div>
-                        </div>
+<aside class="app-sidebar" id="appSidebar">
+    <div>
+        {{-- BRAND LOGO --}}
+        <div class="brand-row">
+            <div class="brand-logo">
+                <img src="{{ asset('icon.png') }}" alt="Logo">
+            </div>
+            <div class="brand-info">
+                <div class="brand-name">DIKSERA</div>
+                <div class="brand-caption">Digitalisasi Kompetensi, <br> Sertifikasi & Evaluasi Keperawatan</div>
+            </div>
+        </div>
+
+        {{-- ========================================= --}}
+        {{-- MENU PERAWAT (ROLE: PERAWAT) --}}
+        {{-- ========================================= --}}
+        @if (Auth::check() && Auth::user()->role === 'perawat')
+            <div class="nav-section-title">Umum</div>
+            <a href="{{ route('dashboard') }}"
+                class="nav-linkx {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                <i class="bi bi-grid-fill"></i> <span class="link-text">Dashboard</span>
+            </a>
+
+            <div class="nav-section-title">Menu Utama</div>
+
+            {{-- DROPDOWN: PELENGKAPAN DATA (MODUL 3) --}}
+            <div class="nav-linkx nav-dropdown {{ request()->routeIs('perawat.drh') || request()->routeIs('perawat.pelatihan.*') || request()->routeIs('perawat.pendidikan.*') || request()->routeIs('perawat.pekerjaan.*') || request()->routeIs('perawat.keluarga.*') || request()->routeIs('perawat.organisasi.*') || request()->routeIs('perawat.tandajasa.*') ? 'active' : '' }}" 
+                data-dropdown="#submenu-master">
+                <i class="bi bi-folder-fill"></i>
+                <span class="link-text">Profil</span>
+                <i class="bi bi-chevron-down dropdown-icon"></i>
+            </div>
+
+            <div id="submenu-master" class="nav-submenu {{ request()->routeIs('perawat.drh') || request()->routeIs('perawat.pelatihan.*') || request()->routeIs('perawat.pendidikan.*') || request()->routeIs('perawat.pekerjaan.*') || request()->routeIs('perawat.keluarga.*') || request()->routeIs('perawat.organisasi.*') || request()->routeIs('perawat.tandajasa.*') ? 'show' : '' }}">
+                <a href="{{ route('perawat.drh') }}" class="nav-linkx {{ request()->routeIs('perawat.drh') ? 'active' : '' }}">
+                    <i class="bi bi-person-vcard-fill"></i> DRH & Profil
+                </a>
+                <a href="{{ route('perawat.pelatihan.index') }}" class="nav-linkx {{ request()->routeIs('perawat.pelatihan.*') ? 'active' : '' }}">
+                    <i class="bi bi-award-fill"></i> Pelatihan
+                </a>
+                <a href="{{ route('perawat.pendidikan.index') }}" class="nav-linkx {{ request()->routeIs('perawat.pendidikan.*') ? 'active' : '' }}">
+                    <i class="bi bi-book-fill"></i> Pendidikan
+                </a>
+                <a href="{{ route('perawat.pekerjaan.index') }}" class="nav-linkx {{ request()->routeIs('perawat.pekerjaan.*') ? 'active' : '' }}">
+                    <i class="bi bi-briefcase-fill"></i> Pekerjaan
+                </a>
+                <a href="{{ route('perawat.keluarga.index') }}" class="nav-linkx {{ request()->routeIs('perawat.keluarga.*') ? 'active' : '' }}">
+                    <i class="bi bi-people-fill"></i> Keluarga
+                </a>
+                <a href="{{ route('perawat.organisasi.index') }}" class="nav-linkx {{ request()->routeIs('perawat.organisasi.*') ? 'active' : '' }}">
+                    <i class="bi bi-diagram-3-fill"></i> Organisasi
+                </a>
+                <a href="{{ route('perawat.tandajasa.index') }}" class="nav-linkx {{ request()->routeIs('perawat.tandajasa.*') ? 'active' : '' }}">
+                    <i class="bi bi-star-fill"></i> Tanda Jasa
+                </a>
+            </div>
+
+            {{-- DROPDOWN: DOKUMEN (MODUL 4) --}}
+            @php
+                $isDokumenActive = request()->routeIs('perawat.str.*') || request()->routeIs('perawat.sip.*') || request()->routeIs('perawat.tambahan.*');
+            @endphp
+
+            <div class="nav-linkx nav-dropdown {{ $isDokumenActive ? 'active' : '' }}" data-dropdown="#submenu-dokumen">
+                <i class="bi bi-folder-fill"></i>
+                <span class="link-text">Dokumen</span>
+                <i class="bi bi-chevron-down dropdown-icon"></i>
+            </div>
+
+            <div id="submenu-dokumen" class="nav-submenu {{ $isDokumenActive ? 'show' : '' }}">
+                <a href="{{ route('perawat.str.index') }}" class="nav-linkx {{ request()->routeIs('perawat.str.*') ? 'active' : '' }}">
+                    <i class="bi bi-file-earmark-text-fill"></i> Dokumen STR
+                </a>
+                <a href="{{ route('perawat.sip.index') }}" class="nav-linkx {{ request()->routeIs('perawat.sip.*') ? 'active' : '' }}">
+                    <i class="bi bi-file-earmark-check-fill"></i> Dokumen SIP
+                </a>
+                <a href="{{ route('perawat.tambahan.index') }}" class="nav-linkx {{ request()->routeIs('perawat.tambahan.*') ? 'active' : '' }}">
+                    <i class="bi bi-file-earmark-plus-fill"></i> Data Tambahan
+                </a>
+            </div>
+
+            {{-- ============================================================== --}}
+            {{-- DROPDOWN: PENGAJUAN LISENSI (LOGIKA KREDENSIALING) --}}
+            {{-- ============================================================== --}}
+            @php
+                // Cek apakah User sudah pernah Lulus Uji Kompetensi (pg_interview)
+                $hasUjiKomp = \App\Models\PerawatLisensi::where('user_id', Auth::id())
+                    ->where('metode', 'pg_interview')
+                    ->where('status', 'active') // Pastikan statusnya aktif/lulus
+                    ->exists();
+
+                // Logic agar menu tetap terbuka saat membuka create ATAU index
+                $isKredensialActive = request()->routeIs('perawat.lisensi.create') || request()->routeIs('perawat.lisensi.index');
+            @endphp
+
+            <div class="nav-linkx nav-dropdown {{ $isKredensialActive ? 'active' : '' }}" data-dropdown="#submenu-kredensial">
+                <i class="bi bi-file-earmark-arrow-up-fill"></i>
+                <span class="link-text">Pengajuan Lisensi</span>
+                <i class="bi bi-chevron-down dropdown-icon"></i>
+            </div>
+
+            <div id="submenu-kredensial" class="nav-submenu {{ $isKredensialActive ? 'show' : '' }}">
+
+                {{-- 1. Uji Kompetensi (Selalu Terbuka) --}}
+                <a href="{{ route('perawat.lisensi.create', 'pg_interview') }}"
+                    class="nav-linkx {{ request()->fullUrlIs(route('perawat.lisensi.create', 'pg_interview')) ? 'active' : '' }}">
+                    <i class="bi bi-clipboard-data-fill"></i> Uji Kompetensi
+                </a>
+
+                {{-- 2. Kredensialing (Locked jika belum punya Uji Komp) --}}
+                @if ($hasUjiKomp)
+                    <a href="{{ route('perawat.lisensi.create', 'interview_only') }}"
+                        class="nav-linkx {{ request()->fullUrlIs(route('perawat.lisensi.create', 'interview_only')) ? 'active' : '' }}">
+                        <i class="bi bi-person-check-fill"></i> Kredensialing
+                    </a>
+                @else
+                    <div class="nav-linkx text-muted d-flex justify-content-between align-items-center" 
+                         style="cursor: not-allowed; opacity: 0.6;" 
+                         data-bs-toggle="tooltip" data-bs-placement="right" 
+                         title="Anda wajib memiliki Sertifikat Uji Kompetensi terlebih dahulu.">
+                        <span><i class="bi bi-lock-fill"></i> Kredensialing</span>
+                        <i class="bi bi-info-circle" style="font-size: 12px;"></i>
                     </div>
+                @endif
 
-                    {{-- ========================================= --}}
-                    {{-- MENU PERAWAT (ROLE: PERAWAT) --}}
-                    {{-- ========================================= --}}
-                    @if (Auth::check() && Auth::user()->role === 'perawat')
-                        <div class="nav-section-title">Umum</div>
-                        <a href="{{ route('dashboard') }}"
-                            class="nav-linkx {{ isset($menu) && $menu === 'dashboard' ? 'active' : '' }}">
-                            <i class="bi bi-grid-fill"></i> <span class="link-text">Dashboard</span>
-                        </a>
-
-                        <div class="nav-section-title">Menu Utama</div>
-
-                        {{-- DROPDOWN: PELENGKAPAN DATA (MODUL 3) --}}
-                        <div class="nav-linkx nav-dropdown" data-dropdown="#submenu-master">
-                            <i class="bi bi-folder-fill"></i>
-                            <span class="link-text">Profil</span>
-                            <i class="bi bi-chevron-down dropdown-icon"></i>
-                        </div>
-
-                        <div id="submenu-master" class="nav-submenu">
-                            <a href="{{ route('perawat.drh') }}"
-                                class="nav-linkx {{ request()->routeIs('perawat.drh') ? 'active' : '' }}">
-                                <i class="bi bi-person-vcard-fill"></i> DRH & Profil
-                            </a>
-                            <a href="{{ route('perawat.pelatihan.index') }}"
-                                class="nav-linkx {{ request()->routeIs('perawat.pelatihan.*') ? 'active' : '' }}">
-                                <i class="bi bi-award-fill"></i> Pelatihan
-                            </a>
-                            <a href="{{ route('perawat.pendidikan.index') }}"
-                                class="nav-linkx {{ request()->routeIs('perawat.pendidikan.*') ? 'active' : '' }}">
-                                <i class="bi bi-book-fill"></i> Pendidikan
-                            </a>
-                            <a href="{{ route('perawat.pekerjaan.index') }}"
-                                class="nav-linkx {{ request()->routeIs('perawat.pekerjaan.*') ? 'active' : '' }}">
-                                <i class="bi bi-briefcase-fill"></i> Pekerjaan
-                            </a>
-                            <a href="{{ route('perawat.keluarga.index') }}"
-                                class="nav-linkx {{ request()->routeIs('perawat.keluarga.*') ? 'active' : '' }}">
-                                <i class="bi bi-people-fill"></i> Keluarga
-                            </a>
-                            <a href="{{ route('perawat.organisasi.index') }}"
-                                class="nav-linkx {{ request()->routeIs('perawat.organisasi.*') ? 'active' : '' }}">
-                                <i class="bi bi-diagram-3-fill"></i> Organisasi
-                            </a>
-                            <a href="{{ route('perawat.tandajasa.index') }}"
-                                class="nav-linkx {{ request()->routeIs('perawat.tandajasa.*') ? 'active' : '' }}">
-                                <i class="bi bi-star-fill"></i> Tanda Jasa
-                            </a>
-                        </div>
-
-                        {{-- DROPDOWN: DOKUMEN (MODUL 4) --}}
-                        @php
-                            $isDokumenActive =
-                                request()->routeIs('perawat.str.*') ||
-                                request()->routeIs('perawat.sip.*') ||
-                                request()->routeIs('perawat.tambahan.*');
-                        @endphp
-
-                        <div class="nav-linkx nav-dropdown {{ $isDokumenActive ? 'active' : '' }}"
-                            data-dropdown="#submenu-dokumen">
-                            <i class="bi bi-folder-fill"></i>
-                            <span class="link-text">Dokumen</span>
-                            <i class="bi bi-chevron-down dropdown-icon"></i>
-                        </div>
-
-                        <div id="submenu-dokumen" class="nav-submenu {{ $isDokumenActive ? 'show' : '' }}">
+                {{-- 3. Daftar Lisensi Saya --}}
+                <a href="{{ route('perawat.lisensi.index') }}"
+                    class="nav-linkx {{ request()->routeIs('perawat.lisensi.index') ? 'active' : '' }}">
+                    <i class="bi bi-clock-history"></i> Daftar Lisensi Saya
+                </a>
+            </div>
+            {{-- ============================================================== --}}
 
 
-                            <a href="{{ route('perawat.str.index') }}"
-                                class="nav-linkx {{ request()->routeIs('perawat.str.*') ? 'active' : '' }}">
-                                <i class="bi bi-file-earmark-text-fill"></i> Dokumen STR
-                            </a>
-                            <a href="{{ route('perawat.sip.index') }}"
-                                class="nav-linkx {{ request()->routeIs('perawat.sip.*') ? 'active' : '' }}">
-                                <i class="bi bi-file-earmark-check-fill"></i> Dokumen SIP
-                            </a>
-                            <a href="{{ route('perawat.tambahan.index') }}"
-                                class="nav-linkx {{ request()->routeIs('perawat.tambahan.*') ? 'active' : '' }}">
-                                <i class="bi bi-file-earmark-plus-fill"></i> Data Tambahan
-                            </a>
-                        </div>
-                        {{-- 
-                        <a href="{{ route('perawat.lisensi.index') }}"
-                            class="nav-linkx {{ request()->routeIs('perawat.lisensi.*') ? 'active' : '' }}">
-                            <i class="bi bi-file-earmark-arrow-up-fill"></i>
-                            <span class="link-text">Kredensialing</span>
-                        </a> --}}
+            {{-- UJIAN & EVALUASI --}}
+            <a href="{{ route('perawat.ujian.index') }}"
+                class="nav-linkx {{ request()->routeIs('perawat.ujian.*') ? 'active' : '' }} nav-with-badge">
+                <i class="bi bi-clipboard-check-fill"></i>
+                <span class="link-text">Ujian & Evaluasi</span>
+                @if (isset($ujianActiveCount) && $ujianActiveCount > 0)
+                    <span class="badge-notification">{{ $ujianActiveCount }}</span>
+                @endif
+            </a>
 
-                        {{-- LOGIKA CEK DATA DI SIDEBAR --}}
-                        @php
-                            $hasUjiKomp = \App\Models\PerawatLisensi::where('user_id', Auth::id())
-                                ->where('metode', 'pg_interview')
-                                ->exists();
+            <div class="nav-section-title">Riwayat</div>
 
-                            $isKredensialActive = request()->routeIs('perawat.lisensi.create');
-                        @endphp
+            <a href="{{ route('perawat.pengajuan.index') }}"
+                class="nav-linkx {{ request()->routeIs('perawat.pengajuan.*') ? 'active' : '' }}">
+                <i class="bi bi-file-earmark-arrow-up-fill"></i>
+                <span class="link-text">Status Pengajuan</span>
+            </a>
 
-                        {{-- KREDENSIALING (MODUL BARU) --}}
-                        <div class="nav-linkx nav-dropdown {{ $isKredensialActive ? 'active' : '' }}"
-                            data-dropdown="#submenu-kredensial">
-                            <i class="bi bi-file-earmark-arrow-up-fill"></i>
-                            <span class="link-text">Pengajuan Lisensi</span>
-                            <i class="bi bi-chevron-down dropdown-icon"></i>
-                        </div>
-
-                        <div id="submenu-kredensial" class="nav-submenu {{ $isKredensialActive ? 'show' : '' }}">
-
-                            {{-- 1. Uji Kompetensi (Selalu Terbuka) --}}
-                            <a href="{{ route('perawat.lisensi.create', 'pg_interview') }}"
-                                class="nav-linkx {{ request()->fullUrlIs(route('perawat.lisensi.create', 'pg_interview')) ? 'active' : '' }}">
-                                <i class="bi bi-clipboard-data-fill"></i> Uji Kompetensi
-                            </a>
-
-                            {{-- 2. Kredensialing (Terkunci jika belum Uji Kompetensi) --}}
-                            @if ($hasUjiKomp)
-                                <a href="{{ route('perawat.lisensi.create', 'interview_only') }}"
-                                    class="nav-linkx {{ request()->fullUrlIs(route('perawat.lisensi.create', 'interview_only')) ? 'active' : '' }}">
-                                    <i class="bi bi-person-check-fill"></i> Kredensialing
-                                </a>
-                            @else
-                                {{-- Tampilan Terkunci --}}
-                                <div class="nav-linkx text-muted" style="cursor: not-allowed; opacity: 0.6;"
-                                    title="Wajib Uji Kompetensi Terlebih Dahulu">
-                                    <i class="bi bi-lock-fill"></i> Kredensialing
-                                </div>
-                            @endif
-
-                            {{-- Link ke Riwayat/Data Lisensi (Index) --}}
-                            <a href="{{ route('perawat.lisensi.index') }}"
-                                class="nav-linkx {{ request()->routeIs('perawat.lisensi.index') ? 'active' : '' }}">
-                                <i class="bi bi-clock-history"></i> Daftar Lisensi
-                            </a>
-
-                        </div>
-
-                        {{-- UJIAN & EVALUASI (MODUL 7) --}}
-                        <a href="{{ route('perawat.ujian.index') }}"
-                            class="nav-linkx {{ request()->routeIs('perawat.ujian.*') ? 'active' : '' }} nav-with-badge">
-                            <i class="bi bi-clipboard-check-fill"></i>
-                            <span class="link-text">Ujian & Evaluasi</span>
-
-                            {{-- Logika ini sudah benar --}}
-                            @if (isset($ujianActiveCount) && $ujianActiveCount > 0)
-                                <span class="badge-notification">{{ $ujianActiveCount }}</span>
-                            @endif
-                        </a>
-
-                        <div class="nav-section-title">Riwayat</div>
-
-                        {{-- STATUS PENGAJUAN (MODUL 8 & RENEWAL) --}}
-                        <a href="{{ route('perawat.pengajuan.index') }}"
-                            class="nav-linkx {{ request()->routeIs('perawat.pengajuan.*') ? 'active' : '' }}">
-                            <i class="bi bi-file-earmark-arrow-up-fill"></i>
-                            <span class="link-text">Status Pengajuan</span>
-                        </a>
-
-                        <div class="nav-section-title">Lainnya</div>
-                        <a href="{{ route('perawat.telegram.link') }}" class="nav-linkx">
-                            <i class="bi bi-gear-fill"></i>
-                            <span class="link-text">Pengaturan</span>
-                        </a>
-                    @endif
+            <div class="nav-section-title">Lainnya</div>
+            <a href="{{ route('perawat.telegram.link') }}" class="nav-linkx {{ request()->routeIs('perawat.telegram.link') ? 'active' : '' }}">
+                <i class="bi bi-telegram"></i>
+                <span class="link-text">Notifikasi Telegram</span>
+            </a>
+        @endif
 
 
-                    {{-- ========================================= --}}
-                    {{-- MENU PEWAWANCARA (ROLE: PEWAWANCARA) --}}
-                    {{-- ========================================= --}}
-                    @if (Auth::check() && Auth::user()->role === 'pewawancara')
-                        <div class="nav-section-title">Menu Utama</div>
+        {{-- ========================================= --}}
+        {{-- MENU PEWAWANCARA & ADMIN (TETAP SAMA) --}}
+        {{-- ========================================= --}}
+        @if (Auth::check() && Auth::user()->role === 'pewawancara')
+             {{-- ... (Kode Pewawancara Anda sudah benar) ... --}}
+             <div class="nav-section-title">Menu Utama</div>
+             <a href="{{ route('dashboard.pewawancara') }}" class="nav-linkx {{ request()->routeIs('dashboard.pewawancara') ? 'active' : '' }}">
+                 <i class="bi bi-grid-fill"></i> <span class="link-text">Dashboard & Tugas</span>
+             </a>
+             <a href="{{ route('pewawancara.antrian') }}" class="nav-linkx {{ request()->routeIs('pewawancara.antrian') ? 'active' : '' }}">
+                 <i class="bi bi-list-ul"></i> <span class="link-text">Antrian Wawancara</span>
+             </a>
+             <a href="{{ route('pewawancara.riwayat') }}" class="nav-linkx {{ request()->routeIs('pewawancara.riwayat') ? 'active' : '' }}">
+                 <i class="bi bi-clock-history"></i> <span class="link-text">Riwayat Penilaian</span>
+             </a>
+             <div class="nav-section-title">Lainnya</div>
+             <a href="{{ route('pewawancara.settings') }}" class="nav-linkx {{ request()->routeIs('pewawancara.settings') ? 'active' : '' }}">
+                 <i class="bi bi-gear-fill"></i> <span class="link-text">Pengaturan</span>
+             </a>
+        @endif
 
-                        {{-- Dashboard: Fokus ke Antrian & Input Nilai --}}
-                        <a href="{{ route('dashboard.pewawancara') }}"
-                            class="nav-linkx {{ request()->routeIs('dashboard.pewawancara') ? 'active' : '' }}">
-                            <i class="bi bi-grid-fill"></i> <span class="link-text">Dashboard & Tugas</span>
-                        </a>
+        @if (Auth::check() && Auth::user()->role === 'admin')
+            {{-- ... (Kode Admin Anda sudah benar) ... --}}
+            <div class="nav-section-title">Admin Panel</div>
+            <a href="{{ route('dashboard.admin') }}" class="nav-linkx {{ request()->routeIs('dashboard.admin') ? 'active' : '' }}">
+                <i class="bi bi-speedometer2"></i> Dashboard
+            </a>
+            <a href="{{ route('admin.manajemen_akun.index') }}" class="nav-linkx {{ request()->routeIs('admin.manajemen_akun*') ? 'active' : '' }}">
+                <i class="bi bi-person-gear"></i> Manajemen Akun
+            </a>
+            <a href="{{ route('admin.perawat.index') }}" class="nav-linkx {{ request()->routeIs('admin.perawat.*') ? 'active' : '' }}">
+                <i class="bi bi-person-lines-fill"></i> Bidan Dan Perawat
+            </a>
 
-                        <a href="{{ route('pewawancara.antrian') }}"
-                            class="nav-linkx {{ request()->routeIs('pewawancara.antrian') ? 'active' : '' }}">
-                            <i class="bi bi-list-ul"></i> <span class="link-text">Antrian Wawancara</span>
-                        </a>
+            <div class="nav-section-title">Kredensialing</div>
+            <a href="{{ route('admin.pengajuan.index') }}" class="nav-linkx {{ request()->routeIs('admin.pengajuan.*') ? 'active' : '' }}">
+                <i class="bi bi-check-square-fill"></i> Approval Pengajuan
+            </a>
+            
+            <a href="{{ route('admin.lisensi_pg_interview.index') }}" class="nav-linkx {{ request()->routeIs('admin.lisensi_pg_interview.*') ? 'active' : '' }}">
+                <i class="bi bi-file-earmark-text"></i> Uji Kompetensi
+            </a>
+            <a href="{{ route('admin.lisensi_interview_only.index') }}" class="nav-linkx {{ request()->routeIs('admin.lisensi_interview_only.*') ? 'active' : '' }}">
+                <i class="bi bi-person-video2"></i> Kredensialing
+            </a>
 
-                        {{-- Halaman Terpisah: Riwayat --}}
-                        <a href="{{ route('pewawancara.riwayat') }}"
-                            class="nav-linkx {{ request()->routeIs('pewawancara.riwayat') ? 'active' : '' }}">
-                            <i class="bi bi-clock-history"></i> <span class="link-text">Riwayat Penilaian</span>
-                        </a>
+            <div class="nav-section-title">Manajemen Ujian</div>
+            <a href="{{ route('admin.penanggung-jawab.index') }}" class="nav-linkx {{ request()->routeIs('admin.penanggung-jawab*') ? 'active' : '' }}">
+                <i class="bi bi-shield-check"></i> Penanggung Jawab
+            </a>
+            <a href="{{ route('admin.form.index') }}" class="nav-linkx {{ request()->routeIs('admin.form.*') ? 'active' : '' }}">
+                <i class="bi bi-ui-checks"></i> Form Ujian
+            </a>
+            <a href="{{ route('admin.bank-soal.index') }}" class="nav-linkx {{ request()->routeIs('admin.bank-soal.*') ? 'active' : '' }}">
+                <i class="bi bi-journal-text"></i> Bank Soal
+            </a>
 
-                        <div class="nav-section-title">Lainnya</div>
-                        {{-- Bisa ditambahkan pengaturan akun jika perlu --}}
-                        <a href="{{ route('pewawancara.settings') }}"
-                            class="nav-linkx {{ request()->routeIs('#') ? 'active' : '' }}">
-                            <i class="bi bi-gear-fill"></i>
-                            <span class="link-text">Pengaturan</span>
-                        </a>
-                    @endif
+            <div class="nav-section-title">Lainnya</div>
+            <a href="{{ route('admin.profile.index') }}" class="nav-linkx {{ request()->routeIs('admin.profile.*') ? 'active' : '' }}">
+                <i class="bi bi-gear-fill"></i> Pengaturan
+            </a>
+        @endif
+    </div>
 
-
-                    {{-- ========================================= --}}
-                    {{-- MENU ADMIN (ROLE: ADMIN) --}}
-                    {{-- ========================================= --}}
-                    @if (Auth::check() && Auth::user()->role === 'admin')
-                        <div class="nav-section-title">Admin Panel</div>
-
-                        {{-- Dashboard (MODUL 10) --}}
-                        <a href="{{ route('dashboard.admin') }}"
-                            class="nav-linkx {{ isset($menu) && $menu === 'admin' ? 'active' : '' }}">
-                            <i class="bi bi-speedometer2"></i>
-                            <span class="link-text">Dashboard</span>
-                        </a>
-
-                        {{-- Manajemen Akun --}}
-                        <a href="{{ route('admin.manajemen_akun.index') }}"
-                            class="nav-linkx {{ request()->routeIs('admin.manajemen_akun*') ? 'active' : '' }}">
-                            <i class="bi bi-person-gear"></i>
-                            <span class="link-text">Manajemen Akun</span>
-                        </a>
-
-                        {{-- Data Perawat & Status Kelayakan (MODUL 5) --}}
-                        <a href="{{ route('admin.perawat.index') }}"
-                            class="nav-linkx {{ request()->routeIs('admin.perawat.*') ? 'active' : '' }}">
-                            <i class="bi bi-person-lines-fill"></i>
-                            <span class="link-text">Bidan Dan Perawat</span>
-                        </a>
-
-                        <div class="nav-section-title">Kredensialing</div>
-
-                        {{-- APPROVAL PENGAJUAN & WAWANCARA (MODUL 8) --}}
-                        <a href="{{ route('admin.pengajuan.index') }}"
-                            class="nav-linkx {{ request()->routeIs('admin.pengajuan.*') || request()->routeIs('admin.pengajuan_wawancara.*') ? 'active' : '' }}">
-                            <i class="bi bi-check-square-fill"></i>
-                            <span class="link-text">Approval Pengajuan</span>
-                        </a>
-                        <a href="{{ route('admin.lisensi_pg_interview.index') }}"
-                            class="nav-linkx {{ request()->routeIs('admin.lisensi_pg_interview.*') ? 'active' : '' }}">
-                            <i class="bi bi-file-earmark-text"></i>
-                            <span class="link-text">Uji Kompetensi</span>
-                        </a>
-                        <a href="{{ route('admin.lisensi_interview_only.index') }}"
-                            class="nav-linkx {{ request()->routeIs('admin.lisensi_interview_only.*') ? 'active' : '' }}">
-                            <i class="bi bi-person-video2"></i>
-                            <span class="link-text">Kredensialing</span>
-                        </a>
-
-                        <div class="nav-section-title">Manajemen Ujian</div>
-
-                        {{-- Penanggung Jawab --}}
-                        <a href="{{ route('admin.penanggung-jawab.index') }}"
-                            class="nav-linkx {{ request()->routeIs('admin.penanggung-jawab*') ? 'active' : '' }}">
-                            <i class="bi bi-shield-check"></i>
-                            <span class="link-text">Penanggung Jawab</span>
-                        </a>
-
-                        {{-- Form Ujian (MODUL 7) --}}
-                        <a href="{{ route('admin.form.index') }}"
-                            class="nav-linkx {{ request()->routeIs('admin.form.*') ? 'active' : '' }}">
-                            <i class="bi bi-ui-checks"></i>
-                            <span class="link-text">Form Ujian</span>
-                        </a>
-
-                        {{-- Bank Soal (MODUL 6) --}}
-                        <a href="{{ route('admin.bank-soal.index') }}"
-                            class="nav-linkx {{ request()->routeIs('admin.bank-soal.*') ? 'active' : '' }}">
-                            <i class="bi bi-journal-text"></i>
-                            <span class="link-text">Bank Soal</span>
-                        </a>
-
-                        <div class="nav-section-title">Lainnya</div>
-
-                        <a href="{{ route('admin.profile.index') }}"
-                            class="nav-linkx {{ request()->routeIs('admin.profile.*') ? 'active' : '' }}">
-                            <i class="bi bi-gear-fill"></i>
-                            <span class="link-text">Pengaturan</span>
-                        </a>
-                    @endif
-                </div>
-
-                <div class="sidebar-footer">
-                    &copy; {{ date('Y') }} DIKSERA<br>
-                    <span>Komite Keperawatan <br>RSUD Simpang Lima Gumul</span>
-                </div>
-            </aside>
+    <div class="sidebar-footer">
+        &copy; {{ date('Y') }} DIKSERA<br>
+        <span>Komite Keperawatan <br>RSUD Simpang Lima Gumul</span>
+    </div>
+</aside>
         </div>
 
         <main class="app-main">

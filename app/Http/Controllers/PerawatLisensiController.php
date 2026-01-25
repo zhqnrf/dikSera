@@ -12,6 +12,20 @@ use Barryvdh\DomPDF\Facade\Pdf; // <--- TAMBAHKAN INI
 
 class PerawatLisensiController extends Controller
 {
+
+    public function index()
+    {
+        $user = Auth::user();
+
+        // Ambil data lisensi milik user login
+        // Diurutkan berdasarkan tanggal terbit terbaru
+        $data = PerawatLisensi::where('user_id', $user->id)
+            ->latest('tgl_terbit')
+            ->get();
+
+        // Pastikan file view ini ada di: resources/views/perawat/lisensi/index.blade.php
+        return view('perawat.dokumen.lisensi.index', compact('data'));
+    }
     private function checkEligibility($userId, $requestedMetode)
     {
         $latestJob = PerawatPekerjaan::where('user_id', $userId)->orderBy('tahun_mulai', 'desc')->first();

@@ -633,8 +633,9 @@
                                         <p class="text-secondary mb-4 col-md-8 mx-auto">
                                             Proses validasi kompetensi Anda telah selesai. Silakan unduh hasil keputusan.
                                         </p>
-                                        <a href="{{ route('perawat.lisensi.download_hasil', $item->id) }}"
-                                            class="btn btn-primary fw-bold px-4 py-2 shadow-sm">
+                                        {{-- [PERBAIKAN] Menggunakan route 'perawat.pengajuan.print' --}}
+                                        <a href="{{ route('perawat.pengajuan.print', $item->id) }}"
+                                            class="btn btn-primary fw-bold px-4 py-2 shadow-sm" target="_blank">
                                             <i class="bi bi-file-earmark-arrow-down me-2"></i> Unduh Dokumen SK
                                         </a>
                                     @else
@@ -643,7 +644,8 @@
                                         <p class="text-secondary mb-4 col-md-8 mx-auto">
                                             Anda dinyatakan kompeten. Sertifikat digital Anda sudah siap.
                                         </p>
-                                        <a href="{{ route('perawat.lisensi.download_hasil', $item->id) }}"
+                                        {{-- [PERBAIKAN] Menggunakan route 'perawat.pengajuan.print' --}}
+                                        <a href="{{ route('perawat.pengajuan.print', $item->id) }}"
                                             class="btn btn-success fw-bold px-4 py-2 shadow-sm" target="_blank">
                                             <i class="bi bi-award-fill me-2"></i> Unduh Sertifikat PDF
                                         </a>

@@ -22,7 +22,7 @@ use App\Http\Controllers\PewawancaraController;
 
 /*
 |--------------------------------------------------------------------------
-| PUBLIC ROUTES (Bisa diakses tanpa login)
+| PUBLIC ROUTES
 |--------------------------------------------------------------------------
 */
 
@@ -45,21 +45,20 @@ Route::middleware(['auth'])->group(function () {
     // === DASHBOARD ===
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('dashboard/admin', [DashboardController::class, 'adminIndex'])->name('dashboard.admin');
-    // Dashboard Pewawancara (Baru)
     Route::get('/dashboard/pewawancara', [PewawancaraController::class, 'index'])->name('dashboard.pewawancara');
 
-    // === GROUP ADMIN ===
+    // ====================================================
+    // GROUP ADMIN
+    // ====================================================
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/perawat', [AdminPerawatController::class, 'index'])->name('perawat.index');
         Route::get('/perawat/{id}', [AdminPerawatController::class, 'show'])->name('perawat.show');
         Route::get('/perawat/{id}/edit', [AdminPerawatController::class, 'edit'])->name('perawat.edit');
         Route::put('/perawat/{id}', [AdminPerawatController::class, 'update'])->name('perawat.update');
         Route::delete('/perawat/{id}', [AdminPerawatController::class, 'destroy'])->name('perawat.destroy');
-        Route::get('/perawat/{id}/sertifikat', [AdminPerawatController::class, 'sertifikat'])
-            ->name('perawat.sertifikat');
+        Route::get('/perawat/{id}/sertifikat', [AdminPerawatController::class, 'sertifikat'])->name('perawat.sertifikat');
 
-
-        // === DOKUMEN: LISENSI PG + WAWANCARA ===
+        // === DOKUMEN MASTER LISENSI ===
         Route::prefix('lisensi_pg_interview')->name('lisensi_pg_interview.')->group(function () {
             Route::get('/', [AdminLisensiController::class, 'lisensiIndex'])->defaults('metode', 'pg_interview')->name('index');
             Route::get('/create', [AdminLisensiController::class, 'lisensiCreate'])->defaults('metode', 'pg_interview')->name('create');
@@ -69,7 +68,6 @@ Route::middleware(['auth'])->group(function () {
             Route::delete('/{id}', [AdminLisensiController::class, 'lisensiDestroy'])->defaults('metode', 'pg_interview')->name('destroy');
         });
 
-        // === DOKUMEN: LISENSI HANYA WAWANCARA ===
         Route::prefix('lisensi_interview_only')->name('lisensi_interview_only.')->group(function () {
             Route::get('/', [AdminLisensiController::class, 'lisensiIndex'])->defaults('metode', 'interview_only')->name('index');
             Route::get('/create', [AdminLisensiController::class, 'lisensiCreate'])->defaults('metode', 'interview_only')->name('create');
@@ -79,7 +77,7 @@ Route::middleware(['auth'])->group(function () {
             Route::delete('/{id}', [AdminLisensiController::class, 'lisensiDestroy'])->defaults('metode', 'interview_only')->name('destroy');
         });
 
-        // === APPROVAL PENGAJUAN (INI YANG PENTING) ===
+        // === APPROVAL PENGAJUAN ===
         Route::get('/pengajuan', [AdminPengajuanController::class, 'index'])->name('pengajuan.index');
 
         // Bulk Actions
@@ -94,11 +92,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/pengajuan/{id}/approve-score', [AdminPengajuanController::class, 'approveExamScore'])->name('pengajuan.approve_score');
         Route::post('/pengajuan/{id}/approve', [AdminPengajuanController::class, 'approve'])->name('pengajuan.approve');
         Route::post('/pengajuan/{id}/reject', [AdminPengajuanController::class, 'reject'])->name('pengajuan.reject');
-
-        // [FIXED] DESTROY WAJIB DELETE
         Route::delete('/pengajuan/{id}', [AdminPengajuanController::class, 'destroy'])->name('pengajuan.destroy');
-
         Route::get('/pengajuan/export-jadwal', [AdminPengajuanController::class, 'exportJadwal'])->name('pengajuan.export_jadwal');
+
+        // Update Tanggal
+        Route::patch('/pengajuan/{id}/update-dates', [AdminPengajuanController::class, 'updateDates'])->name('pengajuan.updateDates');
 
         // PENGAJUAN WAWANCARA
         Route::prefix('pengajuan-wawancara')->name('pengajuan_wawancara.')->group(function () {
@@ -126,13 +124,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/forms/create', [FormController::class, 'create'])->name('form.create');
         Route::post('/forms', [FormController::class, 'store'])->name('form.store');
         Route::patch('form/{form}/update-status', [FormController::class, 'updateStatus'])->name('form.update-status');
-
-        // === PENANGGUNG JAWAB UJIAN ===
-        Route::resource('penanggung-jawab', PenanggungJawabUjianController::class);
-
         Route::get('/forms/{form}/edit', [FormController::class, 'edit'])->name('form.edit');
         Route::put('/forms/{form}', [FormController::class, 'update'])->name('form.update');
         Route::delete('/forms/{form}', [FormController::class, 'destroy'])->name('form.destroy');
+
+        // PENANGGUNG JAWAB UJIAN
+        Route::resource('penanggung-jawab', PenanggungJawabUjianController::class);
 
         // === KELOLA SOAL ===
         Route::get('bank-soal', [BankSoalController::class, 'index'])->name('bank-soal.index');
@@ -141,44 +138,72 @@ Route::middleware(['auth'])->group(function () {
         Route::get('bank-soal/{id}/edit', [BankSoalController::class, 'edit'])->name('bank-soal.edit');
         Route::post('bank-soal/{id}/update', [BankSoalController::class, 'update'])->name('bank-soal.update');
         Route::post('bank-soal/{id}/delete', [BankSoalController::class, 'destroy'])->name('bank-soal.delete');
+        Route::post('/bank-soal/import-json', [BankSoalController::class, 'importJson'])->name('bank-soal.import-json');
 
         // === REKAP HASIL UJIAN ===
         Route::get('/forms/{form}/hasil', [FormController::class, 'hasil'])->name('form.hasil');
         Route::delete('/hasil-ujian/{result}', [FormController::class, 'resetHasil'])->name('form.reset-hasil');
         Route::post('/forms/{form}/generate-soal', [FormController::class, 'generateSoal'])->name('form.generate-soal');
-
-        // Menampilkan halaman pilih soal untuk form tertentu
         Route::get('/forms/{form}/kelola-soal', [FormController::class, 'kelolaSoal'])->name('form.kelola-soal');
-
-        // Route untuk menerima kiriman JSON dari Sheet.js
-        Route::post('/bank-soal/import-json', [BankSoalController::class, 'importJson'])->name('bank-soal.import-json');
-
-        // Menyimpan pilihan soal ke database
         Route::post('/forms/{form}/kelola-soal', [FormController::class, 'simpanSoal'])->name('form.simpan-soal');
     });
 
-    // === GROUP PERAWAT ===
+    // ====================================================
+    // GROUP PERAWAT
+    // ====================================================
     Route::prefix('perawat')->name('perawat.')->group(function () {
 
-        // DRH Summary
-        Route::get('/drh', [PerawatDrhController::class, 'index'])->name('drh');
+        // --- 1. ALUR UTAMA: PENGAJUAN (UPLOAD -> UJIAN -> WAWANCARA -> SERTIFIKAT) ---
 
-        // Identitas
+        // Halaman Riwayat & Status Pengajuan
+        Route::get('/pengajuan', [PengajuanSertifikatController::class, 'index'])->name('pengajuan.index');
+
+        // Halaman Form Upload Berkas (Create) - [ROUTE UTAMA PENGAJUAN]
+        Route::get('/lisensi/create/{metode?}', [PengajuanSertifikatController::class, 'create'])
+            ->name('lisensi.create');
+
+        // Proses Simpan Berkas
+        Route::post('/pengajuan', [PengajuanSertifikatController::class, 'store'])->name('pengajuan.store');
+
+        // Proses Simpan Jadwal Wawancara (Dipanggil setelah lulus ujian)
+        Route::post('/pengajuan/{id}/wawancara', [PengajuanSertifikatController::class, 'storeWawancara'])->name('pengajuan.store_wawancara');
+
+        // Cetak Sertifikat (Tombol dari halaman riwayat / selesai)
+        Route::get('/pengajuan/{id}/print', [PengajuanSertifikatController::class, 'printSertifikat'])->name('pengajuan.print');
+
+
+        // --- 2. HASIL AKHIR: DATA LISENSI SAYA ---
+
+        // Menampilkan tabel lisensi yang sudah AKTIF
+        Route::get('/lisensi-saya', [PerawatLisensiController::class, 'index'])->name('lisensi.index');
+
+        // Tombol Download di halaman Lisensi Saya (Alias ke fungsi print)
+        Route::get('/lisensi/{id}/generate', [PengajuanSertifikatController::class, 'printSertifikat'])->name('lisensi.generate');
+
+        // --- 3. MENU UJIAN (CBT) ---
+        Route::get('/ujian-aktif', [UserFormController::class, 'index'])->name('ujian.index');
+
+        // Route untuk Mulai Ujian dari tombol "KERJAKAN UJIAN" di Pengajuan
+        Route::get('/ujian/{form:slug}/kerjakan', [UserFormController::class, 'kerjakan'])->name('ujian.kerjakan');
+        Route::post('/ujian/{form:slug}/submit', [UserFormController::class, 'submit'])->name('ujian.submit');
+        Route::get('/ujian/{form:slug}/selesai', [UserFormController::class, 'selesai'])->name('ujian.selesai');
+
+
+        // --- 4. DRH & DATA DIRI (EXISTING) ---
+        Route::get('/drh', [PerawatDrhController::class, 'index'])->name('drh');
         Route::get('/drh/identitas', [PerawatDrhController::class, 'editIdentitas'])->name('identitas.edit');
         Route::post('/drh/identitas', [PerawatDrhController::class, 'updateIdentitas'])->name('identitas.update');
-
-        // Data Lengkap
         Route::get('/drh/data-lengkap', [PerawatDrhController::class, 'showDataLengkap'])->name('data.lengkap');
 
-        // === PENDIDIKAN ===
-        Route::get('/pendidikan', [PerawatDrhController::class, 'pendidikanIndex'])->name('pendidikan.index');
+        // PENDIDIKAN (Manual Route Only - Resource dihapus agar tidak bentrok)
+        Route::get('/pendidikan-list', [PerawatDrhController::class, 'pendidikanIndex'])->name('pendidikan.index');
         Route::get('/pendidikan/create', [PerawatDrhController::class, 'pendidikanCreate'])->name('pendidikan.create');
         Route::post('/pendidikan', [PerawatDrhController::class, 'pendidikanStore'])->name('pendidikan.store');
-        Route::get('/pendidikan/{id}/edit', [PerawatDrhController::class, 'pendidikanEdit'])->name('pendidikan.edit');
         Route::put('/pendidikan/{id}', [PerawatDrhController::class, 'pendidikanUpdate'])->name('pendidikan.update');
         Route::delete('/pendidikan/{id}', [PerawatDrhController::class, 'pendidikanDestroy'])->name('pendidikan.destroy');
+        Route::get('/pendidikan/{id}/edit', [PerawatDrhController::class, 'pendidikanEdit'])->name('pendidikan.edit');
 
-        // === PELATIHAN ===
+        // PELATIHAN
         Route::get('/pelatihan', [PerawatDrhController::class, 'pelatihanIndex'])->name('pelatihan.index');
         Route::get('/pelatihan/create', [PerawatDrhController::class, 'pelatihanCreate'])->name('pelatihan.create');
         Route::post('/pelatihan', [PerawatDrhController::class, 'pelatihanStore'])->name('pelatihan.store');
@@ -186,7 +211,7 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/pelatihan/{id}', [PerawatDrhController::class, 'pelatihanUpdate'])->name('pelatihan.update');
         Route::delete('/pelatihan/{id}', [PerawatDrhController::class, 'pelatihanDestroy'])->name('pelatihan.destroy');
 
-        // === PEKERJAAN ===
+        // PEKERJAAN
         Route::get('/pekerjaan', [PerawatDrhController::class, 'pekerjaanIndex'])->name('pekerjaan.index');
         Route::get('/pekerjaan/create', [PerawatDrhController::class, 'pekerjaanCreate'])->name('pekerjaan.create');
         Route::post('/pekerjaan', [PerawatDrhController::class, 'pekerjaanStore'])->name('pekerjaan.store');
@@ -194,7 +219,7 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/pekerjaan/{id}', [PerawatDrhController::class, 'pekerjaanUpdate'])->name('pekerjaan.update');
         Route::delete('/pekerjaan/{id}', [PerawatDrhController::class, 'pekerjaanDestroy'])->name('pekerjaan.destroy');
 
-        // === KELUARGA ===
+        // KELUARGA
         Route::get('/keluarga', [PerawatDrhController::class, 'keluargaIndex'])->name('keluarga.index');
         Route::get('/keluarga/create', [PerawatDrhController::class, 'keluargaCreate'])->name('keluarga.create');
         Route::post('/keluarga', [PerawatDrhController::class, 'keluargaStore'])->name('keluarga.store');
@@ -202,7 +227,7 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/keluarga/{id}', [PerawatDrhController::class, 'keluargaUpdate'])->name('keluarga.update');
         Route::delete('/keluarga/{id}', [PerawatDrhController::class, 'keluargaDestroy'])->name('keluarga.destroy');
 
-        // === ORGANISASI ===
+        // ORGANISASI
         Route::get('/organisasi', [PerawatDrhController::class, 'organisasiIndex'])->name('organisasi.index');
         Route::get('/organisasi/create', [PerawatDrhController::class, 'organisasiCreate'])->name('organisasi.create');
         Route::post('/organisasi', [PerawatDrhController::class, 'organisasiStore'])->name('organisasi.store');
@@ -210,7 +235,7 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/organisasi/{id}', [PerawatDrhController::class, 'organisasiUpdate'])->name('organisasi.update');
         Route::delete('/organisasi/{id}', [PerawatDrhController::class, 'organisasiDestroy'])->name('organisasi.destroy');
 
-        // === TANDA JASA ===
+        // TANDA JASA
         Route::get('/tanda-jasa', [PerawatDrhController::class, 'tandajasaIndex'])->name('tandajasa.index');
         Route::get('/tanda-jasa/create', [PerawatDrhController::class, 'tandajasaCreate'])->name('tandajasa.create');
         Route::post('/tanda-jasa', [PerawatDrhController::class, 'tandajasaStore'])->name('tandajasa.store');
@@ -218,14 +243,7 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/tanda-jasa/{id}', [PerawatDrhController::class, 'tandajasaUpdate'])->name('tandajasa.update');
         Route::delete('/tanda-jasa/{id}', [PerawatDrhController::class, 'tandajasaDestroy'])->name('tandajasa.destroy');
 
-        // === DOKUMEN: LISENSI ===
-        Route::get('/dokumen/lisensi', [PerawatDrhController::class, 'lisensiIndex'])->name('lisensi.index');
-        Route::get('/perawat/lisensi/create/{metode}', [PerawatLisensiController::class, 'lisensiCreate'])
-            ->name('lisensi.create');
-        Route::post('/perawat/lisensi', [PerawatLisensiController::class, 'lisensiStore'])
-            ->name('lisensi.store');
-
-        // === DOKUMEN: STR (FIXED) ===
+        // DOKUMEN STR & SIP (Data Diri, bukan Pengajuan)
         Route::get('/dokumen/str', [PerawatDrhController::class, 'strIndex'])->name('str.index');
         Route::get('/dokumen/str/create', [PerawatDrhController::class, 'strCreate'])->name('str.create');
         Route::post('/dokumen/str', [PerawatDrhController::class, 'strStore'])->name('str.store');
@@ -233,7 +251,6 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/dokumen/str/{id}', [PerawatDrhController::class, 'strUpdate'])->name('str.update');
         Route::delete('/dokumen/str/{id}', [PerawatDrhController::class, 'strDestroy'])->name('str.destroy');
 
-        // === DOKUMEN: SIP ===
         Route::get('/dokumen/sip', [PerawatDrhController::class, 'sipIndex'])->name('sip.index');
         Route::get('/dokumen/sip/create', [PerawatDrhController::class, 'sipCreate'])->name('sip.create');
         Route::post('/dokumen/sip', [PerawatDrhController::class, 'sipStore'])->name('sip.store');
@@ -241,7 +258,7 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/dokumen/sip/{id}', [PerawatDrhController::class, 'sipUpdate'])->name('sip.update');
         Route::delete('/dokumen/sip/{id}', [PerawatDrhController::class, 'sipDestroy'])->name('sip.destroy');
 
-        // === DOKUMEN: TAMBAHAN (DATA TAMBAHAN) ===
+        // DOKUMEN TAMBAHAN
         Route::get('/dokumen/tambahan', [PerawatDrhController::class, 'tambahanIndex'])->name('tambahan.index');
         Route::get('/dokumen/tambahan/create', [PerawatDrhController::class, 'tambahanCreate'])->name('tambahan.create');
         Route::post('/dokumen/tambahan', [PerawatDrhController::class, 'tambahanStore'])->name('tambahan.store');
@@ -249,34 +266,13 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/dokumen/tambahan/{id}', [PerawatDrhController::class, 'tambahanUpdate'])->name('tambahan.update');
         Route::delete('/dokumen/tambahan/{id}', [PerawatDrhController::class, 'tambahanDestroy'])->name('tambahan.destroy');
 
-        // Link Telegram Account
+        // Telegram
         Route::get('/telegram/link', [TelegramController::class, 'linkTelegram'])->name('telegram.link');
         Route::post('/telegram/generate-code', [TelegramController::class, 'generateCode'])->name('telegram.generate-code');
         Route::post('/telegram/unlink', [TelegramController::class, 'unlinkTelegram'])->name('telegram.unlink');
-
-        // === MENU UJIAN / FORM ===
-        Route::get('/ujian-aktif', [UserFormController::class, 'index'])->name('ujian.index');
-        Route::get('/ujian-aktif/{form:slug}', [UserFormController::class, 'show'])->name('ujian.show');
-        Route::get('/ujian/{form:slug}/kerjakan', [UserFormController::class, 'kerjakan'])->name('ujian.kerjakan');
-        Route::post('/ujian/{form:slug}/submit', [UserFormController::class, 'submit'])->name('ujian.submit');
-        Route::get('/ujian/{form:slug}/selesai', [UserFormController::class, 'selesai'])->name('ujian.selesai');
-
-        // CETAK SERTIFIKAT
-        Route::get('/pengajuan/{id}/sertifikat', [PengajuanSertifikatController::class, 'printSertifikat'])->name('pengajuan.sertifikat');
-        Route::get('/lisensi/download-hasil/{id}', [PerawatLisensiController::class, 'downloadHasil'])
-            ->name('lisensi.download_hasil');
-
-        // PENGAJUAN PERPANJANGAN
-        Route::get('/pengajuan', [PengajuanSertifikatController::class, 'index'])->name('pengajuan.index');
-        Route::post('/pengajuan/store', [PengajuanSertifikatController::class, 'store'])->name('pengajuan.store');
-        Route::post('/pengajuan/{id}/pilih-metode', [PengajuanSertifikatController::class, 'pilihMetode'])->name('pengajuan.pilih_metode');
-        Route::post('/pengajuan/{id}/store-wawancara', [PengajuanSertifikatController::class, 'storeWawancara'])->name('pengajuan.store_wawancara');
-
-        // GENERATE LISENSI PDF
-        Route::get('/dokumen/lisensi/{id}/generate', [PerawatDrhController::class, 'generateLisensi'])->name('lisensi.generate');
     });
 
-    // === GROUP PEWAWANCARA (BARU) ===
+    // === GROUP PEWAWANCARA ===
     Route::prefix('pewawancara')->name('pewawancara.')->group(function () {
         Route::get('/dashboard', [PewawancaraController::class, 'index'])->name('dashboard');
         Route::get('/antrian', [PewawancaraController::class, 'antrian'])->name('antrian');
@@ -284,6 +280,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/penilaian/{id}', [PewawancaraController::class, 'storePenilaian'])->name('penilaian.store');
         Route::get('/riwayat', [PewawancaraController::class, 'riwayat'])->name('riwayat');
         Route::get('/settings', [PewawancaraController::class, 'settings'])->name('settings');
+        // Telegram Pewawancara
         Route::post('/telegram/generate', [AdminProfileController::class, 'generateCode'])->name('telegram.generate-code');
         Route::post('/telegram/unlink', [AdminProfileController::class, 'unlink'])->name('telegram.unlink');
         Route::post('/telegram/test', [AdminProfileController::class, 'testMessage'])->name('telegram.test');

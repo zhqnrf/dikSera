@@ -534,41 +534,55 @@
                                                 </button>
 
                                                 {{-- MODAL FORM APPROVE & EDIT JADWAL --}}
-                                                <div class="modal fade text-start"
-                                                    id="modalApproveJadwal{{ $item->id }}" tabindex="-1">
-                                                    <div class="modal-dialog">
-                                                        <div class="modal-content">
+                                                <div class="modal fade" id="modalApproveJadwal{{ $item->id }}"
+                                                    tabindex="-1" aria-hidden="true">
+                                                    <div class="modal-dialog modal-dialog-centered">
+                                                        <div class="modal-content border-0 shadow-lg rounded-4">
                                                             <form
                                                                 action="{{ route('admin.pengajuan_wawancara.approve', $item->id) }}"
                                                                 method="POST">
                                                                 @csrf
 
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title fw-bold">Verifikasi & Edit
-                                                                        Jadwal</h5>
+                                                                {{-- HEADER --}}
+                                                                <div class="modal-header border-0 pb-0">
+                                                                    <div>
+                                                                        <h5 class="modal-title fw-bold text-dark">
+                                                                            Verifikasi Jadwal</h5>
+                                                                        <p class="text-muted small mb-0">Atur ulang detail
+                                                                            pertemuan jika diperlukan.</p>
+                                                                    </div>
                                                                     <button type="button" class="btn-close"
-                                                                        data-bs-dismiss="modal"></button>
+                                                                        data-bs-dismiss="modal"
+                                                                        aria-label="Close"></button>
                                                                 </div>
 
-                                                                <div class="modal-body">
+                                                                <div class="modal-body pt-4">
                                                                     @php
                                                                         $tgl = \Carbon\Carbon::parse(
                                                                             $jadwal->waktu_wawancara,
                                                                         );
                                                                     @endphp
 
-                                                                    <div class="alert alert-info small mb-3">
-                                                                        <i class="bi bi-pencil-fill me-1"></i>
-                                                                        Anda dapat mengganti <strong>Pewawancara</strong>,
-                                                                        Waktu, dan Lokasi di bawah ini.
+                                                                    {{-- ALERT INFO --}}
+                                                                    <div
+                                                                        class="alert alert-primary bg-primary bg-opacity-10 border-0 text-primary d-flex align-items-center p-3 mb-4 rounded-3">
+                                                                        <i class="bi bi-info-circle-fill fs-4 me-3"></i>
+                                                                        <div class="small" style="line-height: 1.4;">
+                                                                            Pastikan <strong>Pewawancara</strong> bersedia
+                                                                            pada waktu yang ditentukan sebelum menyetujui.
+                                                                        </div>
                                                                     </div>
 
-                                                                    {{-- [BARU] PILIH PEWAWANCARA --}}
-                                                                    <div class="mb-3">
-                                                                        <label class="small fw-bold mb-1">Pewawancara /
-                                                                            Penguji</label>
+                                                                    {{-- 1. PEWAWANCARA --}}
+                                                                    <div class="mb-4">
+                                                                        <label
+                                                                            class="form-label small fw-bold text-muted text-uppercase">
+                                                                            <i class="bi bi-person-badge me-1"></i>
+                                                                            Penanggung Jawab
+                                                                        </label>
                                                                         <select name="penanggung_jawab_id"
-                                                                            class="form-select">
+                                                                            class="form-select form-select-lg fw-bold text-dark border-secondary border-opacity-25"
+                                                                            required>
                                                                             @foreach ($pjs as $pj)
                                                                                 <option value="{{ $pj->id }}"
                                                                                     {{ $jadwal->penanggung_jawab_id == $pj->id ? 'selected' : '' }}>
@@ -578,18 +592,24 @@
                                                                         </select>
                                                                     </div>
 
-                                                                    {{-- Input Tanggal & Jam --}}
-                                                                    <div class="row g-2 mb-3">
+                                                                    {{-- 2. WAKTU & LOKASI (GRID) --}}
+                                                                    <div class="row g-3 mb-4">
                                                                         <div class="col-md-6">
                                                                             <label
-                                                                                class="small fw-bold mb-1">Tanggal</label>
+                                                                                class="form-label small fw-bold text-muted text-uppercase">
+                                                                                <i class="bi bi-calendar-event me-1"></i>
+                                                                                Tanggal
+                                                                            </label>
                                                                             <input type="date" name="tgl_wawancara"
                                                                                 class="form-control"
                                                                                 value="{{ $tgl->format('Y-m-d') }}"
                                                                                 required>
                                                                         </div>
                                                                         <div class="col-md-6">
-                                                                            <label class="small fw-bold mb-1">Jam</label>
+                                                                            <label
+                                                                                class="form-label small fw-bold text-muted text-uppercase">
+                                                                                <i class="bi bi-clock me-1"></i> Jam
+                                                                            </label>
                                                                             <input type="time" name="jam_wawancara"
                                                                                 class="form-control"
                                                                                 value="{{ $tgl->format('H:i') }}"
@@ -597,33 +617,44 @@
                                                                         </div>
                                                                         <div class="col-12">
                                                                             <label
-                                                                                class="small fw-bold mb-1">Lokasi</label>
+                                                                                class="form-label small fw-bold text-muted text-uppercase">
+                                                                                <i class="bi bi-geo-alt me-1"></i> Lokasi
+                                                                            </label>
                                                                             <input type="text" name="lokasi"
                                                                                 class="form-control"
-                                                                                value="{{ $jadwal->lokasi }}" required>
+                                                                                value="{{ $jadwal->lokasi }}"
+                                                                                placeholder="Contoh: R. Komite Lt.2"
+                                                                                required>
                                                                         </div>
                                                                     </div>
 
-                                                                    {{-- Input Deskripsi Skill --}}
-                                                                    <div class="mb-2">
-                                                                        <label class="small fw-bold text-primary mb-1">
-                                                                            <i class="bi bi-list-check"></i> Deskripsi
-                                                                            Skill / Topik
+                                                                    {{-- 3. DESKRIPSI / TOPIK --}}
+                                                                    <div
+                                                                        class="bg-light p-3 rounded-3 border border-secondary border-opacity-10">
+                                                                        <label
+                                                                            class="form-label small fw-bold text-dark mb-2">
+                                                                            <i
+                                                                                class="bi bi-card-checklist me-1 text-success"></i>
+                                                                            Materi / Topik Wawancara
                                                                         </label>
-                                                                        <textarea name="deskripsi_skill" class="form-control" rows="3"
-                                                                            placeholder="Contoh: Fokus pada SOP Pemasangan Infus, Komunikasi Efektif...">{{ $jadwal->deskripsi_skill }}</textarea>
-                                                                        <div class="form-text small">Informasi ini akan
-                                                                            tampil di dashboard perawat.
+                                                                        <textarea name="deskripsi_skill" class="form-control border-0 bg-white shadow-sm" rows="3"
+                                                                            placeholder="Tuliskan fokus materi wawancara (opsional)...">{{ $jadwal->deskripsi_skill }}</textarea>
+                                                                        <div class="form-text small mt-2">
+                                                                            <i class="bi bi-eye"></i> Info ini akan tampil
+                                                                            di dashboard perawat.
                                                                         </div>
                                                                     </div>
                                                                 </div>
 
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-light"
+                                                                {{-- FOOTER --}}
+                                                                <div class="modal-footer border-0 pt-0 pb-4 px-4">
+                                                                    <button type="button"
+                                                                        class="btn btn-light text-muted fw-bold px-4"
                                                                         data-bs-dismiss="modal">Batal</button>
                                                                     <button type="submit"
-                                                                        class="btn btn-success text-white fw-bold">
-                                                                        <i class="bi bi-check-lg"></i> Simpan & Setujui
+                                                                        class="btn btn-success fw-bold px-4">
+                                                                        <i class="bi bi-check-circle-fill me-2"></i>
+                                                                        Setujui Jadwal
                                                                     </button>
                                                                 </div>
                                                             </form>
