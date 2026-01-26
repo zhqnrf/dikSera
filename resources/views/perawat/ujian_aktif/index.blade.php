@@ -39,38 +39,35 @@
             color: #166534;
         }
 
-        /* Berlangsung */
         .bg-soft-warning {
             background-color: #fef9c3;
             color: #854d0e;
         }
 
-        /* Belum Mulai */
         .bg-soft-secondary {
             background-color: #f1f5f9;
             color: #475569;
         }
 
-        /* Selesai Waktu */
         .bg-soft-primary {
             background-color: #dbeafe;
             color: #1e40af;
         }
-
-        /* Sudah Dikerjakan */
 
         .bg-soft-purple {
             background-color: #f3e8ff;
             color: #6b21a8;
         }
 
-        /* Undangan */
         .bg-soft-blue {
             background-color: #e0f2fe;
             color: #0369a1;
         }
 
-        /* Public */
+        .bg-soft-info {
+            background-color: #e0f7fa;
+            color: #006064;
+        }
 
         /* --- 3. Info Box Waktu --- */
         .time-box {
@@ -107,7 +104,6 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
             min-height: 40px;
-            /* Jaga tinggi konsisten */
         }
     </style>
 @endpush
@@ -149,33 +145,56 @@
             <div class="row g-4">
                 @foreach ($forms as $form)
                     @php
-                        // --- LOGIKA STATUS ---
-                        $userResult = $form->examResults->first(); // Ambil hasil user (jika ada)
+                        // --- 1. AMBIL INFO PENGAJUAN TERKAIT (Untuk cek metode) ---
+                        // Asumsi: Kita bisa mendeteksi pengajuan aktif user.
+                        // Jika tidak ada di controller, kita pakai logika umum saja.
+                        // (Idealnya controller mengirim variabel $pengajuanAktif)
+                        $user = auth()->user();
+                        $pengajuanAktif = \App\Models\PengajuanSertifikat::where('user_id', $user->id)
+                            ->whereIn('status', ['method_selected', 'exam_passed', 'interview_scheduled'])
+                            ->latest()
+                            ->first();
+
+                        $isKredensialing = $pengajuanAktif && $pengajuanAktif->metode == 'interview_only';
+
+                        // --- 2. LOGIKA STATUS UJIAN ---
+                        $userResult = $form->examResults->first();
                         $isSubmitted = $userResult !== null;
-                        $isRemidi = $isSubmitted && (($userResult->remidi ?? ($userResult->total_nilai < 75)));
+
                         $isStarted = $now->greaterThanOrEqualTo($form->waktu_mulai);
                         $isEnded = $now->greaterThan($form->waktu_selesai);
 
-                        // Cek hasil terakhir (jika remidi, cek hasil terbaru)
+                        // Cek hasil terakhir (untuk remidi)
                         $lastResult = $form->examResults->sortByDesc('id')->first();
-                        $isRemidiLast = $lastResult && ($lastResult->remidi ?? ($lastResult->total_nilai < 75));
+                        $isRemidiLast = $lastResult && ($lastResult->remidi ?? $lastResult->total_nilai < 75);
 
-                        if ($isSubmitted && !$isRemidiLast) {
-                            // SUDAH MENGERJAKAN & TIDAK REMIDI (terakhir lulus)
+                        // --- 3. PENENTUAN BADGE & TOMBOL ---
+                        if ($isKredensialing) {
+                            // JIKA KREDENSIALING (SKIP UJIAN)
+                            $badgeClass = 'bg-soft-info';
+                            $badgeIcon = 'bi-info-circle';
+                            $statusLabel = 'Kredensialing';
+
+                            $btnClass = 'btn-light text-muted border';
+                            $btnLabel = 'Tidak Perlu Ujian';
+                            $btnIcon = 'bi-slash-circle';
+                            $linkRoute = '#';
+                            $isClickable = false;
+                            $opacityClass = 'opacity-75';
+                        } elseif ($isSubmitted && !$isRemidiLast) {
+                            // SUDAH LULUS
                             $badgeClass = 'bg-soft-primary';
                             $badgeIcon = 'bi-check-all';
                             $statusLabel = 'Selesai Dikerjakan';
+
                             $btnClass = 'btn-outline-primary';
                             $btnLabel = 'Lihat Nilai Saya';
                             $btnIcon = 'bi-trophy';
-                            $linkRoute = route('perawat.ujian.selesai', [
-                                'form' => $form->slug,
-                                'result_id' => $lastResult->id,
-                            ]);
+                            $linkRoute = route('perawat.ujian.selesai', ['form' => $form->slug]); // Route Selesai
                             $isClickable = true;
                             $opacityClass = '';
                         } elseif ($isRemidiLast && $isStarted && !$isEnded) {
-                            // REMIDI & MASIH BISA DIKERJAKAN
+                            // REMIDI (Boleh Ulang)
                             $badgeClass = 'bg-soft-warning';
                             $badgeIcon = 'bi-exclamation-triangle';
                             $statusLabel = 'Remidi';
@@ -183,11 +202,11 @@
                             $btnClass = 'btn-danger';
                             $btnLabel = 'Kerjakan Lagi';
                             $btnIcon = 'bi-arrow-repeat';
-                            $linkRoute = route('perawat.ujian.show', $form->slug);
+                            $linkRoute = route('perawat.ujian.kerjakan', $form->slug); // [FIX] Ganti show jadi kerjakan
                             $isClickable = true;
                             $opacityClass = '';
                         } elseif ($isRemidiLast && $isEnded) {
-                            // REMIDI tapi waktu habis
+                            // REMIDI (Waktu Habis)
                             $badgeClass = 'bg-soft-secondary';
                             $badgeIcon = 'bi-x-circle';
                             $statusLabel = 'Remidi (Waktu Habis)';
@@ -199,7 +218,7 @@
                             $isClickable = false;
                             $opacityClass = 'opacity-75 grayscale';
                         } elseif ($isEnded) {
-                            // WAKTU HABIS (Dan belum mengerjakan)
+                            // EXPIRED
                             $badgeClass = 'bg-soft-secondary';
                             $badgeIcon = 'bi-x-circle';
                             $statusLabel = 'Ditutup / Expired';
@@ -223,7 +242,7 @@
                             $isClickable = false;
                             $opacityClass = '';
                         } else {
-                            // BERLANGSUNG (Bisa dikerjakan)
+                            // NORMAL (Bisa Dikerjakan)
                             $badgeClass = 'bg-soft-success';
                             $badgeIcon = 'bi-play-circle-fill';
                             $statusLabel = 'Sedang Berlangsung';
@@ -231,7 +250,7 @@
                             $btnClass = 'btn-primary shadow-sm';
                             $btnLabel = 'Kerjakan Sekarang';
                             $btnIcon = 'bi-arrow-right-circle';
-                            $linkRoute = route('perawat.ujian.show', $form->slug);
+                            $linkRoute = route('perawat.ujian.kerjakan', $form->slug); // [FIX] Ganti show jadi kerjakan
                             $isClickable = true;
                             $opacityClass = '';
                         }
@@ -299,14 +318,20 @@
                                     </div>
                                 </div>
 
+                                {{-- Alert Khusus Kredensialing --}}
+                                @if ($isKredensialing)
+                                    <div
+                                        class="alert alert-info py-2 px-3 small border-0 bg-opacity-10 bg-info text-info mb-3">
+                                        <i class="bi bi-info-circle me-1"></i> Jalur Kredensialing tidak perlu ujian.
+                                    </div>
+                                @endif
+
                                 {{-- Action Button --}}
                                 <a href="{{ $linkRoute }}"
                                     class="btn {{ $btnClass }} w-100 rounded-pill py-2 fw-bold {{ !$isClickable ? 'disabled' : '' }}">
                                     @if ($isSubmitted)
-                                        {{-- Icon di kiri kalau lihat nilai --}}
                                         <i class="bi {{ $btnIcon }} me-1"></i> {{ $btnLabel }}
                                     @else
-                                        {{-- Icon di kanan kalau kerjakan --}}
                                         {{ $btnLabel }} <i class="bi {{ $btnIcon }} ms-1"></i>
                                     @endif
                                 </a>

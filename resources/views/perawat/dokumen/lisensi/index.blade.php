@@ -148,8 +148,6 @@
             border: 1px solid #e5e7eb;
         }
 
-        /* Style Pending */
-
         /* --- Buttons --- */
         .btn-renew {
             margin-top: 8px;
@@ -166,6 +164,8 @@
             justify-content: center;
             align-items: center;
             gap: 5px;
+            text-decoration: none;
+            /* Tambahan agar link seperti tombol */
         }
 
         .btn-renew:hover {
@@ -303,13 +303,11 @@
 
                                 {{-- Metode Badge --}}
                                 <td>
-                                    {{-- Menggunakan kolom 'metode' dari database --}}
                                     @if ($item->metode == 'interview_only')
                                         <span class="badge-metode bg-metode-interview">Kredensialing</span>
                                     @elseif ($item->metode == 'pg_interview')
                                         <span class="badge-metode bg-metode-pg">Uji Kompetensi</span>
                                     @else
-                                        {{-- Jika PG Only atau data lama --}}
                                         <span class="badge-metode bg-metode-pg">Uji Kompetensi</span>
                                     @endif
                                 </td>
@@ -329,9 +327,9 @@
                                     </div>
                                 </td>
 
-                                {{-- LOGIKA UTAMA: STATUS & TOMBOL --}}
+                                {{-- STATUS & AKSI --}}
                                 <td>
-                                    {{-- 1. CEK STATUS PENDING / REJECTED DULU --}}
+                                    {{-- 1. CEK STATUS PENDING / REJECTED --}}
                                     @if ($item->status == 'pending')
                                         <span class="badge-status bs-pending mb-1">
                                             <i class="bi bi-hourglass-split"></i> Menunggu Verifikasi
@@ -347,8 +345,7 @@
                                             Hubungi Admin untuk info lebih lanjut.
                                         </div>
                                     @else
-                                        {{-- 2. JIKA STATUS 'ACTIVE' ATAU NULL (DATA LAMA), CEK EXPIRED --}}
-
+                                        {{-- 2. STATUS AKTIF / EXPIRED --}}
                                         @php
                                             $expired = \Carbon\Carbon::parse($item->tgl_expired);
                                             $today = \Carbon\Carbon::now();
@@ -360,25 +357,21 @@
                                             <span class="badge-status bs-danger mb-1"><i class="bi bi-x-circle"></i>
                                                 Expired</span>
 
-                                            <form action="{{ route('perawat.pengajuan.store') }}" method="POST">
-                                                @csrf
-                                                <input type="hidden" name="lisensi_id" value="{{ $item->id }}">
-                                                <button type="submit" class="btn-renew danger-renew">
-                                                    <i class="bi bi-arrow-repeat"></i> Perpanjang
-                                                </button>
-                                            </form>
+                                            {{-- [PERBAIKAN] Gunakan Link ke Create dengan Metode item tsb --}}
+                                            <a href="{{ route('perawat.lisensi.create', $item->metode) }}"
+                                                class="btn-renew danger-renew">
+                                                <i class="bi bi-arrow-repeat"></i> Ajukan Perpanjangan
+                                            </a>
                                         @elseif($diff < 90)
                                             {{-- HAMPIR EXPIRED --}}
                                             <span class="badge-status bs-warning mb-1"><i
                                                     class="bi bi-exclamation-triangle"></i> Hampir Expired</span>
 
-                                            <form action="{{ route('perawat.pengajuan.store') }}" method="POST">
-                                                @csrf
-                                                <input type="hidden" name="lisensi_id" value="{{ $item->id }}">
-                                                <button type="submit" class="btn-renew">
-                                                    <i class="bi bi-arrow-repeat"></i> Perpanjang
-                                                </button>
-                                            </form>
+                                            {{-- [PERBAIKAN] Gunakan Link ke Create --}}
+                                            <a href="{{ route('perawat.lisensi.create', $item->metode) }}"
+                                                class="btn-renew">
+                                                <i class="bi bi-arrow-repeat"></i> Perpanjang
+                                            </a>
                                         @else
                                             {{-- AKTIF --}}
                                             <span class="badge-status bs-active"><i class="bi bi-check-circle"></i>
@@ -387,7 +380,7 @@
                                     @endif
                                 </td>
 
-                                {{-- Generate PDF (Hanya jika AKTIF / TIDAK PENDING) --}}
+                                {{-- Generate PDF --}}
                                 <td class="text-end">
                                     @if ($item->status == 'pending' || $item->status == 'rejected')
                                         <button class="btn-generate disabled" disabled title="Dokumen belum aktif">

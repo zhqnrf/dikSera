@@ -9,7 +9,21 @@ class PengajuanSertifikat extends Model
 {
     use HasFactory;
     
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'user_id',
+        'lisensi_lama_id',
+        'status',
+        'metode',
+        'keterangan',
+        // Kolom Baru
+        'jenis_pengajuan',
+        'link_gdrive',
+        'file_sertifikat_lama',
+        'file_surat_rekomendasi',
+        'file_dokumen_baru',
+        'tgl_mulai_berlaku',
+        'tgl_akhir_berlaku'
+    ];
 
     public function jadwalWawancara()
     {
